@@ -9,9 +9,9 @@ import Modal from '@/components/ui/modal';
 
 const navLinks = [
   { href: '/', label: 'Home' },
-  { href: '/shop', label: 'Shop' },
-  { href: '/business', label: 'Business (B2B)' },
-  { href: '/about', label: 'About' },
+  { href: '/shop', label: 'Store' },
+  { href: '/business', label: 'For businesses (B2B)' },
+  { href: '/about', label: 'About us' },
   { href: '/contact', label: 'Contact' },
 ];
 
@@ -20,17 +20,17 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <header className="w-full border-b border-border bg-background">
-      <div className="mx-auto max-w-7xl px-4">
+    <header className="w-full border-b mx-auto max-w-[1245px] border-border bg-background">
+      <div className="mx-auto max-w-[1245px]">
         <div className="flex items-center justify-between py-4">
           {/* Logo */}
           <Link href="/" className="shrink-0">
             <Image
               src="/icon.webp"
               alt="KYS Factory"
-              width={600}
-              height={190}
-              className="h-36 w-auto"
+              width={550}
+              height={150}
+              className="h-32 w-auto"
             />
           </Link>
 
