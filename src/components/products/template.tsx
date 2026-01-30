@@ -11,10 +11,8 @@ type ProductTemplateProps = {
 };
 
 const ProductTemplate: React.FC<ProductTemplateProps> = ({ product }) => {
-  // Get related products (excluding current product)
-  const relatedProducts = mockProducts
-    .filter((p) => p.id !== product.id && p.category.id === product.category.id)
-    .slice(0, 4);
+  // TODO: Get related products from Sanity CMS
+  const relatedProducts: Product[] = [];
 
   return (
     <>
@@ -105,8 +103,5 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({ product }) => {
     </>
   );
 };
-
-// Import mock products for related products
-import { mockProducts } from '@/lib/data/mock-products';
 
 export default ProductTemplate;

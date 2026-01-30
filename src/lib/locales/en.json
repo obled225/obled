@@ -4,13 +4,15 @@
       "home": "Home",
       "store": "Store",
       "business": "For businesses (B2B)",
-      "about": "About us",
+      "about": "About",
       "faq": "FAQ"
     },
     "search": {
       "placeholder": "Search products...",
       "ariaLabel": "Search",
-      "closeAriaLabel": "Close search"
+      "closeAriaLabel": "Close search",
+      "resultsFound": "results found",
+      "viewAllResults": "View all results for"
     },
     "cart": {
       "ariaLabel": "Cart"
@@ -18,6 +20,46 @@
     "menu": {
       "ariaLabel": "Menu",
       "title": "Menu"
+    },
+    "currency": {
+      "ariaLabel": "Select currency"
+    }
+  },
+  "products": {
+    "empty": {
+      "title": "Our store is still being set up",
+      "description": "We don't have any products available yet, but we're working hard to add them soon!",
+      "suggestion": "Check back later for our latest collection."
+    },
+    "outOfStock": "Out of stock",
+    "from": "From",
+    "productNotFound": {
+      "title": "Product not found",
+      "description": "The product you're looking for doesn't exist or has been removed.",
+      "browseProducts": "Browse products",
+      "metaTitle": "Product not found"
+    },
+    "productDetail": {
+      "color": "Color",
+      "size": "Size",
+      "quantity": "Quantity",
+      "adding": "Adding...",
+      "addToCart": "Add to cart",
+      "buyNow": "Buy now",
+      "sizeGuide": "Size guide",
+      "share": "Share"
+    },
+    "sizeGuide": {
+      "title": "Size guide",
+      "inches": "Inches",
+      "cm": "Centimeters",
+      "size": "Size",
+      "chest": "Chest",
+      "length": "Length"
+    },
+    "sections": {
+      "allProducts": "All products",
+      "ourPacks": "Our packs"
     }
   },
   "footer": {
@@ -95,20 +137,41 @@
       "table": {
         "headers": ["Category", "Categories of Recipients"],
         "rows": [
-          ["Identifiers such as basic contact information and certain order and account information", "Vendors and third parties that provide services on our behalf (such as Internet service providers, payment processors, order processing partners, customer service partners and data analysis providers)"],
-          ["Commercial information such as order information, purchase information and customer service information", "Business and marketing partners"],
-          ["Internet or other similar network activity, such as usage data", "Affiliates"],
-          ["Geolocation data such as locations determined by IP address or other technical measures", "Vendors and third parties that provide services on our behalf (such as Internet service providers, payment processors, order processing partners, customer service partners and data analysis providers)"]
+          [
+            "Identifiers such as basic contact information and certain order and account information",
+            "Vendors and third parties that provide services on our behalf (such as Internet service providers, payment processors, order processing partners, customer service partners and data analysis providers)"
+          ],
+          [
+            "Commercial information such as order information, purchase information and customer service information",
+            "Business and marketing partners"
+          ],
+          [
+            "Internet or other similar network activity, such as usage data",
+            "Affiliates"
+          ],
+          [
+            "Geolocation data such as locations determined by IP address or other technical measures",
+            "Vendors and third parties that provide services on our behalf (such as Internet service providers, payment processors, order processing partners, customer service partners and data analysis providers)"
+          ]
         ]
       },
       "sensitiveNote": "We do not use or disclose sensitive personal information without your consent or for the purpose of inferring characteristics about you.",
       "consentNote": "With your consent, we share personal information for the purpose of carrying out advertising and marketing activities, as follows.",
       "sharingNote": "We have \"sold\" and \"shared\" (as these terms are defined in applicable legislation) personal information during the previous 12 months for the purpose of carrying out advertising and marketing activities, as follows.",
       "sharingTable": {
-        "headers": ["Categories of Personal Information", "Categories of Recipients"],
+        "headers": [
+          "Categories of Personal Information",
+          "Categories of Recipients"
+        ],
         "rows": [
-          ["Identifiers such as name, email address and phone number", "Business and marketing partners"],
-          ["Commercial information such as records of products or services purchased", "Business and marketing partners"],
+          [
+            "Identifiers such as name, email address and phone number",
+            "Business and marketing partners"
+          ],
+          [
+            "Commercial information such as records of products or services purchased",
+            "Business and marketing partners"
+          ],
           ["Usage data", "Business and marketing partners"]
         ]
       }
@@ -159,7 +222,7 @@
     }
   },
   "about": {
-    "title": "Textile manufacturer in Abidjan | Blank t-shirts & B2B – KYS Factory CIV",
+    "title": "Textile manufacturer in Abidjan | Blank t-shirts & B2B | KYS Factory",
     "subtitle": "Local textile manufacturing for brands & businesses in Abidjan",
     "description": "Blank t-shirts, professional packs and agile production in Côte d'Ivoire. A local, flexible and responsive alternative.",
     "cta": {
@@ -169,12 +232,12 @@
     "whoWeAre": {
       "title": "WHO ARE WE",
       "subtitle": "A local textile manufacturer, close to its customers",
-      "content": "KYS Factory CIV is a textile manufacturer based in Abidjan (Riviera Palmeraie), specialized in the production of blank t-shirts and B2B textile solutions for brands, businesses and professionals in Côte d'Ivoire."
+      "content": "KYS Factory is a textile manufacturer based in Abidjan (Riviera Palmeraie), specialized in the production of high-quality blank t-shirts for brands, businesses and professionals in Côte d'Ivoire and around the world."
     },
     "b2b": {
       "title": "BUSINESS SOLUTIONS (B2B)",
-      "subtitle": "Textile solutions for professionals",
-      "content": "Our packs of blank t-shirts are designed for:",
+      "subtitle": "High-quality blank t-shirts for professionals",
+      "content": "Our packs of premium quality blank t-shirts are designed for:",
       "targets": [
         "Fashion brands",
         "SMEs & businesses",
@@ -208,7 +271,7 @@
     },
     "support": {
       "title": "Human & professional support",
-      "intro": "Our approach is based on exchange, listening and advice. At KYS Factory CIV, you are not an order number, you are a partner.",
+      "intro": "Our approach is based on exchange, listening and advice. At KYS Factory, you are not an order number, you are a partner.",
       "content": "We support you at every stage:",
       "services": [
         "Choice of textiles adapted to your project",
@@ -320,5 +383,10 @@
       "question": "What are your quality commitments?",
       "answer": "We apply rigorous quality controls at every stage of production. Our goal is to deliver a flawless final product, ready to be worn or marketed."
     }
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "Sorry, we couldn't find the page you're looking for. It may have been moved or doesn't exist.",
+    "goHome": "Go back home"
   }
 }

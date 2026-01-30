@@ -1,5 +1,6 @@
 import { Product } from '@/lib/types';
 import { ProductCard } from './card';
+import { useTranslations } from 'next-intl';
 
 interface ProductGridProps {
   products: Product[];
@@ -7,6 +8,8 @@ interface ProductGridProps {
 }
 
 export function ProductGrid({ products, loading = false }: ProductGridProps) {
+  const t = useTranslations('products');
+
   if (loading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -30,14 +33,20 @@ export function ProductGrid({ products, loading = false }: ProductGridProps) {
 
   if (products.length === 0) {
     return (
-      <div className="text-center py-12">
-        <div className="text-gray-400 text-6xl mb-4">🛍️</div>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">
-          No products found
-        </h3>
-        <p className="text-gray-600">
-          Try adjusting your search or filter criteria.
-        </p>
+      <div className="flex justify-center">
+        <div className="bg-background border border-border rounded-lg overflow-hidden max-w-md w-full">
+          <div className="p-6 text-center">
+            <h2 className="text-2xl font-medium text-foreground mb-4">
+              {t('empty.title')}
+            </h2>
+            <p className="text-lg text-foreground/80 mb-4">
+              {t('empty.description')}
+            </p>
+            <p className="text-base text-foreground/70">
+              {t('empty.suggestion')}
+            </p>
+          </div>
+        </div>
       </div>
     );
   }

@@ -7,6 +7,7 @@ import { Search, ShoppingCart, Menu, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import Modal from '@/components/ui/modal';
+import { CurrencySelector } from './currency-selector';
 
 export function Header() {
   const t = useTranslations('header');
@@ -19,7 +20,6 @@ export function Header() {
     { href: '/business', label: t('nav.business') },
     { href: '/about', label: t('nav.about') },
     { href: '/faq', label: t('nav.faq') },
-
   ];
 
   return (
@@ -39,6 +39,9 @@ export function Header() {
 
           {/* Right side actions */}
           <div className="flex items-center gap-2">
+            {/* Currency Selector */}
+            <CurrencySelector />
+
             {/* Search */}
             <Button
               variant="ghost"
@@ -51,7 +54,11 @@ export function Header() {
 
             {/* Cart */}
             <Link href="/cart">
-              <Button variant="ghost" size="icon" aria-label={t('cart.ariaLabel')}>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label={t('cart.ariaLabel')}
+              >
                 <ShoppingCart className="h-5 w-5" />
               </Button>
             </Link>

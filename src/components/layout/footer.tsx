@@ -2,8 +2,13 @@
 
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { useLocaleSwitcher } from '@/lib/utils/locale-switcher';
-import { InstagramIcon, FacebookIcon, LinkedInIcon, WhatsAppIcon } from '@/components/ui/icons';
+import { useLocaleSwitcher } from '@/lib/translations/locale-switcher';
+import {
+  InstagramIcon,
+  FacebookIcon,
+  LinkedInIcon,
+  WhatsAppIcon,
+} from '@/components/ui/icons';
 
 export function Footer() {
   const t = useTranslations('footer');

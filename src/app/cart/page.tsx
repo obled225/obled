@@ -1,20 +1,32 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ShoppingBag } from 'lucide-react';
+import { getLocale } from 'next-intl/server';
+import { siteUrl } from '@/lib/utils/config';
 
-export const metadata: Metadata = {
-  title: 'KYS FACTORY CIV / Cart',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const isFrench = locale === 'fr';
+
+  return {
+    title: isFrench ? 'Panier' : 'Cart',
+    description: isFrench
+      ? "Votre panier d'achat KYS Factory"
+      : 'Your KYS Factory shopping cart',
+    openGraph: {
+      url: `${siteUrl}/cart`,
+    },
+    alternates: {
+      canonical: `${siteUrl}/cart`,
+    },
+  };
+}
 
 export default function PanierPage() {
   return (
     <main className="grow">
       <section className="mx-auto max-w-2xl px-4 py-16">
         <div className="text-center">
-          <div className="mx-auto h-20 w-20 rounded-full bg-muted flex items-center justify-center mb-6">
-            <ShoppingBag className="h-10 w-10 text-muted-foreground" />
-          </div>
           <h1 className="text-2xl font-medium text-foreground">
             Your cart is empty
           </h1>

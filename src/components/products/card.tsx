@@ -2,12 +2,15 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Product } from '@/lib/types';
 import { formatPrice } from '@/lib/actions/utils';
+import { useTranslations } from 'next-intl';
 
 interface ProductCardProps {
   product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const t = useTranslations('products');
+
   return (
     <Link href={`/products/${product.id}`} className="group block">
       <div className="relative aspect-3/4 overflow-hidden bg-gray-100">
@@ -22,7 +25,7 @@ export function ProductCard({ product }: ProductCardProps) {
         />
         {!product.inStock && (
           <span className="absolute bottom-4 left-4 rounded-sm bg-gray-900 px-3 py-1.5 text-xs font-medium text-white">
-            Out of Stock
+            {t('outOfStock')}
           </span>
         )}
       </div>
@@ -38,7 +41,7 @@ export function ProductCard({ product }: ProductCardProps) {
           )}
           <span className="text-sm font-medium text-gray-900">
             {product.originalPrice && product.originalPrice > product.price
-              ? `From ${formatPrice(product.price)}`
+              ? `${t('from')} ${formatPrice(product.price)}`
               : formatPrice(product.price)}
           </span>
         </div>

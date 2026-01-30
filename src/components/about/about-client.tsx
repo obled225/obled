@@ -3,7 +3,6 @@
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { ArrowRight, Phone, Mail } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { WhatsAppIcon, InstagramIcon } from '@/components/ui/icons';
 
 export function AboutClient() {
@@ -19,9 +18,7 @@ export function AboutClient() {
           <h1 className="text-3xl font-medium text-foreground mb-4">
             {t('title')}
           </h1>
-          <p className="text-xl text-foreground/80 mb-6">
-            {t('subtitle')}
-          </p>
+          <p className="text-xl text-foreground/80 mb-6">{t('subtitle')}</p>
           <p className="text-lg text-foreground/70 mb-8 max-w-2xl mx-auto">
             {t('description')}
           </p>
@@ -31,23 +28,25 @@ export function AboutClient() {
           {/* Who We Are Section */}
           <div className="mb-12">
             <h2 className="text-2xl font-medium mb-4">{t('whoWeAre.title')}</h2>
-            <h3 className="text-xl font-medium mb-6 text-foreground/80">{t('whoWeAre.subtitle')}</h3>
-            <p className="text-lg leading-relaxed">
-              {t('whoWeAre.content')}
-            </p>
+            <h3 className="text-xl font-medium mb-6 text-foreground/80">
+              {t('whoWeAre.subtitle')}
+            </h3>
+            <p className="text-lg leading-relaxed">{t('whoWeAre.content')}</p>
           </div>
 
           {/* B2B Solutions Section */}
           <div className="bg-background border border-border rounded-lg overflow-hidden mb-8">
             <div className="p-6">
               <h2 className="text-2xl font-medium mb-4">{t('b2b.title')}</h2>
-              <h3 className="text-xl font-medium mb-6 text-foreground/80">{t('b2b.subtitle')}</h3>
-              <p className="text-lg leading-relaxed mb-6">
-                {t('b2b.content')}
-              </p>
+              <h3 className="text-xl font-medium mb-6 text-foreground/80">
+                {t('b2b.subtitle')}
+              </h3>
+              <p className="text-lg leading-relaxed mb-6">{t('b2b.content')}</p>
               <ul className="list-disc pl-6 mb-6 space-y-2">
                 {t.raw('b2b.targets').map((target: string, index: number) => (
-                  <li key={index} className="leading-relaxed text-lg">{target}</li>
+                  <li key={index} className="leading-relaxed text-lg">
+                    {target}
+                  </li>
                 ))}
               </ul>
               <div className="flex justify-end">
@@ -64,8 +63,12 @@ export function AboutClient() {
 
           {/* Production Section */}
           <div className="mb-12">
-            <h2 className="text-2xl font-medium mb-4">{t('production.title')}</h2>
-            <h3 className="text-xl font-medium mb-6 text-foreground/80">{t('production.subtitle')}</h3>
+            <h2 className="text-2xl font-medium mb-4">
+              {t('production.title')}
+            </h2>
+            <h3 className="text-xl font-medium mb-6 text-foreground/80">
+              {t('production.subtitle')}
+            </h3>
             <p className="text-lg leading-relaxed mb-6">
               {t('production.content')}
             </p>
@@ -76,22 +79,32 @@ export function AboutClient() {
               Nous produisons des vêtements adaptés à tous types de projets :
             </p>
             <ul className="list-disc pl-6 space-y-2">
-              {t.raw('production.projects').map((project: string, index: number) => (
-                <li key={index} className="leading-relaxed text-lg">{project}</li>
-              ))}
+              {t
+                .raw('production.projects')
+                .map((project: string, index: number) => (
+                  <li key={index} className="leading-relaxed text-lg">
+                    {project}
+                  </li>
+                ))}
             </ul>
           </div>
 
           {/* Responsiveness Section */}
           <div className="mb-12">
-            <h2 className="text-2xl font-medium mb-6">{t('responsiveness.title')}</h2>
+            <h2 className="text-2xl font-medium mb-6">
+              {t('responsiveness.title')}
+            </h2>
             <p className="text-lg leading-relaxed mb-6">
               {t('responsiveness.content')}
             </p>
             <ul className="list-disc pl-6 mb-6 space-y-2">
-              {t.raw('responsiveness.features').map((feature: string, index: number) => (
-                <li key={index} className="leading-relaxed text-lg">{feature}</li>
-              ))}
+              {t
+                .raw('responsiveness.features')
+                .map((feature: string, index: number) => (
+                  <li key={index} className="leading-relaxed text-lg">
+                    {feature}
+                  </li>
+                ))}
             </ul>
             <p className="text-lg leading-relaxed font-medium">
               {t('responsiveness.urgency')}
@@ -101,23 +114,27 @@ export function AboutClient() {
           {/* Support Section */}
           <div className="mb-12">
             <h2 className="text-2xl font-medium mb-6">{t('support.title')}</h2>
-            <p className="text-lg leading-relaxed mb-6">
-              {t('support.intro')}
-            </p>
+            <p className="text-lg leading-relaxed mb-6">{t('support.intro')}</p>
             <p className="text-lg leading-relaxed mb-6">
               {t('support.content')}
             </p>
             <ul className="list-disc pl-6 space-y-2">
-              {t.raw('support.services').map((service: string, index: number) => (
-                <li key={index} className="leading-relaxed text-lg">{service}</li>
-              ))}
+              {t
+                .raw('support.services')
+                .map((service: string, index: number) => (
+                  <li key={index} className="leading-relaxed text-lg">
+                    {service}
+                  </li>
+                ))}
             </ul>
           </div>
 
           {/* Commitment Section */}
           <div className="bg-background border border-border rounded-lg overflow-hidden mb-12">
             <div className="p-6">
-              <h2 className="text-2xl font-medium mb-6">{t('commitment.title')}</h2>
+              <h2 className="text-2xl font-medium mb-6">
+                {t('commitment.title')}
+              </h2>
               <p className="text-lg leading-relaxed">
                 {t('commitment.content')}
               </p>
@@ -140,7 +157,7 @@ export function AboutClient() {
                       icon: WhatsAppIcon,
                       bgColor: '#25d366',
                       label: 'WhatsApp',
-                      value: '+225 07 13 51 64 17'
+                      value: '+225 07 13 51 64 17',
                     },
                     {
                       key: 'phone',
@@ -148,7 +165,7 @@ export function AboutClient() {
                       icon: Phone,
                       bgColor: '#19a7a4',
                       label: 'Téléphone',
-                      value: '+225 07 13 51 64 17'
+                      value: '+225 07 13 51 64 17',
                     },
                     {
                       key: 'instagram',
@@ -156,7 +173,7 @@ export function AboutClient() {
                       icon: InstagramIcon,
                       bgColor: '#e56969',
                       label: 'Instagram',
-                      value: '@kysfactoryciv'
+                      value: '@kysfactoryciv',
                     },
                     {
                       key: 'email',
@@ -164,16 +181,26 @@ export function AboutClient() {
                       icon: Mail,
                       bgColor: '#3b82f6',
                       label: 'Email',
-                      value: 'contact@kysfactory.com'
-                    }
+                      value: 'contact@kysfactory.com',
+                    },
                   ].map((method) => {
                     const IconComponent = method.icon;
                     return (
                       <Link
                         key={method.key}
                         href={method.href}
-                        target={method.key === 'whatsapp' || method.key === 'instagram' ? '_blank' : undefined}
-                        rel={method.key === 'whatsapp' || method.key === 'instagram' ? 'noopener noreferrer' : undefined}
+                        target={
+                          method.key === 'whatsapp' ||
+                          method.key === 'instagram'
+                            ? '_blank'
+                            : undefined
+                        }
+                        rel={
+                          method.key === 'whatsapp' ||
+                          method.key === 'instagram'
+                            ? 'noopener noreferrer'
+                            : undefined
+                        }
                         className="flex items-center gap-4 rounded-lg p-6 hover:bg-muted/50 transition-colors group"
                       >
                         <div
@@ -197,7 +224,6 @@ export function AboutClient() {
               </div>
             </div>
           </div>
-
         </div>
       </section>
     </main>

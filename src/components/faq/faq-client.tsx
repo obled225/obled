@@ -28,14 +28,16 @@ export function FaqClient() {
   ];
 
   // First 3 questions should be open by default, rest closed
-  const defaultOpenItems = faqItems.slice(0, 3).map(item => item.key);
+  const defaultOpenItems = faqItems.slice(0, 3).map((item) => item.key);
 
   const renderAnswer = (item: { key: string; hasList: boolean }) => {
     if (item.hasList) {
       return (
         <ul className="list-disc pl-6 mb-6">
           {t.raw(`${item.key}.answer`).map((service: string, index: number) => (
-            <li key={index} className="leading-relaxed mb-2">{service}</li>
+            <li key={index} className="leading-relaxed mb-2">
+              {service}
+            </li>
           ))}
         </ul>
       );
@@ -73,20 +75,25 @@ export function FaqClient() {
             {t('title')}
           </h1>
           <p className="text-muted-foreground text-base leading-relaxed max-w-2xl mx-auto">
-            Find answers to frequently asked questions about our products and services.
+            Find answers to frequently asked questions about our products and
+            services.
           </p>
         </div>
 
         {/* How to Order Section */}
         <div className="bg-background border border-border rounded-lg overflow-hidden mb-8">
           <div className="p-6">
-            <h2 className="text-2xl font-medium mb-4">{t('howToOrder.title')}</h2>
+            <h2 className="text-2xl font-medium mb-4">
+              {t('howToOrder.title')}
+            </h2>
             <p className="text-lg leading-relaxed mb-4">
               {t('howToOrder.content')}
             </p>
             <ul className="list-disc pl-6 space-y-2">
               {t.raw('howToOrder.steps').map((step: string, index: number) => (
-                <li key={index} className="leading-relaxed">{step}</li>
+                <li key={index} className="leading-relaxed">
+                  {step}
+                </li>
               ))}
             </ul>
           </div>
@@ -94,7 +101,10 @@ export function FaqClient() {
 
         {/* FAQ Accordion */}
         <div className="bg-background border border-border rounded-lg overflow-hidden">
-          <AccordionPrimitive.Root type="multiple" defaultValue={defaultOpenItems}>
+          <AccordionPrimitive.Root
+            type="multiple"
+            defaultValue={defaultOpenItems}
+          >
             {faqItems.map((item, index) => (
               <AccordionPrimitive.Item
                 key={item.key}
@@ -129,15 +139,13 @@ export function FaqClient() {
                     'overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down px-6'
                   )}
                 >
-                  <div className="pb-5 pt-2">
-                    {renderAnswer(item)}
-                  </div>
+                  <div className="pb-5 pt-2">{renderAnswer(item)}</div>
                 </AccordionPrimitive.Content>
               </AccordionPrimitive.Item>
             ))}
           </AccordionPrimitive.Root>
         </div>
       </section>
-    </main >
+    </main>
   );
 }

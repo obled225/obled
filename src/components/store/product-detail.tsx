@@ -2,18 +2,22 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Minus, Plus, Share2, ZoomIn } from 'lucide-react';
+import { Minus, Plus, Share2, ZoomIn, Ruler } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Product, formatPrice } from '@/lib/types';
 import { useCartStore } from '@/lib/store/cart-store';
 import { useToast } from '@/lib/hooks/use-toast';
 import { cn } from '@/lib/actions/utils';
+import Modal from '@/components/ui/modal';
+import { SizeGuideContent } from './size-guide-modal';
+import { useTranslations } from 'next-intl';
 
 interface ProductDetailProps {
   product: Product;
 }
 
 export function ProductDetail({ product }: ProductDetailProps) {
+  const t = useTranslations('products');
   const { addItem } = useCartStore();
   const { success, error } = useToast();
   const [selectedImage, setSelectedImage] = useState(0);
@@ -25,6 +29,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
   );
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
+  const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
 
   const images = product.images || [product.image];
 
@@ -91,9 +96,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
         {/* Product Info */}
         <div className="lg:pt-4">
-          <p className="text-xs font-medium tracking-wider text-gray-500 uppercase mb-2">
-            KYSFactory
-          </p>
           <h1 className="text-3xl font-normal text-gray-900 leading-tight mb-4">
             {product.name}
           </h1>
@@ -109,13 +111,12 @@ export function ProductDetail({ product }: ProductDetailProps) {
               </span>
             )}
           </div>
-          <p className="text-sm text-gray-600 mb-6">Taxes included.</p>
 
           {/* Color Selector */}
           {product.colors && product.colors.length > 0 && (
             <div className="mb-6">
               <p className="text-sm font-medium text-gray-900 mb-3">
-                Color: {selectedColor}
+                {t('productDetail.color')}: {selectedColor}
               </p>
               <div className="flex gap-2">
                 {product.colors.map((color) => (
@@ -150,7 +151,9 @@ export function ProductDetail({ product }: ProductDetailProps) {
           {/* Size Selector */}
           {product.sizes && product.sizes.length > 0 && (
             <div className="mb-6">
-              <p className="text-sm font-medium text-gray-900 mb-3">Size</p>
+              <p className="text-sm font-medium text-gray-900 mb-3">
+                {t('productDetail.size')}
+              </p>
               <div className="flex flex-wrap gap-2">
                 {product.sizes.map((size) => (
                   <button
@@ -163,7 +166,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                         ? 'border-gray-900 bg-gray-900 text-white'
                         : 'border-gray-200 bg-white text-gray-900 hover:border-gray-900',
                       !size.available &&
-                      'cursor-not-allowed border-gray-200 text-gray-400 line-through opacity-50'
+                        'cursor-not-allowed border-gray-200 text-gray-400 line-through opacity-50'
                     )}
                   >
                     {size.name}
@@ -175,7 +178,9 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
           {/* Quantity */}
           <div className="mb-8">
-            <p className="text-sm font-medium text-gray-900 mb-3">Quantity</p>
+            <p className="text-sm font-medium text-gray-900 mb-3">
+              {t('productDetail.quantity')}
+            </p>
             <div className="inline-flex items-center border border-gray-300 rounded-md">
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -205,14 +210,19 @@ export function ProductDetail({ product }: ProductDetailProps) {
               className="w-full h-12 text-sm font-medium"
             >
               {isAdding
-                ? 'Adding...'
+                ? t('productDetail.adding')
                 : product.soldOut
-                  ? 'Out of Stock'
-                  : 'Add to Cart'}
+                  ? t('outOfStock')
+                  : t('productDetail.addToCart')}
             </Button>
-            <Button className="w-full h-12 text-sm font-medium bg-gray-900 text-white hover:bg-gray-800">
-              Buy Now
-            </Button>
+            {!product.soldOut && (
+              <Button
+                variant="outline"
+                className="w-full h-12 text-sm font-medium border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white transition-colors"
+              >
+                {t('productDetail.buyNow')}
+              </Button>
+            )}
           </div>
 
           {/* Product Description */}
@@ -229,28 +239,41 @@ export function ProductDetail({ product }: ProductDetailProps) {
             </div>
           )}
 
-          {/* Important Notice */}
-          <div className="text-sm text-gray-900 mb-8">
-            <p className="flex items-start gap-2">
-              <span className="text-amber-500">⚠</span>
-              <span>
-                Important: Your order will not be definitively validated until
-                payment is made via WAVE to +225 07 13 51 64 17.
-              </span>
-            </p>
-            <p className="mt-3">
-              No order will be shipped without payment via WAVE to the number
-              above.
-            </p>
+          {/* Size Guide & Share Buttons */}
+          <div className="flex items-center justify-end gap-4 pt-8 border-t border-gray-200">
+            <Button
+              variant="ghost"
+              className="h-10 px-3 gap-2"
+              onClick={() => setIsSizeGuideOpen(true)}
+              aria-label={t('productDetail.sizeGuide')}
+            >
+              <Ruler className="h-5 w-5" />
+              <span className="text-sm">{t('productDetail.sizeGuide')}</span>
+            </Button>
+            <div className="h-6 w-px bg-gray-300" />
+            <Button
+              variant="ghost"
+              className="h-10 px-3 gap-2"
+              aria-label={t('productDetail.share')}
+            >
+              <Share2 className="h-5 w-5" />
+              <span className="text-sm">{t('productDetail.share')}</span>
+            </Button>
           </div>
-
-          {/* Share */}
-          <button className="inline-flex items-center gap-2 text-sm text-gray-900 hover:text-gray-600 transition-colors">
-            <Share2 className="h-4 w-4" />
-            Share
-          </button>
         </div>
       </div>
+
+      {/* Size Guide Modal */}
+      <Modal
+        isOpen={isSizeGuideOpen}
+        close={() => setIsSizeGuideOpen(false)}
+        size="medium"
+        noBackdrop={true}
+      >
+        <Modal.Body>
+          <SizeGuideContent onClose={() => setIsSizeGuideOpen(false)} />
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }

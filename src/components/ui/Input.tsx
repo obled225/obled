@@ -1,6 +1,5 @@
 import React, { useImperativeHandle, useState, useMemo } from 'react';
-import Eye from './icons/Eye';
-import EyeOff from './icons/EyeOff';
+import { Eye, EyeOff } from 'lucide-react';
 
 type InputProps = Omit<
   Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'>,

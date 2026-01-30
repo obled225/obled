@@ -10,7 +10,9 @@
     "search": {
       "placeholder": "Rechercher des produits...",
       "ariaLabel": "Rechercher",
-      "closeAriaLabel": "Fermer la recherche"
+      "closeAriaLabel": "Fermer la recherche",
+      "resultsFound": "résultats trouvés",
+      "viewAllResults": "Voir tous les résultats pour"
     },
     "cart": {
       "ariaLabel": "Panier"
@@ -18,6 +20,46 @@
     "menu": {
       "ariaLabel": "Menu",
       "title": "Menu"
+    },
+    "currency": {
+      "ariaLabel": "Sélectionner la devise"
+    }
+  },
+  "products": {
+    "empty": {
+      "title": "Notre boutique est en cours de configuration",
+      "description": "Nous n'avons pas encore de produits disponibles, mais nous travaillons dur pour les ajouter bientôt !",
+      "suggestion": "Revenez plus tard pour découvrir notre dernière collection."
+    },
+    "outOfStock": "Rupture de stock",
+    "from": "À partir de",
+    "productNotFound": {
+      "title": "Produit introuvable",
+      "description": "Le produit que vous recherchez n'existe pas ou a été supprimé.",
+      "browseProducts": "Parcourir les produits",
+      "metaTitle": "Produit introuvable"
+    },
+    "productDetail": {
+      "color": "Couleur",
+      "size": "Taille",
+      "quantity": "Quantité",
+      "adding": "Ajout en cours...",
+      "addToCart": "Ajouter au panier",
+      "buyNow": "Acheter maintenant",
+      "sizeGuide": "Guide des tailles",
+      "share": "Partager"
+    },
+    "sizeGuide": {
+      "title": "GUIDE DES TAILLES",
+      "inches": "POUCES",
+      "cm": "CM",
+      "size": "TAILLE",
+      "chest": "Poitrine",
+      "length": "Longueur"
+    },
+    "sections": {
+      "allProducts": "Tous les produits",
+      "ourPacks": "Nos packs"
     }
   },
   "footer": {
@@ -95,21 +137,45 @@
       "table": {
         "headers": ["Catégorie", "Catégories de destinataires"],
         "rows": [
-          ["Les identifiants tels que les coordonnées de base et certaines informations sur les commandes et le compte", "Les fournisseurs et tiers qui fournissent des services en notre nom (tels que les fournisseurs d'accès Internet, les organismes de traitement des paiements, les partenaires de traitement des commandes, les partenaires du service à la clientèle et les fournisseurs d'analyse de données)"],
-          ["Les informations commerciales telles que les informations sur les commandes, les informations d'achat et les informations du service à la clientèle", "Les partenaires commerciaux et marketing"],
-          ["Internet ou toute autre activité de réseau similaire, telle que les données d'utilisation", "Les affiliés"],
-          ["Les données de géolocalisation telles que des emplacements déterminés par une adresse IP ou d'autres mesures techniques", "Les fournisseurs et tiers qui fournissent des services en notre nom (tels que les fournisseurs d'accès Internet, les organismes de traitement des paiements, les partenaires de traitement des commandes, les partenaires du service à la clientèle et les fournisseurs d'analyse de données)"]
+          [
+            "Les identifiants tels que les coordonnées de base et certaines informations sur les commandes et le compte",
+            "Les fournisseurs et tiers qui fournissent des services en notre nom (tels que les fournisseurs d'accès Internet, les organismes de traitement des paiements, les partenaires de traitement des commandes, les partenaires du service à la clientèle et les fournisseurs d'analyse de données)"
+          ],
+          [
+            "Les informations commerciales telles que les informations sur les commandes, les informations d'achat et les informations du service à la clientèle",
+            "Les partenaires commerciaux et marketing"
+          ],
+          [
+            "Internet ou toute autre activité de réseau similaire, telle que les données d'utilisation",
+            "Les affiliés"
+          ],
+          [
+            "Les données de géolocalisation telles que des emplacements déterminés par une adresse IP ou d'autres mesures techniques",
+            "Les fournisseurs et tiers qui fournissent des services en notre nom (tels que les fournisseurs d'accès Internet, les organismes de traitement des paiements, les partenaires de traitement des commandes, les partenaires du service à la clientèle et les fournisseurs d'analyse de données)"
+          ]
         ]
       },
       "sensitiveNote": "Nous n'utilisons et ne divulguons pas d'informations personnelles sensibles sans votre consentement ou dans le but de déduire des caractéristiques vous concernant.",
       "consentNote": "Avec votre consentement, nous partageons des informations personnelles dans le but d'accomplir des activités de publicité et de marketing, comme suit.",
       "sharingNote": "Nous avons « vendu » et « partagé » (tels que ces termes sont définis dans la législation en vigueur) des informations personnelles au cours des 12 mois précédents dans le but d'accomplir des activités de publicité et de marketing, comme suit.",
       "sharingTable": {
-        "headers": ["Catégories d'informations personnelles", "Catégories de destinataires"],
+        "headers": [
+          "Catégories d'informations personnelles",
+          "Catégories de destinataires"
+        ],
         "rows": [
-          ["Les identifiants tels que le nom, l'adresse e-mail et le numéro de téléphone", "Les partenaires commerciaux et marketing"],
-          ["Les informations commerciales telles que les registres des produits ou services achetés", "Les partenaires commerciaux et marketing"],
-          ["Les données d'utilisation", "Les partenaires commerciaux et marketing"]
+          [
+            "Les identifiants tels que le nom, l'adresse e-mail et le numéro de téléphone",
+            "Les partenaires commerciaux et marketing"
+          ],
+          [
+            "Les informations commerciales telles que les registres des produits ou services achetés",
+            "Les partenaires commerciaux et marketing"
+          ],
+          [
+            "Les données d'utilisation",
+            "Les partenaires commerciaux et marketing"
+          ]
         ]
       }
     },
@@ -159,7 +225,7 @@
     }
   },
   "about": {
-    "title": "Fabricant textile à Abidjan | T-shirts vierges & B2B – KYS Factory CIV",
+    "title": "Fabricant textile à Abidjan | T-shirts vierges & B2B | KYS Factory",
     "subtitle": "Fabrication textile locale pour marques & entreprises à Abidjan",
     "description": "T-shirts vierges, packs professionnels et production agile en Côte d'Ivoire. Une alternative locale, flexible et réactive.",
     "cta": {
@@ -169,12 +235,12 @@
     "whoWeAre": {
       "title": "QUI SOMMES-NOUS",
       "subtitle": "Un fabricant textile local, proche de ses clients",
-      "content": "KYS Factory CIV est un fabricant textile basé à Abidjan (Riviera Palmeraie), spécialisé dans la production de t-shirts vierges et solutions textiles B2B pour marques, entreprises et professionnels en Côte d'Ivoire."
+      "content": "KYS Factory est un fabricant textile basé à Abidjan (Riviera Palmeraie), spécialisé dans la production de t-shirts vierges de haute qualité pour marques, entreprises et professionnels en Côte d'Ivoire et dans le monde."
     },
     "b2b": {
       "title": "SOLUTIONS ENTREPRISES (B2B)",
-      "subtitle": "Solutions textiles pour professionnels",
-      "content": "Nos packs de t-shirts vierges sont conçus pour :",
+      "subtitle": "T-shirts vierges de haute qualité pour professionnels",
+      "content": "Nos packs de t-shirts vierges de haute qualité sont conçus pour :",
       "targets": [
         "Marques de vêtements",
         "PME & entreprises",
@@ -208,7 +274,7 @@
     },
     "support": {
       "title": "Un accompagnement humain & professionnel",
-      "intro": "Notre approche repose sur l'échange, l'écoute et le conseil. Chez KYS Factory CIV, vous n'êtes pas un numéro de commande, vous êtes un partenaire.",
+      "intro": "Notre approche repose sur l'échange, l'écoute et le conseil. Chez KYS Factory, vous n'êtes pas un numéro de commande, vous êtes un partenaire.",
       "content": "Nous vous accompagnons à chaque étape :",
       "services": [
         "Choix des textiles adaptés à votre projet",
@@ -320,5 +386,10 @@
       "question": "Quels sont vos engagements qualité ?",
       "answer": "Nous appliquons des contrôles qualité rigoureux à chaque étape de la production. Notre objectif est de livrer un produit final impeccable, prêt à être porté ou commercialisé."
     }
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "description": "Désolé, nous n'avons pas pu trouver la page que vous recherchez. Elle a peut-être été déplacée ou n'existe pas.",
+    "goHome": "Retour à l'accueil"
   }
 }

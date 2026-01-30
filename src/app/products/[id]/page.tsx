@@ -1,57 +1,80 @@
 import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import { mockProducts } from '@/lib/data/mock-products';
-import { ProductDetail } from '@/components/store/product-detail';
-import { SizeGuideModal } from '@/components/store/size-guide-modal';
-
-type Props = {
-  params: Promise<{ id: string }>;
-};
+import { getLocale } from 'next-intl/server';
+import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 export async function generateStaticParams() {
   // Generate static params for all products
-  return mockProducts.map((product) => ({
-    id: product.id,
-  }));
+  // TODO: Fetch products from Sanity CMS
+  return [];
 }
 
-export async function generateMetadata(props: Props): Promise<Metadata> {
-  const params = await props.params;
-  const product = mockProducts.find((p) => p.id === params.id);
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const isFrench = locale === 'fr';
+  // TODO: Fetch product from Sanity CMS
+  const product = null;
 
   if (!product) {
     return {
-      title: 'Product Not Found',
+      title: isFrench ? 'Produit introuvable' : 'Product Not Found',
+      description: isFrench
+        ? 'Le produit que vous recherchez est introuvable.'
+        : 'The product you are looking for could not be found.',
     };
   }
 
+  // TODO: Generate metadata when product is fetched from Sanity
   return {
-    title: `${product.name} | KYSFactory`,
-    description: product.description?.join(' ') || '',
-    openGraph: {
-      title: `${product.name} | KYSFactory`,
-      description: product.description?.join(' ') || '',
-      images:
-        product.images && product.images.length > 0 ? [product.images[0]] : [],
-    },
+    title: isFrench ? 'Produit introuvable' : 'Product Not Found',
+    description: isFrench
+      ? 'Le produit que vous recherchez est introuvable.'
+      : 'The product you are looking for could not be found.',
   };
 }
 
-export default async function ProductPage(props: Props) {
-  const params = await props.params;
-  const product = mockProducts.find((p) => p.id === params.id);
-
-  if (!product) {
-    notFound();
-  }
+// Client component for the not found page content
+function ProductNotFound() {
+  const t = useTranslations('products');
 
   return (
-    <>
-      <main className="grow">
-        <ProductDetail product={product} />
-      </main>
+    <main className="grow">
+      <div className="flex justify-center py-16">
+        <div className="bg-background border border-border rounded-lg overflow-hidden max-w-md w-full">
+          <div className="p-6 text-center">
+            <h1 className="text-2xl font-medium text-foreground mb-4">
+              {t('productNotFound.title')}
+            </h1>
+            <p className="text-lg text-foreground/80 mb-4">
+              {t('productNotFound.description')}
+            </p>
+            <Link
+              href="/shop"
+              className="inline-block px-6 py-3 bg-foreground text-background rounded-md hover:bg-foreground/90 transition-colors"
+            >
+              {t('productNotFound.browseProducts')}
+            </Link>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}
 
-      <SizeGuideModal />
-    </>
+export default async function ProductPage() {
+  // TODO: Fetch product from Sanity CMS
+  const product = null;
+
+  if (!product) {
+    return <ProductNotFound />;
+  }
+
+  // Product structured data will be generated when product is fetched from Sanity
+  // TODO: Add structured data generation here
+
+  return (
+    <main className="grow">
+      {/* TODO: Render ProductDetail when product is fetched from Sanity */}
+    </main>
   );
 }

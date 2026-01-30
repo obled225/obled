@@ -3,15 +3,16 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, X } from 'lucide-react';
-import { mockProducts } from '@/lib/data/mock-products';
 import { Product } from '@/lib/types';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 interface SearchBarProps {
   className?: string;
 }
 
 export function SearchBar({ className }: SearchBarProps) {
+  const t = useTranslations('header');
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [results, setResults] = useState<Product[]>([]);
@@ -34,22 +35,11 @@ export function SearchBar({ className }: SearchBarProps) {
   }, []);
 
   // Search products
+  // TODO: Fetch products from Sanity CMS for search
   const searchResults = useMemo(() => {
     if (query.length > 2) {
-      return mockProducts
-        .filter(
-          (product) =>
-            product.name.toLowerCase().includes(query.toLowerCase()) ||
-            (product.description &&
-              product.description
-                .join(' ')
-                .toLowerCase()
-                .includes(query.toLowerCase())) ||
-            product.tags.some((tag) =>
-              tag.toLowerCase().includes(query.toLowerCase())
-            )
-        )
-        .slice(0, 5); // Limit to 5 results
+      // TODO: Implement search with Sanity
+      return [];
     }
     return [];
   }, [query]);
@@ -83,7 +73,7 @@ export function SearchBar({ className }: SearchBarProps) {
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
         <input
           type="text"
-          placeholder="Search products..."
+          placeholder={t('search.placeholder')}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -108,7 +98,7 @@ export function SearchBar({ className }: SearchBarProps) {
         <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
           <div className="p-2">
             <div className="text-xs text-gray-500 mb-2 px-2">
-              {results.length} results found
+              {results.length} {t('search.resultsFound')}
             </div>
             {results.map((product) => (
               <button
@@ -149,7 +139,7 @@ export function SearchBar({ className }: SearchBarProps) {
               onClick={() => handleSearch(query)}
               className="w-full text-left px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
             >
-              View all results for &quot;{query}&quot;
+              {t('search.viewAllResults')} &quot;{query}&quot;
             </button>
           </div>
         </div>

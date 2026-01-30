@@ -1,17 +1,31 @@
 import type { Metadata } from 'next';
+import { getLocale } from 'next-intl/server';
 import { ProductGrid } from '@/components/products/grid';
-import { mockProducts } from '@/lib/data/mock-products';
+import { siteUrl } from '@/lib/utils/config';
 
-export const metadata: Metadata = {
-  title:
-    "KYS FACTORY CIV / Fournisseur de T-shirt Vierge made in Côte d'Ivoire",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const isFrench = locale === 'fr';
+
+  return {
+    title: 'KYS Factory',
+    description: isFrench
+      ? 'Fabricant textile local à Abidjan spécialisé dans la production de t-shirts vierges de haute qualité pour professionnels.'
+      : 'Local textile manufacturer in Abidjan specialized in high-quality blank t-shirt production for professionals.',
+    openGraph: {
+      url: siteUrl,
+    },
+    alternates: {
+      canonical: siteUrl,
+    },
+  };
+}
 
 export default function Home() {
   return (
     <main className="grow">
       <section className="mx-auto max-w-7xl px-4 py-12">
-        <ProductGrid products={mockProducts} />
+        <ProductGrid products={[]} />
       </section>
     </main>
   );

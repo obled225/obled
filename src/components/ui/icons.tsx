@@ -78,11 +78,10 @@ export function XIcon({ className }: { className?: string }) {
   );
 }
 
-
 export function WhatsAppIcon({
   className,
   size = 24,
-  fill = "white",
+  fill = 'white',
 }: {
   className?: string;
   size?: number;
