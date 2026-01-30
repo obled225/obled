@@ -376,3 +376,63 @@ export async function getProductById(id: string): Promise<Product | null> {
     return null;
   }
 }
+
+// GROQ query to get about page content
+const ABOUT_PAGE_QUERY = `*[_type == "aboutPage" && !(_id in path("drafts.**"))][0] {
+  _id,
+  "heroVideoUrl": heroVideo.asset->url,
+  sectionImages[] {
+    image {
+      _id,
+      asset->{
+        _id,
+        url,
+        metadata {
+          dimensions {
+            width,
+            height
+          }
+        }
+      }
+    },
+    caption,
+    position
+  }
+}`;
+
+export interface AboutSectionImage {
+  image: {
+    _id?: string;
+    asset?: {
+      _id?: string;
+      url?: string;
+      metadata?: {
+        dimensions?: {
+          width?: number;
+          height?: number;
+        };
+      };
+    };
+  };
+  caption?: string;
+  position: string;
+}
+
+export interface AboutPageData {
+  heroVideoUrl?: string;
+  sectionImages?: AboutSectionImage[];
+}
+
+/**
+ * Get about page content from Sanity
+ */
+export async function getAboutPage(): Promise<AboutPageData | null> {
+  try {
+    const doc = await sanityClient.fetch(ABOUT_PAGE_QUERY);
+    if (!doc) return null;
+    return doc;
+  } catch (error) {
+    console.error('Error fetching about page from Sanity:', error);
+    return null;
+  }
+}

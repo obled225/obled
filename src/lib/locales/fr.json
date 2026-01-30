@@ -225,20 +225,20 @@
     }
   },
   "about": {
-    "title": "Fabricant textile à Abidjan | T-shirts vierges & B2B | KYS Factory",
-    "subtitle": "Fabrication textile locale pour marques & entreprises à Abidjan",
-    "description": "T-shirts vierges, packs professionnels et production agile en Côte d'Ivoire. Une alternative locale, flexible et réactive.",
+    "title": "Votre fabricant textile de référence, made in Côte d'Ivoire",
+    "subtitle": "Une production locale pour marques & entreprises à Abidjan",
+    "description": "Un partenaire fiable, flexible et réactif.",
     "cta": {
       "seePacks": "Voir les packs",
       "orderWhatsApp": "Commander via WhatsApp"
     },
     "whoWeAre": {
-      "title": "QUI SOMMES-NOUS",
-      "subtitle": "Un fabricant textile local, proche de ses clients",
+      "title": "QUI SOMMES-NOUS ?",
+      "subtitle": "Un fabricant proche de ses clients",
       "content": "KYS Factory est un fabricant textile basé à Abidjan (Riviera Palmeraie), spécialisé dans la production de t-shirts vierges de haute qualité pour marques, entreprises et professionnels en Côte d'Ivoire et dans le monde."
     },
     "b2b": {
-      "title": "SOLUTIONS ENTREPRISES (B2B)",
+      "title": "SOLUTIONS POUR ENTREPRISES",
       "subtitle": "T-shirts vierges de haute qualité pour professionnels",
       "content": "Nos packs de t-shirts vierges de haute qualité sont conçus pour :",
       "targets": [

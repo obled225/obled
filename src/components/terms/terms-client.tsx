@@ -8,7 +8,7 @@ export function TermsClient() {
   return (
     <main className="grow">
       <section className="mx-auto max-w-4xl px-4 pt-8 pb-16">
-        <h1 className="text-2xl sm:text-3xl font-medium text-foreground text-center mb-16">
+        <h1 className="text-4xl sm:text-5xl font-medium text-foreground text-center mb-16">
           {t('title')}
         </h1>
 

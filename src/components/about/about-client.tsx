@@ -1,24 +1,129 @@
 'use client';
 
+import { useState, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { ArrowRight, Phone, Mail } from 'lucide-react';
+import Image from 'next/image';
+import { ArrowRight, Phone, Mail, Play } from 'lucide-react';
 import { WhatsAppIcon, InstagramIcon } from '@/components/ui/icons';
 
-export function AboutClient() {
+interface SectionImage {
+  url?: string;
+  caption?: string;
+  position: string;
+}
+
+interface AboutClientProps {
+  heroVideoUrl?: string;
+  sectionImages?: SectionImage[];
+}
+
+export function AboutClient({
+  heroVideoUrl,
+  sectionImages = [],
+}: AboutClientProps) {
   const t = useTranslations('about');
   const tContact = useTranslations('contact');
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const handlePlayVideo = () => {
+    if (videoRef.current) {
+      videoRef.current.play();
+      setIsVideoPlaying(true);
+    }
+  };
+
+  const handleVideoEnd = () => {
+    setIsVideoPlaying(false);
+  };
+
+  // Check if device is mobile
+  const isMobile = () => {
+    if (typeof window === 'undefined') return false;
+    return window.innerWidth < 768;
+  };
+
+  // Helper function to render section with optional images
+  const renderSectionWithImages = (
+    sectionKey: string,
+    content: React.ReactNode
+  ) => {
+    const sectionImagesForKey = sectionImages.filter(img => img.position === sectionKey);
+
+    return (
+      <div className="mb-12">
+        {content}
+        {sectionImagesForKey.length > 0 && (
+          <div className="mt-6 space-y-4">
+            {sectionImagesForKey.map((image, index) => (
+              <div key={`${sectionKey}-${index}`} className="rounded-lg overflow-hidden">
+                {image.url && (
+                  <Image
+                    src={image.url}
+                    alt={image.caption || ''}
+                    width={800}
+                    height={600}
+                    className="w-full h-auto object-cover"
+                    unoptimized
+                  />
+                )}
+                {image.caption && (
+                  <p className="text-sm text-muted-foreground mt-2 italic text-center">
+                    {image.caption}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <main className="grow">
-      <section className="mx-auto max-w-4xl px-4 py-16">
+      <section className="mx-auto max-w-4xl px-4 py-8">
         {/* Hero Section */}
         <div className="text-center mb-16">
-          <div className="text-6xl mb-4">🏭</div>
-          <h1 className="text-2xl sm:text-3xl font-medium text-foreground mb-4">
+          {heroVideoUrl && (
+            <div className="mb-6 rounded-lg overflow-hidden max-w-2xl mx-auto shadow-lg relative">
+              <video
+                ref={videoRef}
+                className="w-full h-[500px] md:h-[1000px] object-cover"
+                controls={!isMobile()}
+                preload="metadata"
+                muted
+                playsInline
+                aria-label="About KYS Factory video"
+                onEnded={handleVideoEnd}
+              >
+                <source src={heroVideoUrl} type="video/mp4" />
+                <source src={heroVideoUrl} type="video/webm" />
+                <p>
+                  Your browser does not support the video tag.{' '}
+                  <a href={heroVideoUrl}>Download the video</a> instead.
+                </p>
+              </video>
+
+              {/* Mobile Play Button Overlay */}
+              {!isVideoPlaying && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/20 md:hidden">
+                  <button
+                    onClick={handlePlayVideo}
+                    className="bg-white/90 hover:bg-white rounded-full p-4 shadow-lg transition-all duration-200 transform hover:scale-105"
+                    aria-label="Play video"
+                  >
+                    <Play className="w-8 h-8 text-black ml-1" fill="currentColor" />
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+          <h1 className="text-4xl sm:text-5xl font-medium text-foreground mt-8 mb-4">
             {t('title')}
           </h1>
-          <p className="text-lg sm:text-xl text-foreground/80 mb-6">
+          <p className="text-lg sm:text-xl text-foreground/80 mb-3">
             {t('subtitle')}
           </p>
           <p className="text-base sm:text-lg text-foreground/70 mb-8 max-w-2xl mx-auto">
@@ -28,144 +133,156 @@ export function AboutClient() {
 
         <div className="prose prose-lg max-w-none text-foreground">
           {/* Who We Are Section */}
-          <div className="mb-12">
-            <h2 className="text-xl sm:text-2xl font-medium mb-4">
-              {t('whoWeAre.title')}
-            </h2>
-            <h3 className="text-lg sm:text-xl font-medium mb-6 text-foreground/80">
-              {t('whoWeAre.subtitle')}
-            </h3>
-            <p className="text-sm sm:text-lg leading-relaxed">
-              {t('whoWeAre.content')}
-            </p>
-          </div>
-
-          {/* B2B Solutions Section */}
-          <div className="bg-background border border-border rounded-lg overflow-hidden mb-8">
-            <div className="p-6">
+          {renderSectionWithImages('whoWeAre', (
+            <>
               <h2 className="text-xl sm:text-2xl font-medium mb-4">
-                {t('b2b.title')}
+                {t('whoWeAre.title')}
               </h2>
               <h3 className="text-lg sm:text-xl font-medium mb-6 text-foreground/80">
-                {t('b2b.subtitle')}
+                {t('whoWeAre.subtitle')}
               </h3>
-              <p className="text-sm sm:text-lg leading-relaxed mb-6">
-                {t('b2b.content')}
+              <p className="text-sm sm:text-lg leading-relaxed">
+                {t('whoWeAre.content')}
               </p>
-              <ul className="list-disc pl-6 mb-6 space-y-2">
-                {t.raw('b2b.targets').map((target: string, index: number) => (
-                  <li
-                    key={index}
-                    className="leading-relaxed text-sm sm:text-lg"
+            </>
+          ))}
+
+          {/* B2B Solutions Section */}
+          {renderSectionWithImages('b2b', (
+            <div className="bg-background border border-border rounded-lg overflow-hidden">
+              <div className="p-6">
+                <h2 className="text-xl sm:text-2xl font-medium mb-4">
+                  {t('b2b.title')}
+                </h2>
+                <h3 className="text-lg sm:text-xl font-medium mb-6 text-foreground/80">
+                  {t('b2b.subtitle')}
+                </h3>
+                <p className="text-sm sm:text-lg leading-relaxed mb-6">
+                  {t('b2b.content')}
+                </p>
+                <ul className="list-disc pl-6 mb-6 space-y-2">
+                  {t.raw('b2b.targets').map((target: string, index: number) => (
+                    <li
+                      key={index}
+                      className="leading-relaxed text-sm sm:text-lg"
+                    >
+                      {target}
+                    </li>
+                  ))}
+                </ul>
+                <div className="flex justify-end">
+                  <Link
+                    href="/business"
+                    className="inline-flex items-center text-primary hover:text-primary/80 font-medium group"
                   >
-                    {target}
-                  </li>
-                ))}
-              </ul>
-              <div className="flex justify-end">
-                <Link
-                  href="/business"
-                  className="inline-flex items-center text-primary hover:text-primary/80 font-medium group"
-                >
-                  {t('b2b.cta')}
-                  <ArrowRight className="ml-2 h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </Link>
+                    {t('b2b.cta')}
+                    <ArrowRight className="ml-2 h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </Link>
+                </div>
               </div>
             </div>
-          </div>
+          ))}
 
           {/* Production Section */}
-          <div className="mb-12">
-            <h2 className="text-xl sm:text-2xl font-medium mb-4">
-              {t('production.title')}
-            </h2>
-            <h3 className="text-lg sm:text-xl font-medium mb-6 text-foreground/80">
-              {t('production.subtitle')}
-            </h3>
-            <p className="text-sm sm:text-lg leading-relaxed mb-6">
-              {t('production.content')}
-            </p>
-            <p className="text-sm sm:text-lg leading-relaxed mb-6">
-              {t('production.strength')}
-            </p>
-            <p className="text-sm sm:text-lg leading-relaxed mb-6">
-              Nous produisons des vêtements adaptés à tous types de projets :
-            </p>
-            <ul className="list-disc pl-6 space-y-2">
-              {t
-                .raw('production.projects')
-                .map((project: string, index: number) => (
-                  <li
-                    key={index}
-                    className="leading-relaxed text-sm sm:text-lg"
-                  >
-                    {project}
-                  </li>
-                ))}
-            </ul>
-          </div>
+          {renderSectionWithImages('production', (
+            <>
+              <h2 className="text-xl sm:text-2xl font-medium mb-4">
+                {t('production.title')}
+              </h2>
+              <h3 className="text-lg sm:text-xl font-medium mb-6 text-foreground/80">
+                {t('production.subtitle')}
+              </h3>
+              <p className="text-sm sm:text-lg leading-relaxed mb-6">
+                {t('production.content')}
+              </p>
+              <p className="text-sm sm:text-lg leading-relaxed mb-6">
+                {t('production.strength')}
+              </p>
+              <p className="text-sm sm:text-lg leading-relaxed mb-6">
+                Nous produisons des vêtements adaptés à tous types de projets :
+              </p>
+              <ul className="list-disc pl-6 space-y-2">
+                {t
+                  .raw('production.projects')
+                  .map((project: string, index: number) => (
+                    <li
+                      key={index}
+                      className="leading-relaxed text-sm sm:text-lg"
+                    >
+                      {project}
+                    </li>
+                  ))}
+              </ul>
+            </>
+          ))}
 
           {/* Responsiveness Section */}
-          <div className="mb-12">
-            <h2 className="text-xl sm:text-2xl font-medium mb-6">
-              {t('responsiveness.title')}
-            </h2>
-            <p className="text-sm sm:text-lg leading-relaxed mb-6">
-              {t('responsiveness.content')}
-            </p>
-            <ul className="list-disc pl-6 mb-6 space-y-2">
-              {t
-                .raw('responsiveness.features')
-                .map((feature: string, index: number) => (
-                  <li
-                    key={index}
-                    className="leading-relaxed text-sm sm:text-lg"
-                  >
-                    {feature}
-                  </li>
-                ))}
-            </ul>
-            <p className="text-sm sm:text-lg leading-relaxed font-medium">
-              {t('responsiveness.urgency')}
-            </p>
-          </div>
+          {renderSectionWithImages('responsiveness', (
+            <>
+              <h2 className="text-xl sm:text-2xl font-medium mb-6">
+                {t('responsiveness.title')}
+              </h2>
+              <p className="text-sm sm:text-lg leading-relaxed mb-6">
+                {t('responsiveness.content')}
+              </p>
+              <ul className="list-disc pl-6 mb-6 space-y-2">
+                {t
+                  .raw('responsiveness.features')
+                  .map((feature: string, index: number) => (
+                    <li
+                      key={index}
+                      className="leading-relaxed text-sm sm:text-lg"
+                    >
+                      {feature}
+                    </li>
+                  ))}
+              </ul>
+              <p className="text-sm sm:text-lg leading-relaxed font-medium">
+                {t('responsiveness.urgency')}
+              </p>
+            </>
+          ))}
 
           {/* Support Section */}
-          <div className="mb-12">
-            <h2 className="text-xl sm:text-2xl font-medium mb-6">
-              {t('support.title')}
-            </h2>
-            <p className="text-sm sm:text-lg leading-relaxed mb-6">
-              {t('support.intro')}
-            </p>
-            <p className="text-sm sm:text-lg leading-relaxed mb-6">
-              {t('support.content')}
-            </p>
-            <ul className="list-disc pl-6 space-y-2">
-              {t
-                .raw('support.services')
-                .map((service: string, index: number) => (
-                  <li
-                    key={index}
-                    className="leading-relaxed text-sm sm:text-lg"
-                  >
-                    {service}
-                  </li>
-                ))}
-            </ul>
-          </div>
+          {renderSectionWithImages('support', (
+            <>
+              <h2 className="text-xl sm:text-2xl font-medium mb-6">
+                {t('support.title')}
+              </h2>
+              <p className="text-sm sm:text-lg leading-relaxed mb-6">
+                {t('support.intro')}
+              </p>
+              <p className="text-sm sm:text-lg leading-relaxed mb-6">
+                {t('support.content')}
+              </p>
+              <ul className="list-disc pl-6 space-y-2">
+                {t
+                  .raw('support.services')
+                  .map((service: string, index: number) => (
+                    <li
+                      key={index}
+                      className="leading-relaxed text-sm sm:text-lg"
+                    >
+                      {service}
+                    </li>
+                  ))}
+              </ul>
+            </>
+          ))}
 
           {/* Commitment Section */}
-          <div className="bg-background border border-border rounded-lg overflow-hidden mb-12">
-            <div className="p-6">
-              <h2 className="text-xl sm:text-2xl font-medium mb-6">
-                {t('commitment.title')}
-              </h2>
-              <p className="text-sm sm:text-lg leading-relaxed">
-                {t('commitment.content')}
-              </p>
+          {renderSectionWithImages('commitment', (
+            <div className="bg-background border border-border rounded-lg overflow-hidden">
+              <div className="p-6">
+                <h2 className="text-xl sm:text-2xl font-medium mb-6">
+                  {t('commitment.title')}
+                </h2>
+                <p className="text-sm sm:text-lg leading-relaxed">
+                  {t('commitment.content')}
+                </p>
+              </div>
             </div>
-          </div>
+          ))}
 
           {/* Contact Section */}
           <div className="mb-12">
@@ -219,13 +336,13 @@ export function AboutClient() {
                         href={method.href}
                         target={
                           method.key === 'whatsapp' ||
-                          method.key === 'instagram'
+                            method.key === 'instagram'
                             ? '_blank'
                             : undefined
                         }
                         rel={
                           method.key === 'whatsapp' ||
-                          method.key === 'instagram'
+                            method.key === 'instagram'
                             ? 'noopener noreferrer'
                             : undefined
                         }
