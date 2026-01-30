@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { X } from 'lucide-react';
-import { sizeGuide } from '@/lib/types/product';
+import { sizeGuide } from '@/lib/types';
 import { cn } from '@/lib/actions/utils';
 import { useTranslations } from 'next-intl';
 

@@ -1,0 +1,365 @@
+import { createClient } from '@supabase/supabase-js';
+import crypto from 'crypto';
+import { Buffer } from 'node:buffer';
+
+// --- Helper: Verify Lomi Webhook Signature ---
+async function verifyLomiWebhook(
+  rawBody: string | Buffer,
+  signatureHeader: string | null,
+  webhookSecret: string
+) {
+  if (!signatureHeader) {
+    throw new Error('Missing Lomi signature header (X-Lomi-Signature).');
+  }
+  if (!webhookSecret) {
+    console.error('LOMI_WEBHOOK_SECRET is not set. Cannot verify webhook.');
+    throw new Error('Webhook secret not configured internally.');
+  }
+  const expectedSignature = crypto
+    .createHmac('sha256', webhookSecret)
+    .update(rawBody)
+    .digest('hex');
+  const sigBuffer = Buffer.from(signatureHeader);
+  const expectedSigBuffer = Buffer.from(expectedSignature);
+  if (
+    sigBuffer.length !== expectedSigBuffer.length ||
+    !crypto.timingSafeEqual(sigBuffer, expectedSigBuffer)
+  ) {
+    throw new Error('Lomi webhook signature mismatch.');
+  }
+  return JSON.parse(
+    typeof rawBody === 'string' ? rawBody : rawBody.toString('utf8')
+  );
+}
+
+// --- POST Handler for App Router ---
+export async function POST(request: Request) {
+  console.log('🚀 Lomi Webhook: Received request at', new Date().toISOString());
+  console.log(
+    '📧 Request headers:',
+    Object.fromEntries(request.headers.entries())
+  );
+
+  // --- Environment Variables ---
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const lomiWebhookSecret = process.env.LOMI_WEBHOOK_SECRET;
+
+  console.log('🔧 Environment check:');
+  console.log(
+    `  - NEXT_PUBLIC_SUPABASE_URL: ${supabaseUrl ? '✅ Set' : '❌ Missing'}`
+  );
+  console.log(
+    `  - SUPABASE_SERVICE_ROLE_KEY: ${supabaseServiceKey ? '✅ Set' : '❌ Missing'}`
+  );
+  console.log(
+    `  - LOMI_WEBHOOK_SECRET: ${lomiWebhookSecret ? '✅ Set' : '❌ Missing'}`
+  );
+
+  // Check for required environment variables
+  if (!supabaseUrl || !supabaseServiceKey || !lomiWebhookSecret) {
+    console.error(
+      'Lomi Webhook: Missing critical environment variables. Check NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, LOMI_WEBHOOK_SECRET.'
+    );
+    return new Response(
+      JSON.stringify({ error: 'Missing required environment variables' }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+  }
+
+  // Initialize Supabase client
+  const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+
+  // Read the raw body
+  let rawBody: string;
+  try {
+    rawBody = await request.text();
+  } catch (bodyError) {
+    console.error('Lomi Webhook: Error reading request body:', bodyError);
+    return new Response(
+      JSON.stringify({ error: 'Failed to read request body' }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+  }
+
+  const signature = request.headers.get('x-lomi-signature');
+  let eventPayload: {
+    event?: string;
+    data?: {
+      transaction_id?: string;
+      id?: string;
+      checkout_session_id?: string;
+      gross_amount?: string;
+      amount?: string;
+      net_amount?: string;
+      currency_code?: string;
+      currency?: string;
+      metadata?: {
+        internal_order_id?: string;
+        checkout_session_id?: string;
+        linkId?: string;
+      };
+    };
+  };
+
+  try {
+    eventPayload = (await verifyLomiWebhook(
+      rawBody,
+      signature,
+      lomiWebhookSecret
+    )) as typeof eventPayload;
+    console.log(
+      'Lomi Webhook: Lomi event verified:',
+      eventPayload?.event || 'Event type missing'
+    );
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    console.error(
+      'Lomi Webhook: Lomi signature verification failed:',
+      errorMessage
+    );
+    return new Response(
+      JSON.stringify({ error: `Webhook verification failed: ${errorMessage}` }),
+      {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+  }
+
+  // --- Event Processing ---
+  try {
+    const lomiEventType = eventPayload?.event;
+    const eventData = eventPayload?.data;
+
+    if (!lomiEventType || !eventData) {
+      console.warn(
+        'Lomi Webhook: Event type or data missing in Lomi payload.',
+        eventPayload
+      );
+      return new Response(
+        JSON.stringify({ error: 'Event type or data missing.' }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    console.log('Lomi Webhook: Received Lomi event type:', lomiEventType);
+    console.log(
+      'Lomi Webhook: Full event payload:',
+      JSON.stringify(eventPayload, null, 2)
+    );
+
+    // Extract order ID from metadata
+    const orderId = eventData.metadata?.internal_order_id;
+
+    if (!orderId) {
+      console.error(
+        'Lomi Webhook Error: Missing internal_order_id in Lomi webhook metadata.',
+        { lomiEventData: eventData }
+      );
+      return new Response(
+        JSON.stringify({
+          error: 'Missing internal_order_id in Lomi webhook metadata.',
+        }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    // lomiTransactionId is extracted but not currently used
+    // const lomiTransactionId = eventData.transaction_id || eventData.id;
+
+    // checkout_session_id is sent directly on eventData from lomi
+    const lomiCheckoutSessionId = String(
+      eventData.checkout_session_id ||
+        eventData.metadata?.checkout_session_id ||
+        eventData.metadata?.linkId ||
+        eventData.id ||
+        ''
+    );
+
+    // Amount: lomi sends gross_amount from the transactions table
+    const amount = parseFloat(
+      eventData.gross_amount || eventData.amount || eventData.net_amount || '0'
+    );
+
+    // Currency: lomi sends currency_code from the transactions table
+    const currency = eventData.currency_code || eventData.currency || 'XOF';
+
+    // Determine payment status based on event type
+    let paymentStatusForDb = 'unknown';
+    if (lomiEventType === 'CHECKOUT_COMPLETED') {
+      paymentStatusForDb = 'paid';
+    } else if (lomiEventType === 'PAYMENT_SUCCEEDED') {
+      paymentStatusForDb = 'paid';
+    } else if (lomiEventType === 'PAYMENT_FAILED') {
+      paymentStatusForDb = 'payment_failed';
+    } else {
+      console.log(
+        'Lomi Webhook: Lomi event type not handled for direct payment status update:',
+        lomiEventType
+      );
+      return new Response(
+        JSON.stringify({
+          received: true,
+          message: 'Webhook event type not handled for payment update.',
+        }),
+        {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    // Record Payment Outcome
+    const { error: rpcError } = await supabase.rpc('record_order_payment', {
+      p_lomi_session_id: lomiCheckoutSessionId,
+      p_payment_status: paymentStatusForDb,
+      p_total_amount: amount,
+      p_currency_code: currency,
+      p_lomi_event_payload: eventPayload,
+    });
+
+    if (rpcError) {
+      console.error(
+        `Lomi Webhook Error: Failed to call record_order_payment RPC for order ${orderId}:`,
+        rpcError
+      );
+      return new Response(
+        JSON.stringify({
+          error: 'Failed to record payment',
+          details: rpcError.message,
+        }),
+        {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    console.log(
+      `Lomi Webhook: Payment for order ${orderId} (status: ${paymentStatusForDb}) processed.`
+    );
+
+    // Only proceed to email dispatch if payment was successful
+    if (paymentStatusForDb === 'paid') {
+      console.log(
+        `📧 Lomi Webhook: Triggering send-order-confirmation for order ${orderId}`
+      );
+      try {
+        const functionUrl = `${supabaseUrl}/functions/v1/send-order-confirmation`;
+
+        const emailResponse = await fetch(functionUrl, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${supabaseServiceKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ order_id: orderId }),
+        });
+
+        const emailResult = await emailResponse.text();
+
+        if (!emailResponse.ok) {
+          console.error(
+            `❌ Lomi Webhook: Error triggering send-order-confirmation for ${orderId}:`,
+            {
+              status: emailResponse.status,
+              statusText: emailResponse.statusText,
+              response: emailResult,
+            }
+          );
+
+          // Try to update order status to indicate email dispatch failed
+          try {
+            await supabase.rpc('update_email_dispatch_status', {
+              p_order_id: orderId,
+              p_email_dispatch_status: 'DISPATCH_FAILED',
+              p_email_dispatch_error: `HTTP call failed: ${emailResponse.status} - ${emailResult}`,
+            });
+          } catch (updateError) {
+            console.error(
+              `❌ Failed to update email dispatch status after HTTP error:`,
+              updateError
+            );
+          }
+        } else {
+          console.log(
+            `✅ Lomi Webhook: Successfully triggered send-order-confirmation for ${orderId}:`,
+            emailResult
+          );
+        }
+      } catch (functionError: unknown) {
+        const errorMessage =
+          functionError instanceof Error
+            ? functionError.message
+            : 'Unknown error';
+        const errorName =
+          functionError instanceof Error ? functionError.name : 'Error';
+        const errorStack =
+          functionError instanceof Error ? functionError.stack : undefined;
+        console.error(
+          `❌ Lomi Webhook: Exception calling send-order-confirmation for ${orderId}:`,
+          functionError
+        );
+        console.error(`❌ Function Error Details:`, {
+          name: errorName,
+          message: errorMessage,
+          stack: errorStack,
+        });
+
+        // Try to update order status to indicate email dispatch failed
+        try {
+          await supabase.rpc('update_email_dispatch_status', {
+            p_order_id: orderId,
+            p_email_dispatch_status: 'DISPATCH_FAILED',
+            p_email_dispatch_error: `Function invocation error: ${errorMessage}`,
+          });
+        } catch (updateError) {
+          console.error(
+            `❌ Failed to update email dispatch status after function error:`,
+            updateError
+          );
+        }
+      }
+    }
+
+    return new Response(
+      JSON.stringify({ received: true, message: 'Webhook processed.' }),
+      {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
+    console.error(
+      'Lomi Webhook - Uncaught error during event processing:',
+      error
+    );
+    return new Response(
+      JSON.stringify({
+        error: 'Internal server error processing webhook event.',
+        details: errorMessage,
+      }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+  }
+}

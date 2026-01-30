@@ -2,18 +2,23 @@ import { Metadata } from 'next';
 import { getLocale } from 'next-intl/server';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import { getProductBySlug } from '@/lib/sanity/queries';
+import { ProductDetail } from '@/components/store/product-detail';
 
 export async function generateStaticParams() {
   // Generate static params for all products
-  // TODO: Fetch products from Sanity CMS
+  // This will be populated when products are available
   return [];
 }
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: { id: string };
+}): Promise<Metadata> {
   const locale = await getLocale();
   const isFrench = locale === 'fr';
-  // TODO: Fetch product from Sanity CMS
-  const product = null;
+  const product = await getProductBySlug(params.id);
 
   if (!product) {
     return {
@@ -24,12 +29,14 @@ export async function generateMetadata(): Promise<Metadata> {
     };
   }
 
-  // TODO: Generate metadata when product is fetched from Sanity
   return {
-    title: isFrench ? 'Produit introuvable' : 'Product Not Found',
-    description: isFrench
-      ? 'Le produit que vous recherchez est introuvable.'
-      : 'The product you are looking for could not be found.',
+    title: product.name,
+    description: Array.isArray(product.description)
+      ? product.description.join(' ')
+      : product.description || `${product.name} - KYS Factory`,
+    openGraph: {
+      images: product.image ? [product.image] : [],
+    },
   };
 }
 
@@ -61,20 +68,20 @@ function ProductNotFound() {
   );
 }
 
-export default async function ProductPage() {
-  // TODO: Fetch product from Sanity CMS
-  const product = null;
+export default async function ProductPage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const product = await getProductBySlug(params.id);
 
   if (!product) {
     return <ProductNotFound />;
   }
 
-  // Product structured data will be generated when product is fetched from Sanity
-  // TODO: Add structured data generation here
-
   return (
     <main className="grow">
-      {/* TODO: Render ProductDetail when product is fetched from Sanity */}
+      <ProductDetail product={product} />
     </main>
   );
 }

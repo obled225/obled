@@ -120,7 +120,10 @@ export function Pagination({
       </button>
 
       {/* Page Buttons */}
-      <div className="flex items-center gap-0.5 sm:gap-1 overflow-x-auto" data-testid={dataTestId}>
+      <div
+        className="flex items-center gap-0.5 sm:gap-1 overflow-x-auto"
+        data-testid={dataTestId}
+      >
         {renderPageButtons()}
       </div>
 

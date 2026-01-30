@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,md}\""
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
+    "types": "supabase gen types typescript --project-id tqxtpqrcuuqkcekscmjx > src/lib/types/database.ts"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.0",

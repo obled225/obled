@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { getLocale, getMessages } from 'next-intl/server';
 import { FaqClient } from '@/components/faq/faq-client';
-import { FaqData } from '@/lib/types/faq';
+import { FaqData } from '@/lib/types';
 import { siteUrl } from '@/lib/utils/config';
 
 export async function generateMetadata(): Promise<Metadata> {

@@ -47,10 +47,12 @@ const Modal = ({
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className={clx(
-              "fixed inset-0 h-screen",
-              isBottom ? "bg-black/8" : "bg-black/25"
-            )} />
+            <div
+              className={clx(
+                'fixed inset-0 h-screen',
+                isBottom ? 'bg-black/8' : 'bg-black/25'
+              )}
+            />
           </Transition.Child>
         )}
 

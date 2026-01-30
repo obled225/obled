@@ -15,7 +15,11 @@ const sortOptions: ProductSortOption[] = [
   { label: 'Name A-Z', value: 'name' },
 ];
 
-export default function ProductsClient() {
+interface ProductsClientProps {
+  products: Product[];
+}
+
+export default function ProductsClient({ products }: ProductsClientProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState<ProductSortOption['value']>('newest');
   const [searchQuery, setSearchQuery] = useState('');
@@ -23,7 +27,7 @@ export default function ProductsClient() {
 
   // Filter and sort products
   const filteredProducts = useMemo(() => {
-    let filtered: Product[] = [];
+    let filtered: Product[] = [...products];
 
     // Apply search filter
     if (searchQuery) {
@@ -78,7 +82,7 @@ export default function ProductsClient() {
     filtered = sortProducts(filtered, sortBy);
 
     return filtered;
-  }, [searchQuery, filters, sortBy]);
+  }, [products, searchQuery, filters, sortBy]);
 
   // Paginate products
   const paginatedProducts = useMemo(() => {
@@ -133,7 +137,9 @@ export default function ProductsClient() {
           {/* Sort Options */}
           <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3 sm:gap-4">
             <div className="flex items-center gap-2 sm:gap-4">
-              <span className="text-xs sm:text-sm font-medium text-gray-700">Sort by:</span>
+              <span className="text-xs sm:text-sm font-medium text-gray-700">
+                Sort by:
+              </span>
               <select
                 value={sortBy}
                 onChange={(e) =>

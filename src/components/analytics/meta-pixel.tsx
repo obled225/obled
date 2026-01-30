@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import type { FbqCommand, FbqFunction } from '@/lib/types/meta-pixel';
+import type { FbqCommand, FbqFunction } from '@/lib/types';
 
 type FbqArgs = [FbqCommand, ...unknown[]];
 

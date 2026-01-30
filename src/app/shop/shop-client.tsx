@@ -2,8 +2,13 @@
 
 import { ProductGrid } from '@/components/products/grid';
 import { useTranslations } from 'next-intl';
+import { Product } from '@/lib/types';
 
-export default function ShopClient() {
+interface ShopClientProps {
+  products: Product[];
+}
+
+export default function ShopClient({ products }: ShopClientProps) {
   const t = useTranslations('products');
 
   return (
@@ -12,7 +17,7 @@ export default function ShopClient() {
         <h1 className="text-xl sm:text-2xl font-medium text-foreground mb-6 sm:mb-8">
           {t('sections.allProducts')}
         </h1>
-        <ProductGrid products={[]} />
+        <ProductGrid products={products} />
       </section>
     </main>
   );

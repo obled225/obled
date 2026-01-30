@@ -41,10 +41,11 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({ product }) => {
               </p>
               <div className="flex items-center space-x-4 mb-4">
                 <span
-                  className={`px-2 py-1 text-sm rounded-full ${product.inStock
+                  className={`px-2 py-1 text-sm rounded-full ${
+                    product.inStock
                       ? 'bg-green-100 text-green-800'
                       : 'bg-red-100 text-red-800'
-                    }`}
+                  }`}
                 >
                   {product.inStock ? 'In Stock' : 'Out of Stock'}
                 </span>

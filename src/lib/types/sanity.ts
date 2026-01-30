@@ -1,3 +1,66 @@
+/**
+ * Sanity CMS Type Definitions
+ *
+ * These types extend the generated Sanity Studio types with
+ * transformed types for frontend use.
+ */
+
+import type { SanityDocument } from '@sanity/types';
+import type {
+  Product as SanityProductRaw,
+  Category as SanityCategoryRaw,
+} from '../../../studio/types/sanity.types';
+
+/**
+ * Expanded Product with resolved references
+ * This is what we get from GROQ queries with references resolved
+ */
+export interface SanityProductExpanded extends Omit<
+  SanityProductRaw,
+  'categories'
+> {
+  categories?: Array<{
+    _id: string;
+    _type: 'category';
+    title?: string;
+    slug?: {
+      current?: string;
+    };
+    description?: string;
+    image?: {
+      asset?: {
+        _ref: string;
+        _type: 'reference';
+      };
+    };
+  }>;
+}
+
+/**
+ * Helper type for GROQ query results
+ */
+export type SanityProductQueryResult = SanityProductExpanded;
+
+/**
+ * Type guard to check if a document is a product
+ */
+export function isSanityProduct(doc: SanityDocument): doc is SanityProductRaw {
+  return doc._type === 'product';
+}
+
+/**
+ * Type guard to check if a document is a category
+ */
+export function isSanityCategory(
+  doc: SanityDocument
+): doc is SanityCategoryRaw {
+  return doc._type === 'category';
+}
+
+/**
+ * Transformed Product type for frontend use
+ * This is the transformed version of SanityProductExpanded used throughout the app
+ */
 export interface Product {
   id: string;
   name: string;
@@ -10,7 +73,7 @@ export interface Product {
   colors?: { name: string; value: string; available: boolean }[];
   sizes?: { name: string; available: boolean }[];
   description?: string[];
-  category: Category;
+  category: ProductCategory;
   // Legacy fields for backward compatibility
   inStock: boolean;
   stockQuantity: number;
@@ -36,13 +99,13 @@ export interface ProductVariant {
   sku: string;
 }
 
-export interface Category {
+export interface ProductCategory {
   id: string;
   name: string;
   description?: string;
   image?: string;
   parentId?: string;
-  subcategories?: Category[];
+  subcategories?: ProductCategory[];
 }
 
 export interface ProductFilters {

@@ -45,7 +45,9 @@ export function CartSummary({
       )}
 
       <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6">
-        <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Order Summary</h2>
+        <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">
+          Order Summary
+        </h2>
 
         <div className="space-y-2 sm:space-y-3 mb-3 sm:mb-4">
           <div className="flex justify-between text-sm">

@@ -1,7 +1,7 @@
 'use client';
 
 import { ProductGrid } from '@/components/products/grid';
-import { Product } from '@/lib/types/product';
+import { Product } from '@/lib/types';
 import { useTranslations } from 'next-intl';
 
 export default function BusinessClient() {

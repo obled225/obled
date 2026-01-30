@@ -13,19 +13,27 @@ export function TermsClient() {
         </h1>
 
         <div className="prose prose-lg max-w-none text-foreground">
-          <p className="text-sm sm:text-lg leading-relaxed mb-6">{t('intro')}</p>
+          <p className="text-sm sm:text-lg leading-relaxed mb-6">
+            {t('intro')}
+          </p>
 
-          <p className="text-sm sm:text-base leading-relaxed mb-6">{t('acceptance')}</p>
+          <p className="text-sm sm:text-base leading-relaxed mb-6">
+            {t('acceptance')}
+          </p>
 
           <h2 className="text-lg sm:text-xl font-medium mt-8 mb-4">
             {t('modifications.title')}
           </h2>
-          <p className="text-sm sm:text-base leading-relaxed mb-6">{t('modifications.content')}</p>
+          <p className="text-sm sm:text-base leading-relaxed mb-6">
+            {t('modifications.content')}
+          </p>
 
           <h2 className="text-lg sm:text-xl font-medium mt-8 mb-4">
             {t('collection.title')}
           </h2>
-          <p className="text-sm sm:text-base leading-relaxed mb-6">{t('collection.intro')}</p>
+          <p className="text-sm sm:text-base leading-relaxed mb-6">
+            {t('collection.intro')}
+          </p>
 
           <p className="text-sm sm:text-base leading-relaxed mb-6">
             {t('collection.additionalUses')}
@@ -48,7 +56,10 @@ export function TermsClient() {
             {t
               .raw('collection.personalInfo.directCollection.items')
               .map((item: string, index: number) => (
-                <li key={index} className="leading-relaxed mb-2 text-sm sm:text-base">
+                <li
+                  key={index}
+                  className="leading-relaxed mb-2 text-sm sm:text-base"
+                >
                   {item}
                 </li>
               ))}
@@ -74,7 +85,10 @@ export function TermsClient() {
             {t
               .raw('collection.personalInfo.thirdParty.items')
               .map((item: string, index: number) => (
-                <li key={index} className="leading-relaxed mb-2 text-sm sm:text-base">
+                <li
+                  key={index}
+                  className="leading-relaxed mb-2 text-sm sm:text-base"
+                >
                   {item}
                 </li>
               ))}
@@ -86,32 +100,53 @@ export function TermsClient() {
             {t('collection.personalInfo.thirdParty.processing')}
           </p>
 
-          <h2 className="text-lg sm:text-xl font-medium mt-8 mb-4">{t('usage.title')}</h2>
+          <h2 className="text-lg sm:text-xl font-medium mt-8 mb-4">
+            {t('usage.title')}
+          </h2>
 
-          <p className="text-sm sm:text-base leading-relaxed mb-6">{t('usage.services')}</p>
-          <p className="text-sm sm:text-base leading-relaxed mb-6">{t('usage.marketing')}</p>
-          <p className="text-sm sm:text-base leading-relaxed mb-6">{t('usage.security')}</p>
-          <p className="text-sm sm:text-base leading-relaxed mb-6">{t('usage.communication')}</p>
+          <p className="text-sm sm:text-base leading-relaxed mb-6">
+            {t('usage.services')}
+          </p>
+          <p className="text-sm sm:text-base leading-relaxed mb-6">
+            {t('usage.marketing')}
+          </p>
+          <p className="text-sm sm:text-base leading-relaxed mb-6">
+            {t('usage.security')}
+          </p>
+          <p className="text-sm sm:text-base leading-relaxed mb-6">
+            {t('usage.communication')}
+          </p>
 
           <h2 className="text-lg sm:text-xl font-medium mt-8 mb-4">
             {t('cookies.title')}
           </h2>
-          <p className="text-sm sm:text-base leading-relaxed mb-6">{t('cookies.content')}</p>
-          <p className="text-sm sm:text-base leading-relaxed mb-6">{t('cookies.browserNote')}</p>
+          <p className="text-sm sm:text-base leading-relaxed mb-6">
+            {t('cookies.content')}
+          </p>
+          <p className="text-sm sm:text-base leading-relaxed mb-6">
+            {t('cookies.browserNote')}
+          </p>
 
           <h2 className="text-lg sm:text-xl font-medium mt-8 mb-4">
             {t('disclosure.title')}
           </h2>
-          <p className="text-sm sm:text-base leading-relaxed mb-6">{t('disclosure.intro')}</p>
+          <p className="text-sm sm:text-base leading-relaxed mb-6">
+            {t('disclosure.intro')}
+          </p>
           <ul className="list-disc pl-6 mb-6">
             {t.raw('disclosure.items').map((item: string, index: number) => (
-              <li key={index} className="leading-relaxed mb-2 text-sm sm:text-base">
+              <li
+                key={index}
+                className="leading-relaxed mb-2 text-sm sm:text-base"
+              >
                 {item}
               </li>
             ))}
           </ul>
 
-          <p className="text-sm sm:text-base leading-relaxed mb-6">{t('disclosure.tableIntro')}</p>
+          <p className="text-sm sm:text-base leading-relaxed mb-6">
+            {t('disclosure.tableIntro')}
+          </p>
 
           <div className="overflow-x-auto mb-6">
             <table className="min-w-full border border-gray-300">
@@ -151,8 +186,12 @@ export function TermsClient() {
           <p className="text-sm sm:text-base leading-relaxed mb-6">
             {t('disclosure.sensitiveNote')}
           </p>
-          <p className="text-sm sm:text-base leading-relaxed mb-6">{t('disclosure.consentNote')}</p>
-          <p className="text-sm sm:text-base leading-relaxed mb-6">{t('disclosure.sharingNote')}</p>
+          <p className="text-sm sm:text-base leading-relaxed mb-6">
+            {t('disclosure.consentNote')}
+          </p>
+          <p className="text-sm sm:text-base leading-relaxed mb-6">
+            {t('disclosure.sharingNote')}
+          </p>
 
           <div className="overflow-x-auto mb-6">
             <table className="min-w-full border border-gray-300">
@@ -192,47 +231,76 @@ export function TermsClient() {
           <h2 className="text-lg sm:text-xl font-medium mt-8 mb-4">
             {t('thirdPartySites.title')}
           </h2>
-          <p className="text-sm sm:text-base leading-relaxed mb-6">{t('thirdPartySites.content')}</p>
+          <p className="text-sm sm:text-base leading-relaxed mb-6">
+            {t('thirdPartySites.content')}
+          </p>
 
           <h2 className="text-lg sm:text-xl font-medium mt-8 mb-4">
             {t('childrenData.title')}
           </h2>
-          <p className="text-sm sm:text-base leading-relaxed mb-6">{t('childrenData.content')}</p>
-          <p className="text-sm sm:text-base leading-relaxed mb-6">{t('childrenData.note')}</p>
+          <p className="text-sm sm:text-base leading-relaxed mb-6">
+            {t('childrenData.content')}
+          </p>
+          <p className="text-sm sm:text-base leading-relaxed mb-6">
+            {t('childrenData.note')}
+          </p>
 
           <h2 className="text-lg sm:text-xl font-medium mt-8 mb-4">
             {t('security.title')}
           </h2>
-          <p className="text-sm sm:text-base leading-relaxed mb-6">{t('security.content')}</p>
-          <p className="text-sm sm:text-base leading-relaxed mb-6">{t('security.retention')}</p>
+          <p className="text-sm sm:text-base leading-relaxed mb-6">
+            {t('security.content')}
+          </p>
+          <p className="text-sm sm:text-base leading-relaxed mb-6">
+            {t('security.retention')}
+          </p>
 
-          <h2 className="text-lg sm:text-xl font-medium mt-8 mb-4">{t('rights.title')}</h2>
-          <p className="text-sm sm:text-base leading-relaxed mb-6">{t('rights.intro')}</p>
+          <h2 className="text-lg sm:text-xl font-medium mt-8 mb-4">
+            {t('rights.title')}
+          </h2>
+          <p className="text-sm sm:text-base leading-relaxed mb-6">
+            {t('rights.intro')}
+          </p>
           <ul className="list-disc pl-6 mb-6">
             {t.raw('rights.rightsList').map((right: string, index: number) => (
-              <li key={index} className="leading-relaxed mb-2 text-sm sm:text-base">
+              <li
+                key={index}
+                className="leading-relaxed mb-2 text-sm sm:text-base"
+              >
                 {right}
               </li>
             ))}
           </ul>
-          <p className="text-sm sm:text-base leading-relaxed mb-6">{t('rights.exercise')}</p>
-          <p className="text-sm sm:text-base leading-relaxed mb-6">{t('rights.noDiscrimination')}</p>
+          <p className="text-sm sm:text-base leading-relaxed mb-6">
+            {t('rights.exercise')}
+          </p>
+          <p className="text-sm sm:text-base leading-relaxed mb-6">
+            {t('rights.noDiscrimination')}
+          </p>
 
           <h2 className="text-lg sm:text-xl font-medium mt-8 mb-4">
             {t('complaints.title')}
           </h2>
-          <p className="text-sm sm:text-base leading-relaxed mb-6">{t('complaints.content')}</p>
+          <p className="text-sm sm:text-base leading-relaxed mb-6">
+            {t('complaints.content')}
+          </p>
 
           <h2 className="text-lg sm:text-xl font-medium mt-8 mb-4">
             {t('international.title')}
           </h2>
-          <p className="text-sm sm:text-base leading-relaxed mb-6">{t('international.content')}</p>
-          <p className="text-sm sm:text-base leading-relaxed mb-6">{t('international.transfers')}</p>
+          <p className="text-sm sm:text-base leading-relaxed mb-6">
+            {t('international.content')}
+          </p>
+          <p className="text-sm sm:text-base leading-relaxed mb-6">
+            {t('international.transfers')}
+          </p>
 
           <h2 className="text-lg sm:text-xl font-medium mt-8 mb-4">
             {t('contact.title')}
           </h2>
-          <p className="text-sm sm:text-base leading-relaxed mb-6">{t('contact.content')}</p>
+          <p className="text-sm sm:text-base leading-relaxed mb-6">
+            {t('contact.content')}
+          </p>
 
           <div className="text-right mt-12">
             <p className="text-sm text-foreground/70">{t('lastUpdated')}</p>

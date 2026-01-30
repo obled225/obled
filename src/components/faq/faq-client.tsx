@@ -91,7 +91,10 @@ export function FaqClient() {
             </p>
             <ul className="list-disc pl-6 space-y-2">
               {t.raw('howToOrder.steps').map((step: string, index: number) => (
-                <li key={index} className="leading-relaxed text-sm sm:text-base">
+                <li
+                  key={index}
+                  className="leading-relaxed text-sm sm:text-base"
+                >
                   {step}
                 </li>
               ))}

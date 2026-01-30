@@ -166,7 +166,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                         ? 'border-gray-900 bg-gray-900 text-white'
                         : 'border-gray-200 bg-white text-gray-900 hover:border-gray-900',
                       !size.available &&
-                      'cursor-not-allowed border-gray-200 text-gray-400 line-through opacity-50'
+                        'cursor-not-allowed border-gray-200 text-gray-400 line-through opacity-50'
                     )}
                   >
                     {size.name}
@@ -248,7 +248,9 @@ export function ProductDetail({ product }: ProductDetailProps) {
               aria-label={t('productDetail.sizeGuide')}
             >
               <Ruler className="h-4 w-4 sm:h-5 sm:w-5" />
-              <span className="hidden sm:inline">{t('productDetail.sizeGuide')}</span>
+              <span className="hidden sm:inline">
+                {t('productDetail.sizeGuide')}
+              </span>
             </Button>
             <div className="h-6 w-px bg-gray-300" />
             <Button
@@ -257,7 +259,9 @@ export function ProductDetail({ product }: ProductDetailProps) {
               aria-label={t('productDetail.share')}
             >
               <Share2 className="h-4 w-4 sm:h-5 sm:w-5" />
-              <span className="hidden sm:inline">{t('productDetail.share')}</span>
+              <span className="hidden sm:inline">
+                {t('productDetail.share')}
+              </span>
             </Button>
           </div>
         </div>

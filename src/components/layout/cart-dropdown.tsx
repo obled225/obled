@@ -54,7 +54,9 @@ const CartDropdown = () => {
             className="absolute top-full right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg w-[calc(100vw-2rem)] sm:w-96 max-w-sm z-50"
           >
             <div className="p-3 sm:p-4">
-              <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Shopping Cart</h3>
+              <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">
+                Shopping Cart
+              </h3>
 
               {cart.items.length > 0 ? (
                 <>
@@ -91,12 +93,14 @@ const CartDropdown = () => {
                               {item.selectedVariant.name}
                             </p>
                           )}
-                          <p className="text-xs sm:text-sm">Qty: {item.quantity}</p>
+                          <p className="text-xs sm:text-sm">
+                            Qty: {item.quantity}
+                          </p>
                           <p className="font-medium text-xs sm:text-sm">
                             {formatPrice(
                               (item.product.price +
                                 (item.selectedVariant?.priceModifier || 0)) *
-                              item.quantity
+                                item.quantity
                             )}
                           </p>
                         </div>
@@ -114,7 +118,9 @@ const CartDropdown = () => {
 
                   <div className="border-t pt-3 sm:pt-4 mt-3 sm:mt-4">
                     <div className="flex justify-between items-center mb-3 sm:mb-4">
-                      <span className="font-medium text-sm sm:text-base">Subtotal:</span>
+                      <span className="font-medium text-sm sm:text-base">
+                        Subtotal:
+                      </span>
                       <span className="font-semibold text-sm sm:text-base">
                         {formatPrice(cartSummary.subtotal)}
                       </span>
@@ -132,7 +138,9 @@ const CartDropdown = () => {
                   <div className="bg-gray-100 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
                     <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" />
                   </div>
-                  <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">Your cart is empty</p>
+                  <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">
+                    Your cart is empty
+                  </p>
                   <Link href="/products">
                     <button className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors text-sm sm:text-base h-10 sm:h-11">
                       Continue Shopping
