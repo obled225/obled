@@ -1,0 +1,74 @@
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+import { Product } from '@/lib/types';
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
+export function clx(...inputs: ClassValue[]) {
+  return cn(...inputs);
+}
+
+export function formatPrice(price: number): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(price);
+}
+
+export function formatDate(date: Date): string {
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }).format(date);
+}
+
+export function generateId(): string {
+  return Math.random().toString(36).substr(2, 9);
+}
+
+export function truncateText(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength) + '...';
+}
+
+export function getPercentageDiff(
+  original: number,
+  calculated: number
+): string {
+  const diff = original - calculated;
+  const decrease = (diff / original) * 100;
+  return decrease.toFixed();
+}
+
+export function isSimpleProduct(product: Product): boolean {
+  return product.variants?.length === 1 || !product.variants;
+}
+
+export function sortProducts(products: Product[], sortBy: string): Product[] {
+  const sortedProducts = [...products];
+
+  switch (sortBy) {
+    case 'price_asc':
+      sortedProducts.sort((a, b) => a.price - b.price);
+      break;
+    case 'price_desc':
+      sortedProducts.sort((a, b) => b.price - a.price);
+      break;
+    case 'newest':
+      sortedProducts.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+      break;
+    case 'name':
+      sortedProducts.sort((a, b) => a.name.localeCompare(b.name));
+      break;
+    default:
+      break;
+  }
+
+  return sortedProducts;
+}
