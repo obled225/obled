@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/lib/store/cart-store';
 import { supabase } from '@/lib/supabase/supabase';
 import { Button } from '@/components/ui/button';
-import Input from '@/components/ui/Input';
+import { Input } from '@/components/ui/Input';
 import { CartSummary } from '@/components/cart/cart-summary';
 import { CartItem } from '@/components/cart/cart-item';
 import { useToast } from '@/lib/hooks/use-toast';

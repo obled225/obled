@@ -171,6 +171,30 @@ export type Database = {
           },
         ];
       };
+      verification_config: {
+        Row: {
+          config_key: string;
+          config_value: string;
+          created_at: string | null;
+          id: string;
+          updated_at: string | null;
+        };
+        Insert: {
+          config_key: string;
+          config_value: string;
+          created_at?: string | null;
+          id?: string;
+          updated_at?: string | null;
+        };
+        Update: {
+          config_key?: string;
+          config_value?: string;
+          created_at?: string | null;
+          id?: string;
+          updated_at?: string | null;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -203,7 +227,47 @@ export type Database = {
         };
         Returns: string;
       };
+      export_admin_orders_csv: {
+        Args: never;
+        Returns: {
+          currency_code: string;
+          customer_email: string;
+          customer_name: string;
+          customer_phone: string;
+          email_dispatch_attempts: string;
+          email_dispatch_status: string;
+          order_date: string;
+          order_id: string;
+          order_number: string;
+          status: string;
+          total_amount: string;
+        }[];
+      };
       generate_order_number: { Args: never; Returns: string };
+      get_admin_orders: {
+        Args: never;
+        Returns: {
+          created_at: string;
+          currency_code: string;
+          customer_email: string;
+          customer_id: string;
+          customer_name: string;
+          customer_phone: string;
+          discount_amount: number;
+          email_dispatch_attempts: number;
+          email_dispatch_error: string;
+          email_dispatch_status: string;
+          item_count: number;
+          order_id: string;
+          order_number: string;
+          shipping_fee: number;
+          status: string;
+          tax_amount: number;
+          total_amount: number;
+          total_items: number;
+          updated_at: string;
+        }[];
+      };
       get_order_for_email_dispatch: {
         Args: { p_order_id: string };
         Returns: {
@@ -236,6 +300,39 @@ export type Database = {
         Args: { p_order_id: string };
         Returns: undefined;
       };
+      search_admin_orders: {
+        Args: { p_search_query: string };
+        Returns: {
+          created_at: string;
+          currency_code: string;
+          customer_email: string;
+          customer_id: string;
+          customer_name: string;
+          customer_phone: string;
+          discount_amount: number;
+          email_dispatch_attempts: number;
+          email_dispatch_error: string;
+          email_dispatch_status: string;
+          item_count: number;
+          order_id: string;
+          order_number: string;
+          shipping_fee: number;
+          status: string;
+          tax_amount: number;
+          total_amount: number;
+          total_items: number;
+          updated_at: string;
+        }[];
+      };
+      update_customer_for_resend: {
+        Args: {
+          p_customer_id: string;
+          p_new_email: string;
+          p_new_name: string;
+          p_new_phone?: string;
+        };
+        Returns: undefined;
+      };
       update_email_dispatch_status: {
         Args: {
           p_email_dispatch_attempts?: number;
@@ -263,6 +360,7 @@ export type Database = {
         };
         Returns: string;
       };
+      verify_staff_pin: { Args: { p_pin: string }; Returns: boolean };
     };
     Enums: {
       [_ in never]: never;

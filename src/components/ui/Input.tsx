@@ -1,74 +1,33 @@
-import React, { useImperativeHandle, useState, useMemo } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import * as React from 'react';
+import { cn } from '@/lib/actions/utils';
+import { Label } from './label';
 
-type InputProps = Omit<
-  Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'>,
-  'placeholder'
-> & {
-  label: string;
-  errors?: Record<string, unknown>;
-  touched?: Record<string, unknown>;
-  name: string;
-  topLabel?: string;
+export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
+  label?: string;
 };
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ type, name, label, required, topLabel, ...props }, ref) => {
-    const inputRef = React.useRef<HTMLInputElement>(null);
-    const [showPassword, setShowPassword] = useState(false);
-
-    const inputType = useMemo(() => {
-      if (type === 'password' && showPassword) {
-        return 'text';
-      }
-      if (type === 'password' && !showPassword) {
-        return 'password';
-      }
-      return type;
-    }, [type, showPassword]);
-
-    useImperativeHandle(ref, () => inputRef.current!);
+  ({ className, type, label, id: providedId, ...restProps }, ref) => {
+    const generatedId = React.useId();
+    const inputId = providedId ?? generatedId;
 
     return (
-      <div className="flex flex-col w-full">
-        {topLabel && (
-          <label className="mb-2 text-sm font-medium text-gray-700">
-            {topLabel}
-          </label>
-        )}
-        <div className="flex relative z-0 w-full">
-          <input
-            type={inputType}
-            name={name}
-            placeholder=" "
-            required={required}
-            className="pt-4 pb-1 block w-full h-11 px-4 mt-0 bg-white border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent hover:bg-gray-50 transition-colors"
-            {...props}
-            ref={inputRef}
-          />
-          <label
-            htmlFor={name}
-            onClick={() => inputRef.current?.focus()}
-            className="flex items-center justify-center mx-3 px-1 transition-all absolute duration-300 top-3 -z-1 origin-0 text-gray-500 text-sm"
-          >
-            {label}
-            {required && <span className="text-red-500">*</span>}
-          </label>
-          {type === 'password' && (
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="text-gray-500 px-4 focus:outline-none transition-all duration-150 outline-none focus:text-gray-700 absolute right-0 top-3"
-            >
-              {showPassword ? <Eye /> : <EyeOff />}
-            </button>
+      <div className="space-y-2">
+        {label && <Label htmlFor={inputId}>{label}</Label>}
+        <input
+          id={inputId}
+          type={type}
+          className={cn(
+            'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+            className
           )}
-        </div>
+          ref={ref}
+          {...restProps}
+        />
       </div>
     );
   }
 );
-
 Input.displayName = 'Input';
 
-export default Input;
+export { Input };
