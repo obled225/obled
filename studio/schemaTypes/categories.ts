@@ -1,8 +1,8 @@
 import {defineField, defineType} from 'sanity'
 
 export default defineType({
-  name: 'category',
-  title: 'Category',
+  name: 'categories',
+  title: 'Categories',
   type: 'document',
   fields: [
     defineField({
@@ -38,7 +38,7 @@ export default defineType({
       name: 'parent',
       title: 'Parent Category',
       type: 'reference',
-      to: [{type: 'category'}],
+      to: [{type: 'categories'}],
       description: 'Optional: Select a parent category for hierarchical structure',
     }),
   ],

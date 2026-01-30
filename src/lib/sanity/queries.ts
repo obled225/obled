@@ -111,7 +111,7 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
 }
 
 // GROQ query to get all products
-const ALL_PRODUCTS_QUERY = `*[_type == "product" && !(_id in path("drafts.**"))] | order(_createdAt desc) {
+const ALL_PRODUCTS_QUERY = `*[_type == "products" && !(_id in path("drafts.**"))] | order(_createdAt desc) {
   _id,
   _createdAt,
   _updatedAt,
@@ -149,7 +149,7 @@ const ALL_PRODUCTS_QUERY = `*[_type == "product" && !(_id in path("drafts.**"))]
 }`;
 
 // GROQ query to get a single product by slug
-const PRODUCT_BY_SLUG_QUERY = `*[_type == "product" && slug.current == $slug && !(_id in path("drafts.**"))][0] {
+const PRODUCT_BY_SLUG_QUERY = `*[_type == "products" && slug.current == $slug && !(_id in path("drafts.**"))][0] {
   _id,
   _createdAt,
   _updatedAt,
@@ -187,7 +187,7 @@ const PRODUCT_BY_SLUG_QUERY = `*[_type == "product" && slug.current == $slug && 
 }`;
 
 // GROQ query to get products by category
-const PRODUCTS_BY_CATEGORY_QUERY = `*[_type == "product" && $categoryId in categories[]._ref && !(_id in path("drafts.**"))] | order(_createdAt desc) {
+const PRODUCTS_BY_CATEGORY_QUERY = `*[_type == "products" && $categoryId in categories[]._ref && !(_id in path("drafts.**"))] | order(_createdAt desc) {
   _id,
   _createdAt,
   _updatedAt,
@@ -225,7 +225,7 @@ const PRODUCTS_BY_CATEGORY_QUERY = `*[_type == "product" && $categoryId in categ
 }`;
 
 // GROQ query to get featured products
-const FEATURED_PRODUCTS_QUERY = `*[_type == "product" && featured == true && !(_id in path("drafts.**"))] | order(_createdAt desc)[0...$limit] {
+const FEATURED_PRODUCTS_QUERY = `*[_type == "products" && featured == true && !(_id in path("drafts.**"))] | order(_createdAt desc)[0...$limit] {
   _id,
   _createdAt,
   _updatedAt,
@@ -332,7 +332,7 @@ export async function getFeaturedProducts(
  */
 export async function getProductById(id: string): Promise<Product | null> {
   try {
-    const query = `*[_type == "product" && _id == $id && !(_id in path("drafts.**"))][0] {
+    const query = `*[_type == "products" && _id == $id && !(_id in path("drafts.**"))][0] {
       _id,
       _createdAt,
       _updatedAt,
@@ -378,7 +378,7 @@ export async function getProductById(id: string): Promise<Product | null> {
 }
 
 // GROQ query to get about page content
-const ABOUT_PAGE_QUERY = `*[_type == "aboutPage" && !(_id in path("drafts.**"))][0] {
+const ABOUT_PAGE_QUERY = `*[_type == "about" && !(_id in path("drafts.**"))][0] {
   _id,
   "heroVideoUrl": heroVideo.asset->url,
   sectionImages[] {
@@ -401,11 +401,24 @@ const ABOUT_PAGE_QUERY = `*[_type == "aboutPage" && !(_id in path("drafts.**"))]
 }`;
 
 // GROQ query to get announcement bar content
-const ANNOUNCEMENT_BAR_QUERY = `*[_type == "announcementBar" && !(_id in path("drafts.**"))][0] {
+const ANNOUNCEMENT_BAR_QUERY = `*[_type == "announcements" && !(_id in path("drafts.**"))][0] {
   _id,
   announcements[] {
     text,
+    promoCode,
     link
+  },
+  floatingAnnouncement {
+    text,
+    isActive
+  }
+}`;
+
+// GROQ query to get floating announcement content
+const FLOATING_ANNOUNCEMENT_QUERY = `*[_type == "announcements" && !(_id in path("drafts.**"))][0] {
+  floatingAnnouncement {
+    text,
+    isActive
   }
 }`;
 
@@ -432,13 +445,28 @@ export interface AboutPageData {
   sectionImages?: AboutSectionImage[];
 }
 
+export interface PortableTextBlock {
+  _type: 'block';
+  children: Array<{
+    _type: 'span';
+    text: string;
+    marks?: string[];
+  }>;
+}
+
 export interface Announcement {
-  text: string;
+  text: PortableTextBlock[] | string;
   link?: string;
 }
 
 export interface AnnouncementBarData {
   announcements?: Announcement[];
+  floatingAnnouncement?: FloatingAnnouncementData;
+}
+
+export interface FloatingAnnouncementData {
+  text: PortableTextBlock[] | string;
+  isActive: boolean;
 }
 
 /**
@@ -458,13 +486,27 @@ export async function getAboutPage(): Promise<AboutPageData | null> {
 /**
  * Get announcement bar content from Sanity
  */
-export async function getAnnouncementBar(): Promise<AnnouncementBarData | null> {
+export async function getAnnouncements(): Promise<AnnouncementBarData | null> {
   try {
     const doc = await sanityClient.fetch(ANNOUNCEMENT_BAR_QUERY);
     if (!doc) return null;
     return doc;
   } catch (error) {
     console.error('Error fetching announcement bar from Sanity:', error);
+    return null;
+  }
+}
+
+/**
+ * Get floating announcement content from Sanity
+ */
+export async function getFloatingAnnouncement(): Promise<FloatingAnnouncementData | null> {
+  try {
+    const doc = await sanityClient.fetch(FLOATING_ANNOUNCEMENT_QUERY);
+    if (!doc?.floatingAnnouncement) return null;
+    return doc.floatingAnnouncement;
+  } catch (error) {
+    console.error('Error fetching floating announcement from Sanity:', error);
     return null;
   }
 }

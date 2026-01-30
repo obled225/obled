@@ -75,8 +75,7 @@ export function FaqClient() {
             {t('title')}
           </h1>
           <p className="text-muted-foreground text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
-            Find answers to frequently asked questions about our products and
-            services.
+            {t('subtitle')}
           </p>
         </div>
 

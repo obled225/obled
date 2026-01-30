@@ -1,13 +1,13 @@
 import {defineField, defineType} from 'sanity'
 
 export default defineType({
-  name: 'aboutPage',
-  title: 'About page content',
+  name: 'about',
+  title: 'About page',
   type: 'document',
   fields: [
     defineField({
       name: 'heroVideo',
-      title: 'Hero video (Optional)',
+      title: 'Hero video',
       type: 'file',
       description: 'Optional video to display at the top of the about page',
       options: {

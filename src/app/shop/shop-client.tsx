@@ -13,10 +13,10 @@ export default function ShopClient({ products }: ShopClientProps) {
 
   return (
     <main className="grow">
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12">
-        <h1 className="text-xl sm:text-2xl font-medium text-foreground mb-6 sm:mb-8">
+      <section className="mx-auto max-w-7xl px-4 py-6  border-border">
+        <h2 className="text-2xl sm:text-3xl font-medium text-foreground mb-8">
           {t('sections.allProducts')}
-        </h1>
+        </h2>
         <ProductGrid products={products} />
       </section>
     </main>

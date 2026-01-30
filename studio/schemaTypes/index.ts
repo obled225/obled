@@ -1,6 +1,6 @@
-import product from './product'
-import category from './category'
-import aboutPage from './aboutPage'
-import announcementBar from './announcementBar'
+import product from './products'
+import category from './categories'
+import about from './about'
+import announcement from './announcements'
 
-export const schemaTypes = [product, category, aboutPage, announcementBar]
+export const schemaTypes = [product, category, about, announcement]

@@ -1,4 +1,4 @@
-import { getAnnouncementBar } from '@/lib/sanity/queries';
+import { getAnnouncements } from '@/lib/sanity/queries';
 import { AnnouncementClient } from './announcement-client';
 
 const fallbackAnnouncements = [
@@ -13,7 +13,7 @@ const fallbackAnnouncements = [
 ];
 
 export async function AnnouncementWrapper() {
-  const announcementData = await getAnnouncementBar();
+  const announcementData = await getAnnouncements();
 
   // Use announcements from Sanity if available, otherwise use fallback
   const announcements = announcementData?.announcements || fallbackAnnouncements;

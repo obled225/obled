@@ -1,6 +1,6 @@
 'use client';
 
-import { AnnouncementBar } from './announcement-bar';
+import { FloatingAnnouncement } from './floating-announcement';
 import { ReactNode } from 'react';
 
 interface PortableTextBlock {
@@ -12,13 +12,13 @@ interface PortableTextBlock {
   }>;
 }
 
-interface Announcement {
+interface FloatingAnnouncementData {
   text: PortableTextBlock[] | string;
-  link?: string;
+  isActive: boolean;
 }
 
-interface AnnouncementClientProps {
-  announcements?: Announcement[];
+interface FloatingAnnouncementClientProps {
+  announcement?: FloatingAnnouncementData;
 }
 
 // Simple Portable Text renderer for basic text with bold marks
@@ -53,12 +53,17 @@ function renderPortableText(blocks: PortableTextBlock[] | string): ReactNode {
   });
 }
 
-export function AnnouncementClient({ announcements = [] }: AnnouncementClientProps) {
-  // Transform announcements to the format expected by AnnouncementBar
-  const messages = announcements.map((announcement) => ({
-    text: renderPortableText(announcement.text),
-    href: announcement.link || '',
-  }));
+export function FloatingAnnouncementClient({
+  announcement
+}: FloatingAnnouncementClientProps) {
+  // Use provided announcement data or fallback to placeholder
+  const message = announcement?.text
+    ? renderPortableText(announcement.text)
+    : "Use code WELCOME20 for 20% off";
 
-  return <AnnouncementBar messages={messages} />;
+  return (
+    <FloatingAnnouncement
+      message={message as string}
+    />
+  );
 }

@@ -21,7 +21,7 @@ export interface SanityProductExpanded extends Omit<
 > {
   categories?: Array<{
     _id: string;
-    _type: 'category';
+    _type: 'categories';
     title?: string;
     slug?: {
       current?: string;
@@ -45,7 +45,7 @@ export type SanityProductQueryResult = SanityProductExpanded;
  * Type guard to check if a document is a product
  */
 export function isSanityProduct(doc: SanityDocument): doc is SanityProductRaw {
-  return doc._type === 'product';
+  return doc._type === 'products';
 }
 
 /**
@@ -54,7 +54,7 @@ export function isSanityProduct(doc: SanityDocument): doc is SanityProductRaw {
 export function isSanityCategory(
   doc: SanityDocument
 ): doc is SanityCategoryRaw {
-  return doc._type === 'category';
+  return doc._type === 'categories';
 }
 
 /**
