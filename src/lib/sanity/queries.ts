@@ -400,6 +400,15 @@ const ABOUT_PAGE_QUERY = `*[_type == "aboutPage" && !(_id in path("drafts.**"))]
   }
 }`;
 
+// GROQ query to get announcement bar content
+const ANNOUNCEMENT_BAR_QUERY = `*[_type == "announcementBar" && !(_id in path("drafts.**"))][0] {
+  _id,
+  announcements[] {
+    text,
+    link
+  }
+}`;
+
 export interface AboutSectionImage {
   image: {
     _id?: string;
@@ -423,6 +432,15 @@ export interface AboutPageData {
   sectionImages?: AboutSectionImage[];
 }
 
+export interface Announcement {
+  text: string;
+  link?: string;
+}
+
+export interface AnnouncementBarData {
+  announcements?: Announcement[];
+}
+
 /**
  * Get about page content from Sanity
  */
@@ -433,6 +451,20 @@ export async function getAboutPage(): Promise<AboutPageData | null> {
     return doc;
   } catch (error) {
     console.error('Error fetching about page from Sanity:', error);
+    return null;
+  }
+}
+
+/**
+ * Get announcement bar content from Sanity
+ */
+export async function getAnnouncementBar(): Promise<AnnouncementBarData | null> {
+  try {
+    const doc = await sanityClient.fetch(ANNOUNCEMENT_BAR_QUERY);
+    if (!doc) return null;
+    return doc;
+  } catch (error) {
+    console.error('Error fetching announcement bar from Sanity:', error);
     return null;
   }
 }
