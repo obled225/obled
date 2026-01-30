@@ -71,10 +71,10 @@ export function FaqClient() {
     <main className="grow">
       <section className="mx-auto max-w-4xl px-4 pt-8 pb-16">
         <div className="text-center mb-12">
-          <h1 className="text-3xl font-medium text-foreground mb-4">
+          <h1 className="text-2xl sm:text-3xl font-medium text-foreground mb-4">
             {t('title')}
           </h1>
-          <p className="text-muted-foreground text-base leading-relaxed max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
             Find answers to frequently asked questions about our products and
             services.
           </p>
@@ -83,15 +83,15 @@ export function FaqClient() {
         {/* How to Order Section */}
         <div className="bg-background border border-border rounded-lg overflow-hidden mb-8">
           <div className="p-6">
-            <h2 className="text-2xl font-medium mb-4">
+            <h2 className="text-xl sm:text-2xl font-medium mb-4">
               {t('howToOrder.title')}
             </h2>
-            <p className="text-lg leading-relaxed mb-4">
+            <p className="text-sm sm:text-lg leading-relaxed mb-4">
               {t('howToOrder.content')}
             </p>
             <ul className="list-disc pl-6 space-y-2">
               {t.raw('howToOrder.steps').map((step: string, index: number) => (
-                <li key={index} className="leading-relaxed">
+                <li key={index} className="leading-relaxed text-sm sm:text-base">
                   {step}
                 </li>
               ))}

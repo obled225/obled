@@ -107,18 +107,18 @@ export default function ProductsClient() {
 
   return (
     <main className="grow">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-4">
             All Products
           </h1>
-          <p className="text-gray-600">
+          <p className="text-sm sm:text-base text-gray-600">
             Discover our complete collection of amazing products
           </p>
         </div>
 
         {/* Search and Filters */}
-        <div className="mb-8 space-y-4">
+        <div className="mb-6 sm:mb-8 space-y-3 sm:space-y-4">
           {/* Search Bar */}
           <div className="max-w-md">
             <input
@@ -126,30 +126,32 @@ export default function ProductsClient() {
               placeholder="Search products..."
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
           {/* Sort Options */}
-          <div className="flex flex-wrap items-center gap-4">
-            <span className="text-sm font-medium text-gray-700">Sort by:</span>
-            <select
-              value={sortBy}
-              onChange={(e) =>
-                handleSortChange(e.target.value as ProductSortOption['value'])
-              }
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              {sortOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+          <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3 sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
+              <span className="text-xs sm:text-sm font-medium text-gray-700">Sort by:</span>
+              <select
+                value={sortBy}
+                onChange={(e) =>
+                  handleSortChange(e.target.value as ProductSortOption['value'])
+                }
+                className="flex-1 sm:flex-none px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                {sortOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
 
             {/* Basic Filters */}
-            <div className="flex items-center space-x-4">
-              <label className="flex items-center">
+            <div className="flex items-center">
+              <label className="flex items-center cursor-pointer">
                 <input
                   type="checkbox"
                   checked={filters.inStock === true}
@@ -159,15 +161,15 @@ export default function ProductsClient() {
                       inStock: e.target.checked ? true : undefined,
                     })
                   }
-                  className="mr-2"
+                  className="mr-2 w-4 h-4"
                 />
-                <span className="text-sm">In Stock Only</span>
+                <span className="text-xs sm:text-sm">In Stock Only</span>
               </label>
             </div>
           </div>
 
           {/* Results Count */}
-          <div className="text-sm text-gray-600">
+          <div className="text-xs sm:text-sm text-gray-600">
             Showing {paginatedProducts.length} of {filteredProducts.length}{' '}
             products
           </div>
@@ -178,7 +180,7 @@ export default function ProductsClient() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="mt-12">
+          <div className="mt-8 sm:mt-12">
             <Pagination
               page={currentPage}
               totalPages={totalPages}

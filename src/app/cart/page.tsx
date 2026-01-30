@@ -25,16 +25,16 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function PanierPage() {
   return (
     <main className="grow">
-      <section className="mx-auto max-w-2xl px-4 py-16">
+      <section className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         <div className="text-center">
-          <h1 className="text-2xl font-medium text-foreground">
+          <h1 className="text-xl sm:text-2xl font-medium text-foreground">
             Your cart is empty
           </h1>
-          <p className="mt-2 text-muted-foreground">
+          <p className="mt-2 text-sm sm:text-base text-muted-foreground">
             Discover our products and add them to your cart.
           </p>
           <Link href="/shop">
-            <Button className="mt-8 h-12 px-8 bg-foreground text-background hover:bg-foreground/90">
+            <Button className="mt-6 sm:mt-8 h-11 sm:h-12 px-6 sm:px-8 bg-foreground text-background hover:bg-foreground/90">
               Continue shopping
             </Button>
           </Link>

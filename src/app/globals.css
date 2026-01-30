@@ -104,3 +104,16 @@
 .writing-vertical-rl {
   writing-mode: vertical-rl;
 }
+
+/* Touch-friendly targets for mobile */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+@media (min-width: 640px) {
+  .touch-target {
+    min-height: auto;
+    min-width: auto;
+  }
+}

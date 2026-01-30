@@ -24,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function Home() {
   return (
     <main className="grow">
-      <section className="mx-auto max-w-7xl px-4 py-12">
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12">
         <ProductGrid products={[]} />
       </section>
     </main>

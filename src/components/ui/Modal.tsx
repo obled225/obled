@@ -11,6 +11,7 @@ type ModalProps = {
   size?: 'small' | 'medium' | 'large';
   search?: boolean;
   noBackdrop?: boolean;
+  position?: 'center' | 'bottom';
   children: React.ReactNode;
   'data-testid'?: string;
 };
@@ -21,10 +22,13 @@ const Modal = ({
   size = 'medium',
   search = false,
   noBackdrop = false,
+  position = 'center',
   children,
   'data-testid': dataTestId,
 }: ModalProps) => {
   if (!isOpen) return null;
+
+  const isBottom = position === 'bottom';
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -43,11 +47,42 @@ const Modal = ({
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm h-screen" />
+            <div className={clx(
+              "fixed inset-0 h-screen",
+              isBottom ? "bg-black/8" : "bg-black/25"
+            )} />
           </Transition.Child>
         )}
 
-        {noBackdrop ? (
+        {isBottom ? (
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full h-full justify-center items-end p-0">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 translate-y-full"
+                enterTo="opacity-100 translate-y-0"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 translate-y-0"
+                leaveTo="opacity-0 translate-y-full"
+              >
+                <Dialog.Panel
+                  data-testid={dataTestId}
+                  className={clx(
+                    'flex flex-col justify-start w-full transform text-left align-middle transition-all bg-white shadow-xl rounded-t-xl border-t',
+                    {
+                      'max-w-md': size === 'small',
+                      'max-w-xl': size === 'medium',
+                      'max-w-3xl': size === 'large',
+                    }
+                  )}
+                >
+                  <ModalProvider close={close}>{children}</ModalProvider>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        ) : noBackdrop ? (
           <div className="relative">
             <Dialog.Panel
               data-testid={dataTestId}

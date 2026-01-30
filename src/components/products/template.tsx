@@ -27,25 +27,24 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({ product }) => {
           <div className="order-1 lg:order-2 space-y-8">
             {/* Product Info */}
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
                 {product.name}
               </h1>
-              <p className="text-xl font-semibold text-blue-600 mb-4">
+              <p className="text-lg sm:text-xl font-semibold text-blue-600 mb-4">
                 ${product.price.toFixed(2)}
                 {product.originalPrice &&
                   product.originalPrice > product.price && (
-                    <span className="ml-2 text-lg text-gray-500 line-through">
+                    <span className="ml-2 text-base sm:text-lg text-gray-500 line-through">
                       ${product.originalPrice.toFixed(2)}
                     </span>
                   )}
               </p>
               <div className="flex items-center space-x-4 mb-4">
                 <span
-                  className={`px-2 py-1 text-sm rounded-full ${
-                    product.inStock
+                  className={`px-2 py-1 text-sm rounded-full ${product.inStock
                       ? 'bg-green-100 text-green-800'
                       : 'bg-red-100 text-red-800'
-                  }`}
+                    }`}
                 >
                   {product.inStock ? 'In Stock' : 'Out of Stock'}
                 </span>

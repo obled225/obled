@@ -24,7 +24,9 @@ export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
   const isFrench = locale === 'fr';
 
-  const title = 'KYS Factory';
+  const title = isFrench
+    ? "KYS Factory | Fournisseur de t-shirts vierges made in Côte d'Ivoire"
+    : "KYS Factory | Blank t-shirts manufacturer made in Côte d'Ivoire";
 
   const description = isFrench
     ? 'Fabricant textile local à Abidjan spécialisé dans la production de t-shirts vierges de haute qualité pour professionnels.'
@@ -50,6 +52,21 @@ export async function generateMetadata(): Promise<Metadata> {
       address: false,
       telephone: false,
     },
+    icons: [
+      {
+        rel: 'icon',
+        url: '/favicon.ico',
+      },
+      {
+        rel: 'icon',
+        type: 'image/png',
+        url: '/icon.png',
+      },
+      {
+        rel: 'apple-touch-icon',
+        url: '/apple-touch-icon.png',
+      },
+    ],
     openGraph: {
       type: 'website',
       locale: locale === 'fr' ? 'fr_FR' : 'en_US',
@@ -60,10 +77,10 @@ export async function generateMetadata(): Promise<Metadata> {
       description,
       images: [
         {
-          url: `${siteUrl}/icon.webp`,
+          url: `${siteUrl}/banner.png`,
           width: 1200,
           height: 630,
-          alt: 'KYS Factory - Textile Manufacturer in Abidjan',
+          alt: title,
         },
       ],
     },
@@ -71,7 +88,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: 'summary_large_image',
       title,
       description,
-      images: [`${siteUrl}/icon.webp`],
+      images: [`${siteUrl}/banner.png`],
       creator: '@kysfactoryciv',
     },
     alternates: {

@@ -35,7 +35,7 @@ export function CartSummary({
     cartSummary.discount;
 
   return (
-    <div className={`space-y-6 ${className}`}>
+    <div className={`space-y-4 sm:space-y-6 ${className}`}>
       {showShippingCalculator && (
         <ShippingCalculator
           subtotal={cartSummary.subtotal}
@@ -44,10 +44,10 @@ export function CartSummary({
         />
       )}
 
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
-        <h2 className="text-lg font-semibold mb-4">Order Summary</h2>
+      <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6">
+        <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Order Summary</h2>
 
-        <div className="space-y-3 mb-4">
+        <div className="space-y-2 sm:space-y-3 mb-3 sm:mb-4">
           <div className="flex justify-between text-sm">
             <span className="text-gray-600">
               Subtotal ({cart.itemCount} items)
@@ -82,7 +82,7 @@ export function CartSummary({
         </div>
 
         <div className="border-t pt-4 mb-6">
-          <div className="flex justify-between text-lg font-semibold">
+          <div className="flex justify-between text-base sm:text-lg font-semibold">
             <span>Total</span>
             <span>{formatPrice(finalTotal)}</span>
           </div>
@@ -98,8 +98,8 @@ export function CartSummary({
         )}
 
         {showCheckoutButton && (
-          <Link href="/checkout" className="block mb-3">
-            <Button className="w-full" size="lg">
+          <Link href="/checkout" className="block mb-2 sm:mb-3">
+            <Button className="w-full h-11 sm:h-12" size="lg">
               Proceed to Checkout
             </Button>
           </Link>
@@ -107,7 +107,7 @@ export function CartSummary({
 
         {showContinueShopping && (
           <Link href="/products">
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full h-11 sm:h-12">
               Continue Shopping
             </Button>
           </Link>

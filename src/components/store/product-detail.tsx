@@ -47,8 +47,8 @@ export function ProductDetail({ product }: ProductDetailProps) {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8">
-      <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+      <div className="grid gap-6 sm:gap-8 lg:grid-cols-2 lg:gap-12">
         {/* Image Gallery */}
         <div className="space-y-4">
           {/* Main Image */}
@@ -71,13 +71,13 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
           {/* Thumbnail Gallery */}
           {images.length > 1 && (
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-4 gap-2 sm:gap-4">
               {images.map((image, index) => (
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
                   className={cn(
-                    'relative aspect-square overflow-hidden bg-gray-100',
+                    'relative aspect-square overflow-hidden bg-gray-100 rounded-md',
                     selectedImage === index && 'ring-2 ring-blue-600'
                   )}
                 >
@@ -96,7 +96,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
         {/* Product Info */}
         <div className="lg:pt-4">
-          <h1 className="text-3xl font-normal text-gray-900 leading-tight mb-4">
+          <h1 className="text-2xl sm:text-3xl font-normal text-gray-900 leading-tight mb-3 sm:mb-4">
             {product.name}
           </h1>
 
@@ -166,7 +166,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                         ? 'border-gray-900 bg-gray-900 text-white'
                         : 'border-gray-200 bg-white text-gray-900 hover:border-gray-900',
                       !size.available &&
-                        'cursor-not-allowed border-gray-200 text-gray-400 line-through opacity-50'
+                      'cursor-not-allowed border-gray-200 text-gray-400 line-through opacity-50'
                     )}
                   >
                     {size.name}
@@ -177,24 +177,24 @@ export function ProductDetail({ product }: ProductDetailProps) {
           )}
 
           {/* Quantity */}
-          <div className="mb-8">
+          <div className="mb-6 sm:mb-8">
             <p className="text-sm font-medium text-gray-900 mb-3">
               {t('productDetail.quantity')}
             </p>
             <div className="inline-flex items-center border border-gray-300 rounded-md">
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="flex h-12 w-12 items-center justify-center text-gray-900 hover:bg-gray-50 transition-colors"
+                className="flex h-10 sm:h-12 w-10 sm:w-12 items-center justify-center text-gray-900 hover:bg-gray-50 transition-colors touch-target"
                 aria-label="Decrease quantity"
               >
                 <Minus className="h-4 w-4" />
               </button>
-              <span className="flex h-12 w-16 items-center justify-center text-sm font-medium">
+              <span className="flex h-10 sm:h-12 w-12 sm:w-16 items-center justify-center text-sm font-medium">
                 {quantity}
               </span>
               <button
                 onClick={() => setQuantity(quantity + 1)}
-                className="flex h-12 w-12 items-center justify-center text-gray-900 hover:bg-gray-50 transition-colors"
+                className="flex h-10 sm:h-12 w-10 sm:w-12 items-center justify-center text-gray-900 hover:bg-gray-50 transition-colors touch-target"
                 aria-label="Increase quantity"
               >
                 <Plus className="h-4 w-4" />
@@ -203,11 +203,11 @@ export function ProductDetail({ product }: ProductDetailProps) {
           </div>
 
           {/* Action Buttons */}
-          <div className="space-y-3 mb-8">
+          <div className="space-y-3 mb-6 sm:mb-8">
             <Button
               onClick={handleAddToCart}
               disabled={product.soldOut || isAdding}
-              className="w-full h-12 text-sm font-medium"
+              className="w-full h-11 sm:h-12 text-sm font-medium touch-target"
             >
               {isAdding
                 ? t('productDetail.adding')
@@ -218,7 +218,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
             {!product.soldOut && (
               <Button
                 variant="outline"
-                className="w-full h-12 text-sm font-medium border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white transition-colors"
+                className="w-full h-11 sm:h-12 text-sm font-medium border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white transition-colors touch-target"
               >
                 {t('productDetail.buyNow')}
               </Button>
@@ -240,24 +240,24 @@ export function ProductDetail({ product }: ProductDetailProps) {
           )}
 
           {/* Size Guide & Share Buttons */}
-          <div className="flex items-center justify-end gap-4 pt-8 border-t border-gray-200">
+          <div className="flex items-center justify-center sm:justify-end gap-3 sm:gap-4 pt-6 sm:pt-8 border-t border-gray-200">
             <Button
               variant="ghost"
-              className="h-10 px-3 gap-2"
+              className="h-10 px-2 sm:px-3 gap-2 text-xs sm:text-sm touch-target"
               onClick={() => setIsSizeGuideOpen(true)}
               aria-label={t('productDetail.sizeGuide')}
             >
-              <Ruler className="h-5 w-5" />
-              <span className="text-sm">{t('productDetail.sizeGuide')}</span>
+              <Ruler className="h-4 w-4 sm:h-5 sm:w-5" />
+              <span className="hidden sm:inline">{t('productDetail.sizeGuide')}</span>
             </Button>
             <div className="h-6 w-px bg-gray-300" />
             <Button
               variant="ghost"
-              className="h-10 px-3 gap-2"
+              className="h-10 px-2 sm:px-3 gap-2 text-xs sm:text-sm touch-target"
               aria-label={t('productDetail.share')}
             >
-              <Share2 className="h-5 w-5" />
-              <span className="text-sm">{t('productDetail.share')}</span>
+              <Share2 className="h-4 w-4 sm:h-5 sm:w-5" />
+              <span className="hidden sm:inline">{t('productDetail.share')}</span>
             </Button>
           </div>
         </div>

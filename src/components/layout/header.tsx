@@ -33,23 +33,27 @@ export function Header() {
               alt="KYS Factory"
               width={550}
               height={150}
-              className="h-32 w-auto"
+              className="h-16 sm:h-20 md:h-24 lg:h-32 w-auto"
+              priority
             />
           </Link>
 
           {/* Right side actions */}
-          <div className="flex items-center gap-2">
-            {/* Currency Selector */}
-            <CurrencySelector />
+          <div className="flex items-center gap-1 sm:gap-2">
+            {/* Currency Selector - hidden on very small screens, shown in mobile menu */}
+            <div className="hidden sm:block">
+              <CurrencySelector />
+            </div>
 
             {/* Search */}
             <Button
               variant="ghost"
               size="icon"
+              className="h-9 w-9 sm:h-10 sm:w-10"
               onClick={() => setIsSearchOpen(!isSearchOpen)}
               aria-label={t('search.ariaLabel')}
             >
-              <Search className="h-5 w-5" />
+              <Search className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
 
             {/* Cart */}
@@ -57,9 +61,10 @@ export function Header() {
               <Button
                 variant="ghost"
                 size="icon"
+                className="h-9 w-9 sm:h-10 sm:w-10"
                 aria-label={t('cart.ariaLabel')}
               >
-                <ShoppingCart className="h-5 w-5" />
+                <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
             </Link>
 
@@ -67,11 +72,11 @@ export function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden"
+              className="h-9 w-9 sm:h-10 sm:w-10 md:hidden"
               onClick={() => setIsMobileMenuOpen(true)}
               aria-label={t('menu.ariaLabel')}
             >
-              <Menu className="h-5 w-5" />
+              <Menu className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
           </div>
         </div>
@@ -83,7 +88,7 @@ export function Header() {
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className="text-sm font-medium text-foreground/70 hover:text-black transition-colors"
+                  className="text-xs sm:text-sm font-medium text-foreground/70 hover:text-black transition-colors"
                 >
                   {link.label}
                 </Link>
@@ -94,18 +99,18 @@ export function Header() {
 
         {/* Search bar */}
         {isSearchOpen && (
-          <div className="border-t border-border py-4">
+          <div className="border-t border-border py-3 sm:py-4 px-4 sm:px-6 lg:px-8">
             <div className="relative">
               <input
                 type="text"
                 placeholder={t('search.placeholder')}
-                className="w-full rounded-md border border-input bg-background px-4 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                className="w-full rounded-md border border-input bg-background px-3 sm:px-4 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                 autoFocus
               />
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute right-0 top-0"
+                className="absolute right-0 top-0 h-full w-10"
                 onClick={() => setIsSearchOpen(false)}
                 aria-label={t('search.closeAriaLabel')}
               >
@@ -116,22 +121,31 @@ export function Header() {
         )}
       </div>
 
-      {/* Mobile Menu Modal */}
-      <Modal isOpen={isMobileMenuOpen} close={() => setIsMobileMenuOpen(false)}>
-        <div className="p-6">
-          <h2 className="text-lg font-semibold mb-4">{t('menu.title')}</h2>
-          <nav className="flex flex-col gap-4">
+      {/* Mobile Menu Modal - Bottom Sheet */}
+      <Modal
+        isOpen={isMobileMenuOpen}
+        close={() => setIsMobileMenuOpen(false)}
+        position="bottom"
+      >
+        <div className="p-6 pb-8">
+          <nav className="flex flex-col gap-2">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-lg font-medium text-foreground/70 hover:text-black transition-colors"
+                className="text-base font-medium text-foreground/70 hover:text-black transition-colors py-3 px-2 rounded-md hover:bg-gray-50"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {link.label}
               </Link>
             ))}
           </nav>
+          {/* Currency selector in mobile menu */}
+          <div className="mt-6 pt-6 border-t border-border">
+            <div className="flex items-center justify-end py-2">
+              <CurrencySelector />
+            </div>
+          </div>
         </div>
       </Modal>
     </header>

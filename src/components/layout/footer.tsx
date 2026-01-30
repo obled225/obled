@@ -24,26 +24,28 @@ export function Footer() {
 
   return (
     <footer className="w-full border-t mx-auto max-w-[1245px] border-border bg-background">
-      <div className="py-6">
-        <div className="flex justify-between items-center text-sm text-foreground/70">
-          <div className="flex justify-start text-start">
+      <div className="py-4 sm:py-6 px-4 sm:px-6 md:px-0">
+        <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center text-xs sm:text-sm text-foreground/70">
+          {/* Copyright and links - left aligned on mobile */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-start gap-2 sm:gap-0 text-left">
             <span className="font-normal">{t('copyright')}</span>
-            <span className="mx-2">·</span>
+            <span className="hidden sm:inline mx-2">·</span>
             <Link
               href="/terms"
               className="font-normal hover:text-black transition-colors"
             >
               {t('terms')}
             </Link>
-            <span className="mx-2">·</span>
+            <span className="hidden sm:inline mx-2">·</span>
             <button
               onClick={handleLocaleSwitch}
-              className="font-normal hover:text-black hover:underline transition-colors cursor-pointer"
+              className="font-normal hover:text-black hover:underline transition-colors cursor-pointer text-left"
             >
               {languageText}
             </button>
           </div>
-          <div className="flex items-center space-x-4">
+          {/* Social icons - right aligned on mobile, same vertical position */}
+          <div className="flex items-center justify-end gap-3 sm:gap-4 pt-2 sm:pt-0">
             <Link
               href="https://wa.me/22507135164117"
               target="_blank"
@@ -51,7 +53,7 @@ export function Footer() {
               className="opacity-70 hover:opacity-100 transition-opacity"
               aria-label="WhatsApp"
             >
-              <WhatsAppIcon className="w-5 h-5" fill="black" />
+              <WhatsAppIcon className="w-5 h-5 sm:w-5 sm:h-5" fill="black" />
             </Link>
             <Link
               href="https://www.instagram.com/kysfactoryciv/"
@@ -60,7 +62,7 @@ export function Footer() {
               className="hover:text-foreground transition-colors"
               aria-label="Instagram"
             >
-              <InstagramIcon className="w-5 h-5" />
+              <InstagramIcon className="w-5 h-5 sm:w-5 sm:h-5" />
             </Link>
             <Link
               href="https://www.facebook.com/people/KYS-Factory/61572203992802/"
@@ -69,7 +71,7 @@ export function Footer() {
               className="hover:text-foreground transition-colors"
               aria-label="Facebook"
             >
-              <FacebookIcon className="w-5 h-5" />
+              <FacebookIcon className="w-5 h-5 sm:w-5 sm:h-5" />
             </Link>
             <Link
               href="https://www.linkedin.com/company/kys-factory/"
@@ -78,7 +80,7 @@ export function Footer() {
               className="hover:text-foreground transition-colors"
               aria-label="LinkedIn"
             >
-              <LinkedInIcon className="w-5 h-5" />
+              <LinkedInIcon className="w-5 h-5 sm:w-5 sm:h-5" />
             </Link>
           </div>
         </div>

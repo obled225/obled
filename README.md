@@ -1,0 +1,3 @@
+# lomi. Commerce / KYS Factory
+
+This project serves as both a boilerplate for e-commerce stores and the production e-commerce platform for KYS Factory, a textile manufacturing company based in Abidjan, Côte d'Ivoire. The storefront is built with Next.js and includes integrations with lomi. for payment processing. It features internationalization support, product catalog management through Sanity, cart functionality, and a complete shopping experience for both B2C and B2B customers. The platform showcases KYS Factory's range of textile products, and custom manufacturing services for brands, businesses, and professionals in Côte d'Ivoire and beyond.

@@ -37,7 +37,7 @@ export function Pagination({
     <button
       key={pageNum}
       className={cn(
-        'px-3 py-2 text-sm font-medium rounded-md transition-colors',
+        'px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium rounded-md transition-colors min-w-[36px] sm:min-w-[40px] touch-target',
         {
           'bg-blue-600 text-white': isCurrent,
           'text-gray-700 hover:bg-gray-100': !isCurrent,
@@ -113,14 +113,14 @@ export function Pagination({
       <button
         onClick={() => handlePageChange(page - 1)}
         disabled={page <= 1}
-        className="p-2 text-gray-600 hover:bg-gray-100 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+        className="p-2 text-gray-600 hover:bg-gray-100 rounded-md disabled:opacity-50 disabled:cursor-not-allowed touch-target"
         aria-label="Previous page"
       >
         <ChevronLeft className="w-4 h-4" />
       </button>
 
       {/* Page Buttons */}
-      <div className="flex items-center space-x-1" data-testid={dataTestId}>
+      <div className="flex items-center gap-0.5 sm:gap-1 overflow-x-auto" data-testid={dataTestId}>
         {renderPageButtons()}
       </div>
 
@@ -128,7 +128,7 @@ export function Pagination({
       <button
         onClick={() => handlePageChange(page + 1)}
         disabled={page >= totalPages}
-        className="p-2 text-gray-600 hover:bg-gray-100 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+        className="p-2 text-gray-600 hover:bg-gray-100 rounded-md disabled:opacity-50 disabled:cursor-not-allowed touch-target"
         aria-label="Next page"
       >
         <ChevronRight className="w-4 h-4" />
