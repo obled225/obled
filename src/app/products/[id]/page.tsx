@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import { mockProducts } from '@/lib/data/mock-products';
 import { ProductDetail } from '@/components/store/product-detail';
 import { SizeGuideModal } from '@/components/store/size-guide-modal';
-import { AnnouncementBar } from '@/components/store/announcement-bar';
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -46,17 +45,8 @@ export default async function ProductPage(props: Props) {
     notFound();
   }
 
-  const announcements = [
-    {
-      text: 'Business offers for brands and businesses',
-      href: '/business',
-    },
-  ];
-
   return (
     <>
-      <AnnouncementBar messages={announcements} />
-
       <main className="grow">
         <ProductDetail product={product} />
       </main>

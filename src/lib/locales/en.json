@@ -1,6 +1,324 @@
 {
+  "header": {
+    "nav": {
+      "home": "Home",
+      "store": "Store",
+      "business": "For businesses (B2B)",
+      "about": "About us",
+      "faq": "FAQ"
+    },
+    "search": {
+      "placeholder": "Search products...",
+      "ariaLabel": "Search",
+      "closeAriaLabel": "Close search"
+    },
+    "cart": {
+      "ariaLabel": "Cart"
+    },
+    "menu": {
+      "ariaLabel": "Menu",
+      "title": "Menu"
+    }
+  },
   "footer": {
     "copyright": "© 2026, KYS Factory — All rights reserved.",
     "terms": "Privacy Policy"
+  },
+  "terms": {
+    "title": "Privacy Policy",
+    "lastUpdated": "Last updated: December 27, 2025",
+    "intro": "This privacy policy explains how KYS Factory (the \"Site\", \"we\", \"our\" or \"us\") collects, uses and discloses your personal information when you visit, use our services or make a purchase on kysfactoryciv.com (the \"Site\") or otherwise communicate with us concerning the Site (collectively, the \"Services\"). For the purposes of this privacy policy, \"you\", \"your\" and \"yours\" refer to you as a user of the Services, whether you are a customer, website visitor or any other person whose information we have collected in accordance with this privacy policy.",
+    "acceptance": "Please read this privacy policy carefully. By using and accessing the Services, you accept the collection, use and disclosure of your information as described in this privacy policy. If you do not accept this privacy policy, please do not use or access the Services.",
+    "modifications": {
+      "title": "Modifications to this privacy policy",
+      "content": "We may update this privacy policy from time to time, including to reflect changes in our practices or for other operational, legal or regulatory reasons. We will publish the revised privacy policy on the Site, update the \"Last updated\" date and take any other steps required by applicable law."
+    },
+    "collection": {
+      "title": "How we collect and use your personal information",
+      "intro": "To provide the Services, we collect personal information about you from various sources, as described below. The information we collect and use varies depending on how you interact with us.",
+      "additionalUses": "In addition to the specific uses described below, we may use the information we collect about you to communicate with you, provide or improve the Services, comply with any applicable legal obligations, enforce applicable terms of service and protect or defend the Services, our rights and the rights of our users or others.",
+      "personalInfo": {
+        "title": "Personal information we collect",
+        "intro": "The types of personal information we obtain about you depend on how you interact with our Site and use our Services. When we use the term \"personal information\", we refer to information that identifies, relates to, describes or can be associated with you. The following sections describe the categories and specific types of personal information we collect.",
+        "directCollection": {
+          "title": "Information we collect directly from you",
+          "content": "Information you submit directly through our Services may include:",
+          "items": [
+            "Contact information including your name, address, phone number, and email.",
+            "Order information including your name, billing address, shipping address, payment confirmation, email and phone number.",
+            "Account information including your username, password, security questions and other information used for account security purposes.",
+            "Purchase information including items you view, put in your cart, save to your account, such as loyalty points, reviews, referrals or gift cards, or purchases.",
+            "Loyalty points/product reviews/referrals/gift cards registered",
+            "Customer service information including information you choose to include in your communications with us, for example when you send a message through the Services."
+          ],
+          "note": "Some features of the Services may require you to provide certain information about yourself directly to us. You may choose not to provide this information, but doing so may prevent you from using or accessing these features."
+        },
+        "usageData": {
+          "title": "Information we collect about your usage",
+          "content": "We may also automatically collect certain information about your interaction with the Services (\"Usage Data\"). To do this, we may use cookies, pixels and similar technologies (\"Cookies\"). Usage Data may include information about how you access and use our Site and your account, including device information, browser information, network connection information, your IP address and other information relating to your interaction with the Services."
+        },
+        "thirdParty": {
+          "title": "Information we obtain from third parties",
+          "content": "Finally, we may obtain information about you from third parties, including from vendors and service providers who may collect information on our behalf, such as:",
+          "items": [
+            "Companies that support our Site and Services, such as Shopify.",
+            "Our payment processors, who collect payment information (e.g. bank account information, credit or debit card information, billing address) to process your payment in order to execute your orders and provide you with the products or services you have requested, in order to execute the contract we have entered into with you."
+          ],
+          "tracking": "When you visit our Site, open or click on emails we send you, or interact with our Services or advertisements, we, or third parties we work with, may automatically collect certain information using online tracking technologies such as pixels, web beacons, software development kits, third-party libraries and cookies.",
+          "processing": "Any information we obtain from third parties will be processed in accordance with this privacy policy. See also the section below, Website and Third Party Links."
+        }
+      }
+    },
+    "usage": {
+      "title": "How we use your personal information",
+      "services": "Provision of Products and Services. We use your personal information to provide you with the Services in order to execute the contract we have entered into with you, including to process your payments, execute your orders, send you notifications relating to your account, purchases, returns, exchanges or other transactions, to create, maintain and manage your account, organize shipping, facilitate any returns and exchanges as well as other account-related features and functionalities. We may also improve your shopping experience by allowing Shopify to match your account with other Shopify services you may choose to use. In this case, Shopify will process your information as indicated in its privacy policy and consumer privacy policy.",
+      "marketing": "Marketing and advertising. We may use your personal information for marketing and promotional purposes, for example to send marketing, advertising and promotional communications by email, SMS or postal mail, and to show you advertisements for products or services. This may include using your personal information to better tailor the Services and advertising on our Site and other websites.",
+      "security": "Security and fraud prevention. We use your personal information to detect, investigate or take action regarding potential fraudulent, illegal or malicious activities. If you choose to use the Services and create an account, you are responsible for maintaining the security of your account credentials. We strongly recommend that you do not share your username, password or other access information. If you believe your account has been compromised, please contact us immediately.",
+      "communication": "Communicate with you and improve the Services. We use your personal information to provide you with customer service and improve our Services. This is in our legitimate interest to ensure our responsiveness, provide you with effective services and maintain our business relationship with you."
+    },
+    "cookies": {
+      "title": "Cookies",
+      "content": "Like many websites, we use cookies on our Site. For accurate information about the cookies we use in operating our store with Shopify, go to https://www.shopify.com/legal/cookies. We use cookies to operate and improve our Site and Services (including to remember your actions and preferences), to perform analytics and better understand user interaction with the Services (in our legitimate interest to administer, improve and optimize the Services). We may also allow third parties and service providers to use cookies on our Site to better tailor services, products and advertisements on our Site and other websites.",
+      "browserNote": "Most browsers automatically accept cookies by default, but you can choose to set your browser to delete or reject cookies through your browser controls. Please keep in mind that deleting or blocking cookies may harm your user experience and cause some Services to malfunction, including certain features and general functionalities, or their unavailability. In addition, blocking cookies may not completely prevent the way we share information with third parties such as our advertising partners."
+    },
+    "disclosure": {
+      "title": "How we disclose personal information",
+      "intro": "In certain circumstances, we may disclose your personal information to third parties for contract execution purposes, legitimate purposes and for other reasons subject to this privacy policy. This may include:",
+      "items": [
+        "Vendors or other third parties that perform services on our behalf (e.g. IT management, payment processing, data analysis, customer service, cloud storage, order processing and shipping).",
+        "Business and marketing partners to provide you with services and advertise to you. Our business and marketing partners will use your information in accordance with their own privacy notices.",
+        "When you request that we disclose or otherwise consent to us disclosing certain information to third parties, for example to ship you products or through your use of social media widgets or login integrations, with your consent.",
+        "With our affiliates or within our corporate group, in our legitimate interest to run a successful business.",
+        "In connection with a business transaction such as a merger or bankruptcy, to comply with applicable legal obligations (including to respond to subpoenas, search warrants and similar requests), to enforce applicable terms of service and to protect or defend the Services, our rights and the rights of our users or third parties."
+      ],
+      "tableIntro": "we have disclosed the following categories of personal information and sensitive personal information about users for the purposes described above, in the sections \"How we collect and use your personal information\" and \"How we disclose personal information\":",
+      "table": {
+        "headers": ["Category", "Categories of Recipients"],
+        "rows": [
+          ["Identifiers such as basic contact information and certain order and account information", "Vendors and third parties that provide services on our behalf (such as Internet service providers, payment processors, order processing partners, customer service partners and data analysis providers)"],
+          ["Commercial information such as order information, purchase information and customer service information", "Business and marketing partners"],
+          ["Internet or other similar network activity, such as usage data", "Affiliates"],
+          ["Geolocation data such as locations determined by IP address or other technical measures", "Vendors and third parties that provide services on our behalf (such as Internet service providers, payment processors, order processing partners, customer service partners and data analysis providers)"]
+        ]
+      },
+      "sensitiveNote": "We do not use or disclose sensitive personal information without your consent or for the purpose of inferring characteristics about you.",
+      "consentNote": "With your consent, we share personal information for the purpose of carrying out advertising and marketing activities, as follows.",
+      "sharingNote": "We have \"sold\" and \"shared\" (as these terms are defined in applicable legislation) personal information during the previous 12 months for the purpose of carrying out advertising and marketing activities, as follows.",
+      "sharingTable": {
+        "headers": ["Categories of Personal Information", "Categories of Recipients"],
+        "rows": [
+          ["Identifiers such as name, email address and phone number", "Business and marketing partners"],
+          ["Commercial information such as records of products or services purchased", "Business and marketing partners"],
+          ["Usage data", "Business and marketing partners"]
+        ]
+      }
+    },
+    "thirdPartySites": {
+      "title": "Websites and Third Party Links",
+      "content": "Our Site may provide links to websites or other online platforms operated by third parties. If you follow links to non-affiliated sites or sites we do not control, you should review their privacy and security policies as well as their other terms and conditions. We do not guarantee and are not responsible for the privacy or security of these sites, including the accuracy, completeness or reliability of information found on these sites. Information you provide on public or semi-public areas, including information you share on third-party social media platforms, may also be visible to other users of the Services and/or users of said third-party platforms, without limitation on our use of it or a third party's use of it. The fact that we include such links does not, in itself, imply approval of the content of said platforms or their owners or operators, except in situations stated in the Services."
+    },
+    "childrenData": {
+      "title": "Children's Data",
+      "content": "The Services are not intended for use by children, and we do not knowingly collect any personal information about children. If you are the parent or guardian of a child who has provided us with their personal information, you may contact us using the contact information provided below to request its deletion.",
+      "note": "As of the effective date of this privacy policy, we do not actually know that we \"share\" or \"sell\" (as defined in applicable legislation) the personal information of persons under 16 years of age."
+    },
+    "security": {
+      "title": "Security and retention of your information",
+      "content": "Please be aware that no security measure is perfect or impenetrable and we cannot guarantee \"absolute security.\" In addition, any information you send us may not be secure during transmission. We recommend that you do not use unsecured channels to communicate sensitive or confidential information to us.",
+      "retention": "The retention period of your personal information depends on various factors, for example whether we need or do not need this information to maintain your account, provide the Services, comply with legal obligations, resolve disputes or enforce other contracts and policies in force."
+    },
+    "rights": {
+      "title": "Your rights",
+      "intro": "Depending on your place of residence, you may be entitled to all or part of the rights listed below in relation to your personal information. However, these rights are not absolute and may only apply in certain circumstances, and we may in some cases refuse your request as permitted by law.",
+      "rightsList": [
+        "Right of access/knowledge: You may have the right to request access to personal information we hold about you, including details about how we use and share your information.",
+        "Right of deletion: You may have the right to request that we delete personal information we hold about you.",
+        "Right of correction: You may have the right to request that we correct personal information we hold about you.",
+        "Right of portability: You may have the right to receive a copy of personal information we hold about you and request that we transfer it to a third party, in certain circumstances and with certain exceptions.",
+        "Right to refuse sale, sharing or targeted advertising: You may have the right to ask us not to \"sell\" or \"share\" your personal information or to refuse the processing of your personal information for purposes considered \"targeted advertising\", as defined in privacy laws. Please note that if you visit our Site while the Global Privacy Control opt-out preference signal is enabled, depending on where you are located, we will automatically treat this as a request to opt-out of the \"sale\" or \"sharing\" of information for the device and browser you use to visit the Site.",
+        "Processing restriction: You may have the right to ask us to stop or restrict our processing of personal information.",
+        "Withdrawal of consent: When we rely on your consent to process your personal information, you may have the right to withdraw said consent.",
+        "Appeal: You may have the right to appeal our decision if we refuse to process your request. You can do this by responding directly to our refusal.",
+        "Communication preferences management: We may send you promotional emails that you can opt out of receiving at any time using the unsubscribe option displayed in our emails. If you unsubscribe, we may continue to send you non-promotional emails, such as those concerning your account or orders you have placed."
+      ],
+      "exercise": "You can exercise any of these rights when indicated on our Site or by contacting us using the contact information provided below.",
+      "noDiscrimination": "We will not discriminate against you if you exercise any of said rights. We may need to collect information from you to verify your identity, such as your email address or account information, before providing a substantive response to the request. In accordance with applicable laws, you may designate an authorized agent to make requests on your behalf to exercise your rights. Before accepting such a request from an agent, we will require that the agent provide proof that you authorized them to act on your behalf, and we may need you to verify your identity directly with us. We will respond to your request as soon as possible, as required by applicable legislation."
+    },
+    "complaints": {
+      "title": "Complaints",
+      "content": "If you have complaints about how we process your personal information, please contact us using the contact information provided below. If our response to your complaint does not satisfy you, depending on your place of residence, you may have the right to appeal our decision by contacting us using the contact information provided below, or to file your complaint with your local data protection authority."
+    },
+    "international": {
+      "title": "International Users",
+      "content": "Please note that we may transfer, store and process your personal information outside the country in which you live. Your personal information is also processed by employees and by third-party service providers and partners in these countries.",
+      "transfers": "If we transfer your personal information outside Europe, we will use recognized transfer mechanisms such as the European Commission's standard contractual clauses or any equivalent contract issued by the competent United Kingdom authority, as the case may be, unless the data transfer takes place to a country deemed to provide adequate protection."
+    },
+    "contact": {
+      "title": "Contact",
+      "content": "If you have questions about our privacy practices or this privacy policy, or if you wish to exercise any of the rights available to you, please call us or email us at latelierkysllc@gmail.com or contact us at Riviéra Palmeraie, Abidjan, CI."
+    }
+  },
+  "about": {
+    "title": "Textile manufacturer in Abidjan | Blank t-shirts & B2B – KYS Factory CIV",
+    "subtitle": "Local textile manufacturing for brands & businesses in Abidjan",
+    "description": "Blank t-shirts, professional packs and agile production in Côte d'Ivoire. A local, flexible and responsive alternative.",
+    "cta": {
+      "seePacks": "See the packs",
+      "orderWhatsApp": "Order via WhatsApp"
+    },
+    "whoWeAre": {
+      "title": "WHO ARE WE",
+      "subtitle": "A local textile manufacturer, close to its customers",
+      "content": "KYS Factory CIV is a textile manufacturer based in Abidjan (Riviera Palmeraie), specialized in the production of blank t-shirts and B2B textile solutions for brands, businesses and professionals in Côte d'Ivoire."
+    },
+    "b2b": {
+      "title": "BUSINESS SOLUTIONS (B2B)",
+      "subtitle": "Textile solutions for professionals",
+      "content": "Our packs of blank t-shirts are designed for:",
+      "targets": [
+        "Fashion brands",
+        "SMEs & businesses",
+        "Associations & events",
+        "Resellers"
+      ],
+      "cta": "Discover B2B packs"
+    },
+    "production": {
+      "title": "OUR PRODUCTION",
+      "subtitle": "Local expertise at the service of your projects",
+      "content": "Our workshop brings together a team of passionate tailors, artisans and technicians. Each piece is crafted with rigor, care and professionalism.",
+      "projects": [
+        "Collections for emerging brands",
+        "Corporate uniforms for businesses",
+        "Event textiles (festivals, campaigns, trade shows)",
+        "Products for NGOs, associations or schools"
+      ],
+      "strength": "Our strength: flexible and responsive manufacturing, from 1 piece."
+    },
+    "responsiveness": {
+      "title": "Responsiveness worthy of your projects",
+      "content": "We know that your deadlines are often tight. That's why we designed our workshop to respond quickly, with:",
+      "features": [
+        "Production deadlines from 5 days depending on volumes",
+        "Local production capacity, without import dependency",
+        "Flexible management of small and medium series",
+        "Fluid communication at every stage of the project"
+      ],
+      "urgency": "You have a date constraint? We adapt our organization to deliver on time."
+    },
+    "support": {
+      "title": "Human & professional support",
+      "intro": "Our approach is based on exchange, listening and advice. At KYS Factory CIV, you are not an order number, you are a partner.",
+      "content": "We support you at every stage:",
+      "services": [
+        "Choice of textiles adapted to your project",
+        "Advice on finishes, sizes, quantities",
+        "Prototypes and tests before production",
+        "Personalized follow-up until delivery"
+      ]
+    },
+    "commitment": {
+      "title": "Strong local commitment",
+      "content": "By producing locally in Côte d'Ivoire, we value regional know-how, support the local economy and reduce our logistics footprint. Our ambition is clear: to offer a reliable and professional alternative to brands and businesses in West Africa."
+    }
+  },
+  "contact": {
+    "title": "Contact",
+    "description": "For any questions, feel free to contact us.",
+    "methods": {
+      "whatsapp": {
+        "title": "WhatsApp",
+        "value": "+225 07 13 51 64 17"
+      },
+      "phone": {
+        "title": "Phone",
+        "value": "+225 07 13 51 64 17"
+      },
+      "instagram": {
+        "title": "Instagram",
+        "value": "@kysfactoryciv"
+      },
+      "email": {
+        "title": "Email",
+        "value": "contact@kysfactory.com"
+      }
+    }
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "howToOrder": {
+      "title": "HOW TO ORDER?",
+      "content": "Simple, easy and effective:",
+      "steps": [
+        "Choose your pack",
+        "Add to cart",
+        "Our team confirms sizes & colors",
+        "Fast delivery"
+      ]
+    },
+    "whoWeAre": {
+      "question": "Who are we?",
+      "answer": "KYS Factory, based in Abidjan, manufactures blank t-shirts, polo shirts and other textile products with artisanal know-how and ethics. We work with schools, brands, companies, both local and international."
+    },
+    "location": {
+      "question": "Where are you located?",
+      "answer": "We are based in Abidjan, at Riviera Palmeraie, in our fully equipped production workshop."
+    },
+    "products": {
+      "question": "What types of products do you offer?",
+      "answer": "We produce premium quality blank t-shirts, ready to be customized. We also offer textile customization services (DTF, screen printing, embroidery) on demand."
+    },
+    "productionTime": {
+      "question": "What is the production lead time?",
+      "answer": "Blank t-shirts: 3 to 4 business days\nCustomized t-shirts: from 10 business days (depending on technique and quantity)"
+    },
+    "samples": {
+      "question": "Can I order a sample before launching production?",
+      "answer": "Absolutely. Ordering a sample is the best way to test our quality. We strongly recommend it if you hesitate between several cuts, fabrics or colors."
+    },
+    "visits": {
+      "question": "Is it possible to visit the workshop?",
+      "answer": "No, the workshop does not yet accept visits at the moment."
+    },
+    "fabrics": {
+      "question": "What fabrics do you use for your t-shirts?",
+      "answer": "We mainly work with 100% cotton, combed cotton and various blends according to needs. All our fabrics are selected for their durability and comfort."
+    },
+    "services": {
+      "question": "What services do you offer in addition to blank production?",
+      "answer": [
+        "Textile customization (DTF, embroidery, screen printing)",
+        "Custom cut creation",
+        "Prototyping for emerging brands"
+      ]
+    },
+    "minimumOrder": {
+      "question": "What is the minimum order?",
+      "answer": "There is no minimum order."
+    },
+    "localDelivery": {
+      "question": "Do you deliver in Abidjan?",
+      "answer": "Yes, we deliver throughout Abidjan, generally via Yango. Shipping costs are the responsibility of the customer and paid upon receipt of the package."
+    },
+    "internationalShipping": {
+      "question": "Do you ship internationally?",
+      "answer": "Yes, we ship to several countries in Africa and Europe. Costs and deadlines vary depending on the destination. Contact us for a personalized quote."
+    },
+    "brandLaunch": {
+      "question": "Can I launch my brand with you?",
+      "answer": "It's our core business. We support brand creators, from the first sample to series production. If you have an idea, we have the means to make it happen."
+    },
+    "cuts": {
+      "question": "What cuts are available?",
+      "answer": "We offer oversized, standard and oversized boxy cut. Other formats are available on request. You can also create your own cut."
+    },
+    "fileFormats": {
+      "question": "What file formats do you accept for custom visuals?",
+      "answer": "We recommend PNG files (transparent background), AI or vectorized PDF. A verification is always performed before launching production."
+    },
+    "quality": {
+      "question": "What are your quality commitments?",
+      "answer": "We apply rigorous quality controls at every stage of production. Our goal is to deliver a flawless final product, ready to be worn or marketed."
+    }
   }
 }

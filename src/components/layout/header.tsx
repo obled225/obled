@@ -4,20 +4,23 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Search, ShoppingCart, Menu, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import Modal from '@/components/ui/modal';
 
-const navLinks = [
-  { href: '/', label: 'Home' },
-  { href: '/shop', label: 'Store' },
-  { href: '/business', label: 'For businesses (B2B)' },
-  { href: '/about', label: 'About us' },
-  { href: '/contact', label: 'Contact' },
-];
-
 export function Header() {
+  const t = useTranslations('header');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const navLinks = [
+    { href: '/', label: t('nav.home') },
+    { href: '/shop', label: t('nav.store') },
+    { href: '/business', label: t('nav.business') },
+    { href: '/about', label: t('nav.about') },
+    { href: '/faq', label: t('nav.faq') },
+
+  ];
 
   return (
     <header className="w-full border-b mx-auto max-w-[1245px] border-border bg-background">
@@ -41,14 +44,14 @@ export function Header() {
               variant="ghost"
               size="icon"
               onClick={() => setIsSearchOpen(!isSearchOpen)}
-              aria-label="Search"
+              aria-label={t('search.ariaLabel')}
             >
               <Search className="h-5 w-5" />
             </Button>
 
             {/* Cart */}
             <Link href="/cart">
-              <Button variant="ghost" size="icon" aria-label="Cart">
+              <Button variant="ghost" size="icon" aria-label={t('cart.ariaLabel')}>
                 <ShoppingCart className="h-5 w-5" />
               </Button>
             </Link>
@@ -59,7 +62,7 @@ export function Header() {
               size="icon"
               className="md:hidden"
               onClick={() => setIsMobileMenuOpen(true)}
-              aria-label="Menu"
+              aria-label={t('menu.ariaLabel')}
             >
               <Menu className="h-5 w-5" />
             </Button>
@@ -73,7 +76,7 @@ export function Header() {
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className="text-sm font-medium text-foreground hover:text-foreground/70 transition-colors"
+                  className="text-sm font-medium text-foreground/70 hover:text-black transition-colors"
                 >
                   {link.label}
                 </Link>
@@ -88,7 +91,7 @@ export function Header() {
             <div className="relative">
               <input
                 type="text"
-                placeholder="Search products..."
+                placeholder={t('search.placeholder')}
                 className="w-full rounded-md border border-input bg-background px-4 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                 autoFocus
               />
@@ -97,7 +100,7 @@ export function Header() {
                 size="icon"
                 className="absolute right-0 top-0"
                 onClick={() => setIsSearchOpen(false)}
-                aria-label="Close search"
+                aria-label={t('search.closeAriaLabel')}
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -109,13 +112,13 @@ export function Header() {
       {/* Mobile Menu Modal */}
       <Modal isOpen={isMobileMenuOpen} close={() => setIsMobileMenuOpen(false)}>
         <div className="p-6">
-          <h2 className="text-lg font-semibold mb-4">Menu</h2>
+          <h2 className="text-lg font-semibold mb-4">{t('menu.title')}</h2>
           <nav className="flex flex-col gap-4">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-lg font-medium text-foreground hover:text-foreground/70"
+                className="text-lg font-medium text-foreground/70 hover:text-black transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {link.label}

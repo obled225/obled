@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { Minus, Plus, Share2, ZoomIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Product, formatPrice } from '@/lib/types';
@@ -48,7 +47,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
         {/* Image Gallery */}
         <div className="space-y-4">
           {/* Main Image */}
-          <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
+          <div className="relative aspect-3/4 overflow-hidden bg-gray-100">
             <Image
               src={images[selectedImage] || '/placeholder-product.jpg'}
               alt={product.name}
@@ -164,7 +163,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                         ? 'border-gray-900 bg-gray-900 text-white'
                         : 'border-gray-200 bg-white text-gray-900 hover:border-gray-900',
                       !size.available &&
-                        'cursor-not-allowed border-gray-200 text-gray-400 line-through opacity-50'
+                      'cursor-not-allowed border-gray-200 text-gray-400 line-through opacity-50'
                     )}
                   >
                     {size.name}
@@ -223,28 +222,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 {product.description.map((item, index) => (
                   <li key={index} className="flex items-start gap-2">
                     <span className="text-gray-900">•</span>
-                    {item.includes('page contact') ? (
-                      <span>
-                        For bulk orders, contact us via the{' '}
-                        <Link
-                          href="/contact"
-                          className="underline hover:text-gray-600"
-                        >
-                          contact page
-                        </Link>{' '}
-                        or on Instagram DM{' '}
-                        <Link
-                          href="https://instagram.com/kysfactoryciv"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="underline hover:text-gray-600"
-                        >
-                          @kysfactoryciv
-                        </Link>
-                      </span>
-                    ) : (
-                      item
-                    )}
+                    {item}
                   </li>
                 ))}
               </ul>

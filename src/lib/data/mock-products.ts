@@ -49,7 +49,6 @@ export const mockProducts: Product[] = [
       'Coupe Oversized Boxy Cut',
       'Épaules tombantes (Drop Shoulder)',
       'Convient aux hommes et aux femmes',
-      'Disponible pour une commande en gros',
     ],
     category: mockCategories[1], // Clothing
     inStock: false,
@@ -84,7 +83,6 @@ export const mockProducts: Product[] = [
       'Coupe Oversized Boxy Cut',
       'Épaules tombantes (Drop Shoulder)',
       'Convient aux hommes et aux femmes',
-      'Disponible pour une commande en gros',
     ],
     category: mockCategories[1], // Clothing
     inStock: false,
@@ -119,7 +117,6 @@ export const mockProducts: Product[] = [
       'Coupe Oversized Boxy Cut',
       'Épaules tombantes (Drop Shoulder)',
       'Convient aux hommes et aux femmes',
-      'Disponible pour une commande en gros',
     ],
     category: mockCategories[1], // Clothing
     inStock: false,
@@ -154,7 +151,6 @@ export const mockProducts: Product[] = [
       'Coupe Oversized Boxy Cut',
       'Épaules tombantes (Drop Shoulder)',
       'Convient aux hommes et aux femmes',
-      'Disponible pour une commande en gros',
     ],
     category: mockCategories[1], // Clothing
     inStock: false,
@@ -188,7 +184,6 @@ export const mockProducts: Product[] = [
       '180 gsm',
       'Coupe Standard',
       'Convient aux hommes et aux femmes',
-      'Disponible pour une commande en gros',
     ],
     category: mockCategories[1], // Clothing
     inStock: false,

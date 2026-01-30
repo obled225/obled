@@ -7,15 +7,15 @@ interface AnnouncementBarProps {
 
 export function AnnouncementBar({ messages }: AnnouncementBarProps) {
   return (
-    <div className="border-b border-gray-200 bg-white  mx-auto max-w-[1245px]">
+    <div className="w-full border-b border-gray-200 bg-white mx-auto max-w-[1245px]">
       {messages.map((message, index) => (
         <Link
           key={index}
           href={message.href}
-          className="flex items-center justify-center gap-2 py-3 text-center text-sm font-medium text-gray-900 hover:text-gray-600 transition-colors border-b border-gray-200 last:border-b-0"
+          className="group flex items-center justify-center gap-2 py-3 text-center text-sm font-medium text-foreground/70 hover:text-black transition-colors border-b border-gray-200 last:border-b-0"
         >
           {message.text}
-          <ArrowRight className="h-4 w-4" />
+          <ArrowRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
         </Link>
       ))}
     </div>

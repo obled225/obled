@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Header } from './header';
-import { Footer } from './footers';
+import { Footer } from './footer';
 import { CartProvider } from '@/lib/context/cart-provider';
 
 interface LayoutProps {

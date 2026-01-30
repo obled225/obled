@@ -1,6 +1,324 @@
 {
+  "header": {
+    "nav": {
+      "home": "Accueil",
+      "store": "Boutique",
+      "business": "Offres Pro (B2B)",
+      "about": "À propos",
+      "faq": "FAQ"
+    },
+    "search": {
+      "placeholder": "Rechercher des produits...",
+      "ariaLabel": "Rechercher",
+      "closeAriaLabel": "Fermer la recherche"
+    },
+    "cart": {
+      "ariaLabel": "Panier"
+    },
+    "menu": {
+      "ariaLabel": "Menu",
+      "title": "Menu"
+    }
+  },
   "footer": {
     "copyright": "© 2026, KYS Factory - Tous droits réservés.",
     "terms": "Politique de confidentialité"
+  },
+  "terms": {
+    "title": "Politique de confidentialité",
+    "lastUpdated": "Dernière mise à jour : 27 décembre 2025",
+    "intro": "Cette politique de confidentialité explique comment KYS Factory (le « Site », « nous », « notre » ou « nos ») collecte, utilise et divulgue vos informations personnelles lorsque vous visitez, utilisez nos services ou effectuez un achat sur kysfactoryciv.com (le « Site » ) ou communiquez autrement avec nous au sujet du Site (conjointement, les « Services »). Aux fins de la présente politique de confidentialité, « vous », « votre » et « vos » vous désignent en tant qu'utilisateur des Services, que vous soyez un client, un visiteur du site web ou une autre personne dont nous avons collecté les informations conformément à la présente politique de confidentialité.",
+    "acceptance": "Veuillez lire attentivement la présente politique de confidentialité. En utilisant les Services et en y accédant, vous acceptez la collecte, l'utilisation et la divulgation de vos informations comme décrit dans la présente politique de confidentialité. Si vous n'acceptez pas la présente politique de confidentialité, veuillez ne pas utiliser les Services ou y accéder.",
+    "modifications": {
+      "title": "Modifications de la présente politique de confidentialité",
+      "content": "Nous pouvons mettre à jour la présente politique de confidentialité de temps à autre, notamment pour refléter les changements apportés à nos pratiques ou pour d'autres raisons opérationnelles, juridiques ou réglementaires. Nous publierons la politique de confidentialité révisée sur le Site, actualiserons la date de « Dernière mise à jour » et prendrons toute autre mesure requise par la législation en vigueur."
+    },
+    "collection": {
+      "title": "Comment nous collectons et utilisons vos informations personnelles",
+      "intro": "Pour fournir les Services, nous collectons des informations personnelles vous concernant issues de diverses sources, comme indiqué ci-dessous. Les informations que nous collectons et utilisons varient en fonction de la manière dont vous interagissez avec nous.",
+      "additionalUses": "En plus des utilisations spécifiques exposées ci-dessous, nous pouvons utiliser les informations que nous collectons à votre sujet pour communiquer avec vous, fournir ou améliorer les Services, nous conformer à toute obligation légale applicable, faire respecter les conditions de service applicables et protéger ou défendre les Services, nos droits et les droits de nos utilisateurs ou autres.",
+      "personalInfo": {
+        "title": "Informations personnelles que nous collectons",
+        "intro": "Les types d'informations personnelles que nous obtenons à votre sujet dépendent de la manière dont vous interagissez avec notre Site et utilisez nos Services. Lorsque nous utilisons le terme « informations personnelles », nous faisons référence aux informations qui vous identifient, vous concernent, vous décrivent ou peuvent être associées à vous. Les sections suivantes décrivent les catégories et les types spécifiques d'informations personnelles que nous collectons.",
+        "directCollection": {
+          "title": "Informations que nous collectons directement auprès de vous",
+          "content": "Les informations que vous nous soumettez directement via nos Services peuvent inclure :",
+          "items": [
+            "Des coordonnées notamment votre nom, adresse, numéro de téléphone, et e-mail.",
+            "Des informations de commande notamment votre nom, votre adresse de facturation, votre adresse d'expédition, votre confirmation de paiement, votre e-mail et numéro de téléphone.",
+            "Des informations du compte notamment votre nom d'utilisateur, votre mot de passe, vos questions de sécurité et d'autres informations utilisées à des fins de sécurité du compte.",
+            "Des informations d'achat notamment les articles que vous consultez, que vous mettez dans votre panier, que vous enregistrez dans votre compte, comme les points de fidélité, les commentaires, les parrainages ou les cartes-cadeaux, ou les achats.",
+            "Points de fidélité/avis sur les produits/parrainages/cartes-cadeaux enregistrés",
+            "Les informations sur le service à la clientèle notamment les informations que vous choisissez d'inclure dans vos communications avec nous, par exemple lorsque vous envoyez un message par l'intermédiaire des Services."
+          ],
+          "note": "Certaines fonctionnalités des Services peuvent vous imposer de nous fournir directement certaines informations vous concernant. Vous pouvez choisir de ne pas fournir ces informations, mais cela peut vous empêcher d'utiliser ou d'accéder à ces fonctionnalités."
+        },
+        "usageData": {
+          "title": "Informations que nous collectons sur votre utilisation",
+          "content": "Nous pouvons également collecter automatiquement certaines informations sur votre interaction avec les Services (« Données d'utilisation »). Pour ce faire, nous pouvons utiliser des cookies, des pixels et des technologies similaires (« Cookies »). Les Données d'utilisation peuvent inclure des informations sur la façon dont vous accédez à notre Site et à votre compte et les utilisez, y compris des informations sur l'appareil, des informations sur le navigateur, des informations sur votre connexion réseau, votre adresse IP et d'autres informations relatives à votre interaction avec les Services."
+        },
+        "thirdParty": {
+          "title": "Informations que nous obtenons de la part de tiers",
+          "content": "Enfin, nous pouvons obtenir des informations vous concernant auprès de tiers, notamment auprès de fournisseurs et de prestataires de services qui sont susceptibles de collecter des informations en notre nom, tels que :",
+          "items": [
+            "Des entreprises qui prennent en charge notre Site et nos Services, comme Shopify.",
+            "Nos organismes de traitement des paiements, qui collectent des informations de paiement (p. ex. des informations sur le compte bancaire, la carte de crédit ou de débit, l'adresse de facturation) pour traiter votre paiement afin d'exécuter vos commandes et de vous fournir les produits ou services que vous avez demandés, en vue d'exécuter le contrat que nous avons conclu avec vous."
+          ],
+          "tracking": "Lorsque vous visitez notre Site, ouvrez ou cliquez sur les e-mails que nous vous envoyons, ou interagissez avec nos Services ou nos publicités, nous, ou des tiers avec lesquels nous travaillons, pouvons collecter automatiquement certaines informations à l'aide de technologies de suivi en ligne telles que les pixels, les balises Web, les kits de développeurs de logiciels, les bibliothèques tierces et les cookies.",
+          "processing": "Toute information que nous obtenons de la part de tiers sera traitée conformément à la présente politique de confidentialité. Voir également la section ci-dessous, Site web et Liens tiers."
+        }
+      }
+    },
+    "usage": {
+      "title": "Comment nous utilisons vos informations personnelles",
+      "services": "Fourniture des Produits et des Services. Nous utilisons vos informations personnelles pour vous fournir les Services afin d'exécuter le contrat que nous avons conclu avec vous, notamment pour traiter vos paiements, exécuter vos commandes, vous envoyer des notifications relatives à votre compte, vos achats, retours, échanges ou à d'autres transactions, pour créer, tenir et gérer votre compte, organiser l'expédition, faciliter les éventuels retours et échanges ainsi que d'autres caractéristiques et fonctionnalités liées à votre compte. Nous pouvons également améliorer votre expérience d'achat en permettant à Shopify de faire correspondre votre compte avec d'autres services Shopify que vous pouvez choisir d'utiliser. Dans ce cas, Shopify traitera vos informations comme indiqué dans sa politique de confidentialité et sa politique de confidentialité relative aux consommateurs.",
+      "marketing": "Marketing et publicité. Nous pouvons utiliser vos informations personnelles à des fins de marketing et de promotion, par exemple pour envoyer des communications marketing, publicitaires et promotionnelles par e-mail, SMS ou courrier postal, et pour vous montrer des publicités pour des produits ou des services. Cela peut inclure l'utilisation de vos informations personnelles pour mieux adapter les Services et la publicité sur notre Site et d'autres sites web.",
+      "security": "Sécurité et prévention de la fraude. Nous utilisons vos informations personnelles pour détecter, enquêter ou prendre des mesures concernant d'éventuelles activités frauduleuses, illégales ou malveillantes. Si vous choisissez d'utiliser les Services et de créer un compte, vous êtes responsable de veiller à la sécurité des informations d'identification de votre compte. Nous vous recommandons fortement de ne pas partager votre nom d'utilisateur, votre mot de passe ou d'autres informations d'accès. Si vous pensez que votre compte a été compromis, veuillez nous contacter immédiatement.",
+      "communication": "Communiquer avec vous et améliorer les Services. Nous utilisons vos informations personnelles pour vous fournir le service à la clientèle et améliorer nos Services. Ceci est dans notre intérêt légitime afin d'assurer notre réactivité, de vous fournir des services efficaces et de maintenir notre relation commerciale avec vous."
+    },
+    "cookies": {
+      "title": "Cookies",
+      "content": "Comme de nombreux sites web, nous utilisons des cookies sur notre Site. Pour des informations précises sur les cookies que nous utilisons dans le cadre de l'exploitation de notre boutique avec Shopify, allez sur https://www.shopify.com/legal/cookies. Nous utilisons des cookies pour faire fonctionner et améliorer notre Site et nos Services (y compris pour mémoriser vos actions et préférences), pour réaliser des analyses et mieux comprendre l'interaction des utilisateurs avec les Services (dans notre intérêt légitime d'administrer, d'améliorer et d'optimiser les Services). Nous pouvons également autoriser des tiers et des prestataires de services à utiliser des cookies sur notre Site afin de mieux adapter les services, produits et publicités sur notre Site et d'autres sites web.",
+      "browserNote": "La plupart des navigateurs acceptent automatiquement les cookies par défaut, mais vous pouvez choisir de configurer votre navigateur pour qu'il supprime ou rejette les cookies grâce aux contrôles de votre navigateur. Veuillez garder à l'esprit que la suppression ou le blocage des cookies peut nuire à votre expérience utilisateur et entraîner un dysfonctionnement de certains Services, y compris certaines fonctionnalités et fonctionnalités générales, ou leur indisponibilité. De plus, le blocage des cookies peut ne pas empêcher complètement la manière dont nous partageons des informations avec des tiers tels que nos partenaires publicitaires."
+    },
+    "disclosure": {
+      "title": "Comment nous divulguons les informations personnelles",
+      "intro": "Dans certaines circonstances, nous pouvons divulguer vos informations personnelles à des tiers à des fins d'exécution de contrat, à des fins légitimes et pour d'autres raisons soumises à la présente politique de confidentialité. Il peut s'agir notamment :",
+      "items": [
+        "De fournisseurs ou d'autres tiers qui accomplissent des services en notre nom (p. ex. gestion informatique, traitement des paiements, analyse de données, service à la clientèle, stockage sur le cloud, traitement des commandes et expédition).",
+        "Des partenaires commerciaux et marketing pour vous fournir des services et vous adresser de la publicité. Nos partenaires commerciaux et marketing utiliseront vos informations conformément à leurs propres avis de confidentialité.",
+        "Lorsque vous nous demandez de divulguer ou consentez de toute autre manière à ce que nous divulguions certaines informations à des tiers, par exemple pour vous expédier des produits ou via votre utilisation de widgets de médias sociaux ou d'intégrations d'identifiants, avec votre consentement.",
+        "Avec nos affiliés ou au sein de notre groupe d'entreprises, dans notre intérêt légitime de gérer une entreprise prospère.",
+        "Dans le cadre d'une transaction commerciale comme une fusion ou une faillite, pour se conformer aux obligations légales applicables (y compris pour répondre aux assignations à comparaître, aux mandats de perquisition et aux demandes similaires), pour faire respecter les conditions de service applicables et pour protéger ou défendre les Services, nos droits et les droits de nos utilisateurs ou de tiers."
+      ],
+      "tableIntro": "nous avons divulgué les catégories suivantes d'informations personnelles et d'informations personnelles sensibles sur les utilisateurs aux fins décrites ci-dessus, dans les rubriques « Comment nous collectons et utilisons vos informations personnelles » et « Comment nous divulguons les informations personnelles » :",
+      "table": {
+        "headers": ["Catégorie", "Catégories de destinataires"],
+        "rows": [
+          ["Les identifiants tels que les coordonnées de base et certaines informations sur les commandes et le compte", "Les fournisseurs et tiers qui fournissent des services en notre nom (tels que les fournisseurs d'accès Internet, les organismes de traitement des paiements, les partenaires de traitement des commandes, les partenaires du service à la clientèle et les fournisseurs d'analyse de données)"],
+          ["Les informations commerciales telles que les informations sur les commandes, les informations d'achat et les informations du service à la clientèle", "Les partenaires commerciaux et marketing"],
+          ["Internet ou toute autre activité de réseau similaire, telle que les données d'utilisation", "Les affiliés"],
+          ["Les données de géolocalisation telles que des emplacements déterminés par une adresse IP ou d'autres mesures techniques", "Les fournisseurs et tiers qui fournissent des services en notre nom (tels que les fournisseurs d'accès Internet, les organismes de traitement des paiements, les partenaires de traitement des commandes, les partenaires du service à la clientèle et les fournisseurs d'analyse de données)"]
+        ]
+      },
+      "sensitiveNote": "Nous n'utilisons et ne divulguons pas d'informations personnelles sensibles sans votre consentement ou dans le but de déduire des caractéristiques vous concernant.",
+      "consentNote": "Avec votre consentement, nous partageons des informations personnelles dans le but d'accomplir des activités de publicité et de marketing, comme suit.",
+      "sharingNote": "Nous avons « vendu » et « partagé » (tels que ces termes sont définis dans la législation en vigueur) des informations personnelles au cours des 12 mois précédents dans le but d'accomplir des activités de publicité et de marketing, comme suit.",
+      "sharingTable": {
+        "headers": ["Catégories d'informations personnelles", "Catégories de destinataires"],
+        "rows": [
+          ["Les identifiants tels que le nom, l'adresse e-mail et le numéro de téléphone", "Les partenaires commerciaux et marketing"],
+          ["Les informations commerciales telles que les registres des produits ou services achetés", "Les partenaires commerciaux et marketing"],
+          ["Les données d'utilisation", "Les partenaires commerciaux et marketing"]
+        ]
+      }
+    },
+    "thirdPartySites": {
+      "title": "Sites web et Liens tiers",
+      "content": "Notre Site peut fournir des liens vers des sites web ou d'autres plateformes en ligne exploitées par des tiers. Si vous suivez des liens vers des sites non affiliés ou que nous ne contrôlons pas, vous devez consulter leurs politiques de confidentialité et de sécurité ainsi que leurs autres conditions générales d'utilisation. Nous ne garantissons pas et ne sommes pas responsables de la confidentialité ou de la sécurité de ces sites, y compris de l'exactitude, de l'exhaustivité ou de la fiabilité des informations trouvées sur ces sites. Les informations que vous fournissez sur des zones publiques ou semi-publiques, y compris les informations que vous partagez sur des plateformes de réseaux sociaux tierces, peuvent également être visibles par d'autres utilisateurs des Services et/ou par les utilisateurs desdites plateformes tierces, sans que l'utilisation que nous en faisons ou qu'en fait un tiers ne soit limitée. Le fait que nous incluons ce type de liens n'implique pas, en soi, une approbation du contenu desdites plateformes ou de leurs propriétaires ou opérateurs, sauf dans les situations énoncées dans les Services."
+    },
+    "childrenData": {
+      "title": "Données sur les enfants",
+      "content": "Les Services ne sont pas destinés à être utilisés par des enfants, et nous ne collectons sciemment aucune information personnelle sur des enfants. Si vous êtes le parent ou le tuteur d'un enfant qui nous a fourni ses informations personnelles, vous pouvez nous contacter en utilisant les coordonnées indiquées ci-dessous pour demander leur suppression.",
+      "note": "À la date d'effet de la présente politique de confidentialité, nous ne savons pas réellement que nous « partageons » ou « vendons » (selon la définition attribuée à ces termes dans la législation en vigueur) les informations personnelles de personnes de moins de 16 ans."
+    },
+    "security": {
+      "title": "Sécurité et conservation de vos informations",
+      "content": "Sachez qu'aucune mesure de sécurité n'est parfaite ou inviolable et que nous ne pouvons pas garantir une « sécurité absolue ». De plus, toutes les informations que vous nous envoyez sont susceptibles de ne pas être sécurisées pendant leur transit. Nous vous recommandons de ne pas utiliser de canaux non sécurisés pour nous communiquer des informations sensibles ou confidentielles.",
+      "retention": "La durée de conservation de vos informations personnelles dépend de différents facteurs, par exemple si nous avons besoin ou pas de ces informations pour tenir votre compte, fournir les Services, respecter les obligations légales, résoudre des litiges ou faire appliquer d'autres contrats et politiques en vigueur."
+    },
+    "rights": {
+      "title": "Vos droits",
+      "intro": "Selon votre lieu de résidence, vous pouvez bénéficier de la totalité ou d'une partie des droits énumérés ci-dessous en lien avec vos informations personnelles. Toutefois, ces droits ne sont pas absolus et ne peuvent s'appliquer que dans certaines circonstances, et nous pouvons dans certains cas refuser votre demande comme le permet la loi.",
+      "rightsList": [
+        "Droit d'accès/de savoir : Vous pouvez avoir le droit de demander l'accès aux informations personnelles que nous détenons à votre sujet, y compris les détails relatifs à la manière dont nous utilisons et partageons vos informations.",
+        "Droit de suppression : Vous pouvez avoir le droit de demander que nous supprimions les informations personnelles que nous conservons à votre sujet.",
+        "Droit de correction : Vous pouvez avoir le droit de demander que nous corrigions les informations personnelles que nous conservons à votre sujet.",
+        "Droit de portabilité : Vous pouvez avoir le droit de recevoir une copie des informations personnelles que nous détenons à votre sujet et de demander que nous les transférions à un tiers, dans certaines circonstances et avec certaines exceptions.",
+        "Droit de refuser la vente, le partage ou la publicité ciblée : Vous pouvez avoir le droit de nous demander de ne pas « vendre » ou « partager » vos informations personnelles ou de refuser le traitement de vos informations personnelles à des fins considérées comme de la « publicité ciblée », tel que défini dans les lois relatives à la confidentialité. Veuillez noter que, si vous visitez notre Site alors que le signal de préférence de désinscription du contrôle mondial de la confidentialité (Global Privacy Control) est activé, en fonction de l'endroit où vous vous trouvez, nous traiterons automatiquement cela comme une demande de désinscription de la « vente » ou du « partage » d'informations pour l'appareil et le navigateur que vous utilisez pour visiter le Site.",
+        "Restriction du traitement : Vous pouvez avoir le droit de nous demander d'arrêter ou de restreindre notre traitement des informations personnelles.",
+        "Consentement du retrait : Lorsque nous nous fondons sur votre consentement pour traiter vos informations personnelles, vous pouvez avoir le droit de retirer ledit consentement.",
+        "Appel : Vous pouvez avoir le droit de faire appel de notre décision si nous refusons de traiter votre demande. Vous pouvez le faire en répondant directement à notre refus.",
+        "Gestion des préférences de communication : Nous pouvons vous envoyer des e-mails promotionnels que vous pouvez refuser de recevoir à tout moment en utilisant l'option de désabonnement affichée dans nos e-mails. Si vous vous désabonnez, nous pouvons continuer de vous envoyer des e-mails non promotionnels, comme ceux qui concernnent votre compte ou les commandes que vous avez passées."
+      ],
+      "exercise": "Vous pouvez exercer n'importe lequel de ces droits lorsque cela est indiqué sur notre Site ou en nous contactant à l'aide des coordonnées indiquées ci-dessous.",
+      "noDiscrimination": "Nous ne commettrons aucune discrimination à votre égard si vous exercez l'un desdits droits. Nous pouvons avoir besoin de collecter des informations auprès de vous pour vérifier votre identité, telles que votre adresse e-mail ou les informations sur votre compte, avant de donner une réponse substantielle à la demande. Conformément aux lois applicables, vous pouvez désigner un mandataire autorisé pour faire des demandes en votre nom afin d'exercer vos droits. Avant d'accepter une telle demande d'un mandataire, nous exigerons que celui-ci fournisse la preuve que vous l'avez autorisé à agir en votre nom, et nous pourrons avoir besoin que vous vérifiions votre identité directement auprès de nous. Nous répondrons à votre demande dans les meilleurs délais, comme l'exige la législation en vigueur."
+    },
+    "complaints": {
+      "title": "Réclamations",
+      "content": "Si vous avez des réclamations à émettre concernant la façon dont nous traitons vos informations personnelles, veuillez nous contacter à l'aide des coordonnées fournies ci-dessous. Si notre réponse à votre réclamation ne vous satisfait pas, en fonction de votre lieu de résidence, vous pouvez avoir le droit de faire appel de notre décision en nous contactant à l'aide des coordonnées indiquées ci-dessous, ou de déposer votre réclamation auprès de votre autorité locale en matière de protection des données."
+    },
+    "international": {
+      "title": "Utilisateurs internationaux",
+      "content": "Veuillez noter que nous pouvons transférer, stocker et traiter vos informations personnelles en dehors du pays dans lequel vous vivez. Vos informations personnelles sont également traitées par les employés et par des prestataires de services et partenaires tiers dans ces pays.",
+      "transfers": "Si nous transférons vos informations personnelles hors d'Europe, nous aurons recours à des mécanismes de transfert reconnus comme les clauses contractuelles types de la Commission européenne ou tout contrat équivalent émis par l'autorité compétente du Royaume-Uni, selon le cas, sauf si le transfert de données s'effectue vers un pays réputé fournir un niveau de protection adéquat."
+    },
+    "contact": {
+      "title": "Contact",
+      "content": "Si vous avez des questions sur nos pratiques en matière de confidentialité ou cette politique de confidentialité, ou si vous souhaitez exercer l'un des droits dont vous disposez, veuillez nous appeler ou nous envoyer un e-mail à l'adresse latelierkysllc@gmail.com ou nous contacter au Riviéra Palmeraie, Abidjan, CI."
+    }
+  },
+  "about": {
+    "title": "Fabricant textile à Abidjan | T-shirts vierges & B2B – KYS Factory CIV",
+    "subtitle": "Fabrication textile locale pour marques & entreprises à Abidjan",
+    "description": "T-shirts vierges, packs professionnels et production agile en Côte d'Ivoire. Une alternative locale, flexible et réactive.",
+    "cta": {
+      "seePacks": "Voir les packs",
+      "orderWhatsApp": "Commander via WhatsApp"
+    },
+    "whoWeAre": {
+      "title": "QUI SOMMES-NOUS",
+      "subtitle": "Un fabricant textile local, proche de ses clients",
+      "content": "KYS Factory CIV est un fabricant textile basé à Abidjan (Riviera Palmeraie), spécialisé dans la production de t-shirts vierges et solutions textiles B2B pour marques, entreprises et professionnels en Côte d'Ivoire."
+    },
+    "b2b": {
+      "title": "SOLUTIONS ENTREPRISES (B2B)",
+      "subtitle": "Solutions textiles pour professionnels",
+      "content": "Nos packs de t-shirts vierges sont conçus pour :",
+      "targets": [
+        "Marques de vêtements",
+        "PME & entreprises",
+        "Associations & événements",
+        "Revendeurs"
+      ],
+      "cta": "Découvrir les packs B2B"
+    },
+    "production": {
+      "title": "NOTRE PRODUCTION",
+      "subtitle": "Un savoir-faire local au service de vos projets",
+      "content": "Notre atelier regroupe une équipe de couturiers, artisans et techniciens passionnés. Chaque pièce est confectionnée avec rigueur, soin et professionnalisme.",
+      "projects": [
+        "Collections pour jeunes marques",
+        "Tenues corporate pour entreprises",
+        "Textiles événementiels (festivals, campagnes, salons)",
+        "Produits pour ONG, associations ou écoles"
+      ],
+      "strength": "Notre force : une fabrication flexible et réactive, à partir d'1 pièce."
+    },
+    "responsiveness": {
+      "title": "Une réactivité à la hauteur de vos projets",
+      "content": "Nous savons que vos délais sont souvent serrés. C'est pourquoi nous avons conçu notre atelier pour répondre rapidement, avec :",
+      "features": [
+        "Des délais de production dès 5 jours selon les volumes",
+        "Une capacité de production locale , sans dépendance à l'importation",
+        "Une gestion souple des séries petites et moyennes",
+        "Une communication fluide à chaque étape du projet"
+      ],
+      "urgency": "Vous avez un impératif de date ? Nous adaptons notre organisation pour livrer à temps."
+    },
+    "support": {
+      "title": "Un accompagnement humain & professionnel",
+      "intro": "Notre approche repose sur l'échange, l'écoute et le conseil. Chez KYS Factory CIV, vous n'êtes pas un numéro de commande, vous êtes un partenaire.",
+      "content": "Nous vous accompagnons à chaque étape :",
+      "services": [
+        "Choix des textiles adaptés à votre projet",
+        "Conseils sur les finitions, les tailles, les quantités",
+        "Prototypes et tests avant production",
+        "Suivi personnalisé jusqu'à la livraison"
+      ]
+    },
+    "commitment": {
+      "title": "Un engagement local fort",
+      "content": "En produisant localement en Côte d'Ivoire, nous valorisons le savoir-faire régional, soutenons l'économie locale et réduisons notre empreinte logistique. Notre ambition est claire : proposer une alternative fiable et professionnelle aux marques et entreprises d'Afrique de l'Ouest."
+    }
+  },
+  "contact": {
+    "title": "Contact",
+    "description": "Pour toute question, n'hésitez pas à nous contacter.",
+    "methods": {
+      "whatsapp": {
+        "title": "WhatsApp",
+        "value": "+225 07 13 51 64 17"
+      },
+      "phone": {
+        "title": "Téléphone",
+        "value": "+225 07 13 51 64 17"
+      },
+      "instagram": {
+        "title": "Instagram",
+        "value": "@kysfactoryciv"
+      },
+      "email": {
+        "title": "Email",
+        "value": "contact@kysfactory.com"
+      }
+    }
+  },
+  "faq": {
+    "title": "Questions fréquentes",
+    "howToOrder": {
+      "title": "COMMENT COMMANDER ?",
+      "content": "Simple, facile et efficace :",
+      "steps": [
+        "Choisissez votre pack",
+        "Ajoutez au panier",
+        "Notre équipe confirme tailles & couleurs",
+        "Livraison rapide"
+      ]
+    },
+    "whoWeAre": {
+      "question": "Qui sommes-nous ?",
+      "answer": "KYS Factory, basé à Abidjan, fabrique des t-shirts vierges, polos et autres produits textiles avec un savoir-faire artisanal et éthique. Nous travaillons avec des écoles, marques, entreprises, aussi bien locales qu'internationales."
+    },
+    "location": {
+      "question": "Où êtes-vous situé ?",
+      "answer": "Nous sommes basés à Abidjan, à la Riviera Palmeraie, dans notre atelier de production entièrement équipé."
+    },
+    "products": {
+      "question": "Quels types de produits proposez-vous ?",
+      "answer": "Nous produisons des t-shirts blanks (vierges) de qualité premium, prêts à être personnalisés. Nous proposons également un service de personnalisation textile (DTF, sérigraphie, broderie) sur demande."
+    },
+    "productionTime": {
+      "question": "Quel est le délai de production ?",
+      "answer": "T-shirts blanks : 3 à 4 jours ouvrables\nT-shirts personnalisés : à partir de 10 jours ouvrables (selon la technique et la quantité)"
+    },
+    "samples": {
+      "question": "Puis-je commander un échantillon avant de lancer une production ?",
+      "answer": "Absolument. Commander un échantillon est le meilleur moyen de tester notre qualité. Nous le recommandons vivement si vous hésitez entre plusieurs coupes, tissus ou couleurs."
+    },
+    "visits": {
+      "question": "Est-il possible de visiter l'atelier ?",
+      "answer": "Non, l'atelier ne prend pas encore de visites pour le moment."
+    },
+    "fabrics": {
+      "question": "Quels tissus utilisez-vous pour vos t-shirts ?",
+      "answer": "Nous travaillons principalement avec du coton 100 %, du coton peigné et différents mélanges selon les besoins. Tous nos tissus sont sélectionnés pour leur durabilité et leur confort."
+    },
+    "services": {
+      "question": "Quels services proposez-vous en plus de la production de blanks ?",
+      "answer": [
+        "Personnalisation textile (DTF, broderie, sérigraphie)",
+        "Création de coupes sur mesure",
+        "Prototypage pour marques naissantes"
+      ]
+    },
+    "minimumOrder": {
+      "question": "Quel est le minimum de commande ?",
+      "answer": "Il n'y a aucun minimum de commande."
+    },
+    "localDelivery": {
+      "question": "Livrez-vous à Abidjan ?",
+      "answer": "Oui, nous livrons partout à Abidjan, généralement via Yango. Les frais de livraison sont à la charge du client et réglés à la réception du colis."
+    },
+    "internationalShipping": {
+      "question": "Faites-vous des envois à l'international ?",
+      "answer": "Oui, nous expédions vers plusieurs pays d'Afrique et d'Europe. Les frais et délais varient selon la destination. Contactez-nous pour un devis personnalisé."
+    },
+    "brandLaunch": {
+      "question": "Puis-je lancer ma marque avec vous ?",
+      "answer": "C'est notre cœur de métier. Nous accompagnons les créateurs de marque, du premier échantillon jusqu'à la production en série. Si vous avez une idée, nous avons les moyens de la concrétiser."
+    },
+    "cuts": {
+      "question": "Quelles sont les coupes disponibles ?",
+      "answer": "Nous proposons des coupes oversized, standard et oversized boxy cut. D'autres formats sont disponibles sur demande. Vous pouvez également créer votre propre coupe."
+    },
+    "fileFormats": {
+      "question": "Quels formats de fichiers acceptez-vous pour les visuels personnalisés ?",
+      "answer": "Nous recommandons les fichiers PNG (fond transparent), AI ou PDF vectorisé. Une vérification est toujours effectuée avant le lancement de la production."
+    },
+    "quality": {
+      "question": "Quels sont vos engagements qualité ?",
+      "answer": "Nous appliquons des contrôles qualité rigoureux à chaque étape de la production. Notre objectif est de livrer un produit final impeccable, prêt à être porté ou commercialisé."
+    }
   }
 }
