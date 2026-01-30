@@ -4,8 +4,6 @@ import { mockProducts } from '@/lib/data/mock-products';
 import { ProductDetail } from '@/components/store/product-detail';
 import { SizeGuideModal } from '@/components/store/size-guide-modal';
 import { AnnouncementBar } from '@/components/store/announcement-bar';
-import { Header } from '@/components/layout/header';
-import { Footer } from '@/components/layout/footer';
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -50,22 +48,20 @@ export default async function ProductPage(props: Props) {
 
   const announcements = [
     {
-      text: 'Free Shipping on Orders Over $50',
-      href: '/shipping',
+      text: 'Business offers for brands and businesses',
+      href: '/business',
     },
   ];
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
+    <>
       <AnnouncementBar messages={announcements} />
 
-      <main className="flex-1">
+      <main className="grow">
         <ProductDetail product={product} />
       </main>
 
       <SizeGuideModal />
-      <Footer />
-    </div>
+    </>
   );
 }

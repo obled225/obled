@@ -3,11 +3,11 @@ import { Header } from './headers';
 import { Footer } from './footer';
 import { CartProvider } from '@/lib/context/cart-provider';
 
-interface LayoutProps {
+interface PageLayoutProps {
   children: ReactNode;
 }
 
-export function Layout({ children }: LayoutProps) {
+export function PageLayout({ children }: PageLayoutProps) {
   return (
     <CartProvider>
       <div className="min-h-screen flex flex-col">

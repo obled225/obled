@@ -1,8 +1,11 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-import { ThemeProvider } from '@/components/layout/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
+import { PageLayout } from '@/components/layout/page-layout';
+import { TranslationProvider } from '@/lib/context/translation-provider';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -15,30 +18,29 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'KYSFactory - Your Premier E-commerce Store',
+  title: 'KYS FACTORY CIV',
   description:
-    'Discover amazing products at KYSFactory. Quality items, great prices, and exceptional customer service.',
+    "KYS FACTORY CIV - Fournisseur de T-shirt Vierge made in Côte d'Ivoire. Quality blank t-shirts manufactured locally.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const messages = await getMessages();
+
   return (
-    <html lang="en">
+    <html lang="fr">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-          <Toaster />
-        </ThemeProvider>
+        <NextIntlClientProvider messages={messages}>
+          <TranslationProvider>
+            <PageLayout>{children}</PageLayout>
+            <Toaster />
+          </TranslationProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );
