@@ -14,6 +14,7 @@ import { PortableText } from '@/components/ui/portable-text';
 import { useTranslations } from 'next-intl';
 import { FullscreenGallery } from '@/components/products/fullscreen-gallery';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 interface ProductDetailProps {
   product: Product;
@@ -31,6 +32,13 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const [selectedSize, setSelectedSize] = useState(
     product.sizes?.find((s) => s.available)?.name || ''
   );
+
+  // Business Pack Selection
+  const [selectedPack, setSelectedPack] = useState<
+    NonNullable<Product['businessPacks']>[number] | null
+  >(null);
+
+
 
   // Get color image if available, otherwise use main images
   const getDisplayImages = () => {
@@ -55,7 +63,14 @@ export function ProductDetail({ product }: ProductDetailProps) {
     getProductPrice(product, currency) ||
     getProductPrice(product, 'XOF') ||
     product.prices[0];
-  const displayPrice = currentPrice?.basePrice || product.price;
+
+  // Calculate display price based on Pack selection
+  const baseDisplayPrice = currentPrice?.basePrice || product.price;
+  const packDisplayPrice = selectedPack
+    ? (selectedPack.price || baseDisplayPrice * selectedPack.quantity)
+    : baseDisplayPrice;
+
+  const displayPrice = packDisplayPrice;
   const displayCurrency = currentPrice?.currency || product.currency;
   const displayOriginalPrice = currentPrice?.originalPrice;
 
@@ -65,16 +80,68 @@ export function ProductDetail({ product }: ProductDetailProps) {
     setSelectedImage(0); // Reset to first image when color changes
   };
 
+  const router = useRouter();
+
   const handleAddToCart = async () => {
     setIsAdding(true);
     try {
-      addItem(product, quantity);
+      if (selectedPack) {
+        const base = currentPrice?.basePrice || product.price;
+        // Calculate effective unit price in the pack
+        const packPrice = selectedPack.price || (base * selectedPack.quantity);
+        const unitPriceInPack = packPrice / selectedPack.quantity;
+        const priceModifier = unitPriceInPack - base;
+
+        const variant = {
+          id: `pack-${selectedPack.quantity}`,
+          name: selectedPack.label || `Pack ${selectedPack.quantity}`,
+          value: String(selectedPack.quantity),
+          priceModifier: priceModifier,
+          stockQuantity: product.stockQuantity,
+          sku: `${product.sku}-PACK-${selectedPack.quantity}`,
+          lomiPriceId: selectedPack.lomiPriceId,
+          packSize: selectedPack.quantity,
+        };
+
+        addItem(product, quantity * selectedPack.quantity, variant);
+      } else {
+        addItem(product, quantity);
+      }
       success('Added to cart!', `${product.name} has been added to your cart.`);
     } catch (err) {
       error('Failed to add to cart', 'Please try again.');
       console.error('Failed to add to cart:', err);
     } finally {
       setIsAdding(false);
+    }
+  };
+
+  const handleBuyNow = async () => {
+    try {
+      if (selectedPack) {
+        const base = currentPrice?.basePrice || product.price;
+        const packPrice = selectedPack.price || (base * selectedPack.quantity);
+        const unitPriceInPack = packPrice / selectedPack.quantity;
+        const priceModifier = unitPriceInPack - base;
+
+        const variant = {
+          id: `pack-${selectedPack.quantity}`,
+          name: selectedPack.label || `Pack ${selectedPack.quantity}`,
+          value: String(selectedPack.quantity),
+          priceModifier: priceModifier,
+          stockQuantity: product.stockQuantity,
+          sku: `${product.sku}-PACK-${selectedPack.quantity}`,
+          lomiPriceId: selectedPack.lomiPriceId,
+          packSize: selectedPack.quantity,
+        };
+        addItem(product, quantity * selectedPack.quantity, variant);
+      } else {
+        addItem(product, quantity);
+      }
+      router.push('/checkout');
+    } catch (err) {
+      error('Failed to proceed to checkout', 'Please try again.');
+      console.error('Failed to buy now:', err);
     }
   };
 
@@ -221,10 +288,46 @@ export function ProductDetail({ product }: ProductDetailProps) {
                         ? 'border-gray-900 bg-gray-900 text-white'
                         : 'border-gray-200 bg-white text-gray-900 hover:border-gray-900',
                       !size.available &&
-                        'cursor-not-allowed border-gray-200 text-gray-400 line-through opacity-50'
+                      'cursor-not-allowed border-gray-200 text-gray-400 line-through opacity-50'
                     )}
                   >
                     {size.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Pack Selector (Business Only) */}
+          {product.productType === 'business' && product.businessPacks && product.businessPacks.length > 0 && (
+            <div className="mb-6">
+              <p className="text-sm font-medium text-gray-900 mb-3">
+                {t('pack') || 'Pack'}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setSelectedPack(null)}
+                  className={cn(
+                    'flex h-10 px-4 items-center justify-center rounded-md border text-sm font-medium transition-colors',
+                    !selectedPack
+                      ? 'border-gray-900 bg-gray-900 text-white'
+                      : 'border-gray-200 bg-white text-gray-900 hover:border-gray-900'
+                  )}
+                >
+                  Unit (1)
+                </button>
+                {product.businessPacks.map((pack) => (
+                  <button
+                    key={pack.quantity}
+                    onClick={() => setSelectedPack(pack)}
+                    className={cn(
+                      'flex h-10 px-4 items-center justify-center rounded-md border text-sm font-medium transition-colors',
+                      selectedPack?.quantity === pack.quantity
+                        ? 'border-gray-900 bg-gray-900 text-white'
+                        : 'border-gray-200 bg-white text-gray-900 hover:border-gray-900'
+                    )}
+                  >
+                    {pack.label || `Pack ${pack.quantity}`}
                   </button>
                 ))}
               </div>
@@ -274,6 +377,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
               <Button
                 variant="outline"
                 className="w-full h-11 sm:h-12 text-sm font-medium border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white transition-colors touch-target"
+                onClick={handleBuyNow}
               >
                 {t('productDetail.buyNow')}
               </Button>

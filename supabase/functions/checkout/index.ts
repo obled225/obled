@@ -33,6 +33,7 @@ interface CartItem {
   quantity: number;
   price: number;
   productImageUrl?: string;
+  lomiPriceId?: string;
 }
 
 interface RequestPayload {
@@ -281,17 +282,44 @@ serve(async (req: Request) => {
     const successRedirectPath = payload.successUrlPath || '/payment/success';
     const cancelRedirectPath = payload.cancelUrlPath || '/payment/error';
 
-    // Use amount-based checkout for e-commerce (always includes shipping/tax)
+    // Use line_items based checkout for e-commerce
     const lomiPayload = {
       success_url: `${APP_BASE_URL}${successRedirectPath}?order_id=${encodeURIComponent(orderId)}&status=success`,
       cancel_url: `${APP_BASE_URL}${cancelRedirectPath}?order_id=${encodeURIComponent(orderId)}&status=cancelled`,
-      amount: totalAmount,
+      // amount is calculated by lomi from line_items, but we can send currency_code
       currency_code: currencyCode,
       customer_email: payload.userEmail,
       customer_name: payload.userName,
       ...(payload.userPhone && { customer_phone: payload.userPhone }),
-      title: `Order (${payload.cartItems.length} items)`,
-      description: `Your order: ${payload.cartItems.map((item) => `${item.quantity}x ${item.productTitle}`).join(', ')}`,
+      line_items: payload.cartItems.map(item => {
+        if (item.lomiPriceId) {
+          return {
+            price: item.lomiPriceId, // Use 'price' for ID reference in some APIs, or 'price_id'
+            // The previous logic used 'price_id' in one place and 'price' in another. 
+            // Looking at line 297 above: 'price_id: item.lomiPriceId'.
+            // Let's stick to the previous key 'price_id' if that's what Lomi uses for IDs.
+            price_id: item.lomiPriceId,
+            quantity: item.quantity
+          };
+        } 
+        
+        // Ad-Hoc Pricing (Direct Charge)
+        return {
+          price_data: {
+            currency: currencyCode,
+            product_data: {
+              name: item.productTitle + (item.variantTitle ? ` (${item.variantTitle})` : ''),
+              images: item.productImageUrl ? [item.productImageUrl] : undefined,
+              metadata: {
+                product_id: item.productId,
+                variant_id: item.variantId
+              }
+            },
+            unit_amount: item.price
+          },
+          quantity: item.quantity
+        };
+      }),
       allow_coupon_code:
         payload.allowCouponCode !== undefined
           ? payload.allowCouponCode

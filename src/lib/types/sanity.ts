@@ -67,6 +67,12 @@ export interface SanityProductExpanded extends Omit<
   };
   productType?: 'normal' | 'collab' | 'business';
   lomiProductId?: string;
+  businessPacks?: Array<{
+    quantity: number;
+    price?: number;
+    lomiPriceId?: string;
+    label?: string;
+  }>;
   featured?: boolean;
   dimensions?: {
     length?: number;
@@ -174,6 +180,12 @@ export interface Product {
   };
   productType: 'normal' | 'collab' | 'business';
   lomiProductId?: string;
+  businessPacks?: Array<{
+    quantity: number;
+    price?: number;
+    lomiPriceId?: string;
+    label?: string;
+  }>;
   featured?: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -186,6 +198,8 @@ export interface ProductVariant {
   priceModifier: number;
   stockQuantity: number;
   sku: string;
+  lomiPriceId?: string;
+  packSize?: number;
 }
 
 export interface ProductCategory {

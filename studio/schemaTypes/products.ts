@@ -62,6 +62,13 @@ export default defineType({
               title: 'lomi. Price ID',
               type: 'string',
               description: 'The price ID from lomi. payment processor for this currency',
+              validation: (Rule) => 
+      Rule.required()
+        .regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i, {
+          name: 'UUID', // Error message is "Does not match UUID pattern"
+          invert: false, // Don't allow non-matches
+        })
+        .error('lomi. Price ID must be a valid UUID'),
             },
           ],
           preview: {
@@ -263,6 +270,57 @@ export default defineType({
       },
       initialValue: 'normal',
       validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'businessPacks',
+      title: 'Business Packs',
+      type: 'array',
+      description: 'Pack sizes and pricing for business offers',
+      hidden: ({document}) => document?.productType !== 'business',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            {
+              name: 'quantity',
+              title: 'Quantity',
+              type: 'number',
+              validation: (Rule) => Rule.required().min(2),
+            },
+            {
+              name: 'price',
+              title: 'Price',
+              type: 'number',
+              description: 'Total price for the pack (leave empty to use base price * quantity)',
+            },
+            {
+              name: 'lomiPriceId',
+              title: 'lomi. Price ID',
+              type: 'string',
+              description: 'Optional: Specific price ID for this pack from lomi.',
+            },
+            {
+              name: 'label',
+              title: 'Label',
+              type: 'string',
+              description: 'e.g., Pack 5',
+            },
+          ],
+          preview: {
+            select: {
+              quantity: 'quantity',
+              price: 'price',
+              label: 'label',
+            },
+            prepare({quantity, price, label}) {
+              return {
+                title: label || `Pack of ${quantity}`,
+                subtitle: price ? `${price}` : 'Base price x Quantity',
+              };
+            },
+          },
+        },
+      ],
     }),
     defineField({
       name: 'categories',

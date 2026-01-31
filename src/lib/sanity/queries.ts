@@ -135,6 +135,7 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
     productType: doc.productType || 'normal',
     lomiProductId: doc.lomiProductId,
     featured: doc.featured || false,
+    businessPacks: doc.businessPacks,
     createdAt: doc._createdAt ? new Date(doc._createdAt) : new Date(),
     updatedAt: doc._updatedAt ? new Date(doc._updatedAt) : new Date(),
   };
@@ -149,6 +150,13 @@ const ALL_PRODUCTS_QUERY = `*[_type == "products" && !(_id in path("drafts.**"))
   "slug": slug.current,
   productType,
   lomiProductId,
+
+  businessPacks[] {
+    quantity,
+    price,
+    lomiPriceId,
+    label
+  },
   featured,
   prices[] {
     currency,
@@ -192,6 +200,12 @@ const PRODUCT_BY_SLUG_QUERY = `*[_type == "products" && slug.current == $slug &&
   "slug": slug.current,
   productType,
   lomiProductId,
+  businessPacks[] {
+    quantity,
+    price,
+    lomiPriceId,
+    label
+  },
   featured,
   prices[] {
     currency,
@@ -498,6 +512,12 @@ export async function getProductById(id: string): Promise<Product | null> {
       "slug": slug.current,
       productType,
       lomiProductId,
+      businessPacks[] {
+        quantity,
+        price,
+        lomiPriceId,
+        label
+      },
       prices[] {
         currency,
         basePrice,

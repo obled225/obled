@@ -48,18 +48,42 @@ export default function CheckoutPage() {
       }
 
       // Prepare cart items for the edge function
-      const cartItems = cart.items.map((item) => ({
-        productId: item.product.id,
-        productTitle: item.product.name,
-        productSlug: item.product.slug,
-        variantId: item.selectedVariant?.id,
-        variantTitle: item.selectedVariant
-          ? `${item.selectedVariant.name} - ${item.selectedVariant.value}`
-          : undefined,
-        quantity: item.quantity,
-        price: item.product.price + (item.selectedVariant?.priceModifier || 0),
-        productImageUrl: item.product.image,
-      }));
+      const cartItems = cart.items.map((item) => {
+        // Find price for the selected currency
+        const defaultCurrency = 'XOF'; // Default to XOF if no currency set
+        const selectedCurrency = item.product.currency || defaultCurrency;
+
+        // Find specific price object from product.prices
+        const priceObj = item.product.prices?.find(p => p.currency === selectedCurrency) || item.product.prices?.[0];
+
+        // Determine price ID and quantity
+        const variantLomiId = item.selectedVariant?.lomiPriceId;
+        const baseLomiId = priceObj?.lomiPriceId;
+
+        // If variant has a lomi ID (e.g. Pack Price), use it. Otherwise use base ID.
+        const effectiveLomiId = variantLomiId || baseLomiId;
+
+        // If we are using a Pack Price ID, the quantity sent to lomi should be number of packs
+        // item.quantity is total items. So packs = total / packSize
+        const packSize = item.selectedVariant?.packSize || 1;
+        const quantityToSend = (variantLomiId && packSize > 1)
+          ? (item.quantity / packSize)
+          : item.quantity;
+
+        return {
+          productId: item.product.id,
+          productTitle: item.product.name,
+          productSlug: item.product.slug,
+          variantId: item.selectedVariant?.id,
+          variantTitle: item.selectedVariant
+            ? `${item.selectedVariant.name} - ${item.selectedVariant.value}`
+            : undefined,
+          quantity: quantityToSend,
+          price: item.product.price + (item.selectedVariant?.priceModifier || 0),
+          productImageUrl: item.product.image,
+          lomiPriceId: effectiveLomiId
+        };
+      });
 
       // Calculate shipping fee (free over $50, else $9.99)
       const shippingFee = cartSummary.subtotal > 50 ? 0 : 9.99;
@@ -74,13 +98,13 @@ export default function CheckoutPage() {
           userPhone: formData.userPhone || undefined,
           shippingAddress: formData.shippingName
             ? {
-                name: formData.shippingName,
-                address: formData.shippingAddress,
-                city: formData.shippingCity,
-                country: formData.shippingCountry,
-                postalCode: formData.shippingPostalCode,
-                phone: formData.shippingPhone || formData.userPhone,
-              }
+              name: formData.shippingName,
+              address: formData.shippingAddress,
+              city: formData.shippingCity,
+              country: formData.shippingCountry,
+              postalCode: formData.shippingPostalCode,
+              phone: formData.shippingPhone || formData.userPhone,
+            }
             : undefined,
           shippingFee,
           taxAmount: cartSummary.tax,
@@ -95,7 +119,7 @@ export default function CheckoutPage() {
         showError(
           'Error',
           error.message ||
-            'Failed to create checkout session. Please try again.'
+          'Failed to create checkout session. Please try again.'
         );
         setIsSubmitting(false);
         return;
