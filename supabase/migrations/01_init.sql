@@ -5,6 +5,7 @@ CREATE TABLE public.customers (
     email TEXT UNIQUE NOT NULL,
     phone TEXT,
     whatsapp TEXT,
+    organization TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
 

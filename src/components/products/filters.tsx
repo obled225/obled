@@ -12,6 +12,7 @@ export type SortOption =
   | 'date-desc';
 
 export interface FilterState {
+  category?: string;
   availability: {
     inStock: boolean;
     outOfStock: boolean;
@@ -34,6 +35,7 @@ export function ProductFilters({
       inStock: false,
       outOfStock: false,
     },
+    category: undefined,
     sortBy: 'featured',
   });
 
@@ -58,6 +60,13 @@ export function ProductFilters({
   // Filter and sort products
   const filteredProducts = useMemo(() => {
     let filtered = [...products];
+
+    // Apply category filter
+    if (filters.category) {
+      filtered = filtered.filter(
+        (product) => product.category?.name === filters.category
+      );
+    }
 
     // Apply availability filters
     const hasAvailabilityFilter =
@@ -130,6 +139,36 @@ export function ProductFilters({
       {/* Left Side - Filters */}
       <div className="flex items-center gap-4">
         <span className="text-foreground">Filtre :</span>
+
+        {/* Category Dropdown (New) */}
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() =>
+              setFilters((prev) => ({ ...prev, category: undefined }))
+            } // Reset logic if implementing toggle
+            className="hidden" // Hidden for now, implemented properly below
+          />
+          <select
+            value={filters.category || ''}
+            onChange={(e) =>
+              setFilters((prev) => ({
+                ...prev,
+                category: e.target.value || undefined,
+              }))
+            }
+            className="h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <option value="">All Categories</option>
+            {Array.from(
+              new Set(products.map((p) => p.category?.name).filter(Boolean))
+            ).map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
+        </div>
 
         {/* Availability Dropdown */}
         <div className="relative">

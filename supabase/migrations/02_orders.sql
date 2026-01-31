@@ -3,7 +3,8 @@ CREATE OR REPLACE FUNCTION public.upsert_customer(
     p_name TEXT,
     p_email TEXT,
     p_phone TEXT DEFAULT NULL,
-    p_whatsapp TEXT DEFAULT NULL
+    p_whatsapp TEXT DEFAULT NULL,
+    p_organization TEXT DEFAULT NULL
 )
 RETURNS UUID
 LANGUAGE plpgsql
@@ -25,12 +26,13 @@ BEGIN
             name = p_name,
             phone = COALESCE(p_phone, phone),
             whatsapp = COALESCE(p_whatsapp, whatsapp),
+            organization = COALESCE(p_organization, organization),
             updated_at = NOW()
         WHERE id = customer_id;
     ELSE
         -- Create new customer
-        INSERT INTO public.customers (name, email, phone, whatsapp)
-        VALUES (p_name, p_email, p_phone, p_whatsapp)
+        INSERT INTO public.customers (name, email, phone, whatsapp, organization)
+        VALUES (p_name, p_email, p_phone, p_whatsapp, p_organization)
         RETURNING id INTO customer_id;
     END IF;
 
@@ -38,7 +40,7 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION public.upsert_customer(TEXT, TEXT, TEXT, TEXT)
+COMMENT ON FUNCTION public.upsert_customer(TEXT, TEXT, TEXT, TEXT, TEXT)
 IS 'Creates a new customer or updates existing customer by email. Returns customer ID.';
 
 -- Function to generate unique order number
@@ -270,7 +272,7 @@ COMMENT ON FUNCTION public.record_order_payment(TEXT, TEXT, NUMERIC, TEXT, JSONB
 IS 'Records the outcome of a lomi. payment for an order, updating status and storing lomi. transaction details. Returns order_id.';
 
 -- Grant execute permissions to service_role
-GRANT EXECUTE ON FUNCTION public.upsert_customer(TEXT, TEXT, TEXT, TEXT) TO service_role;
+GRANT EXECUTE ON FUNCTION public.upsert_customer(TEXT, TEXT, TEXT, TEXT, TEXT) TO service_role;
 GRANT EXECUTE ON FUNCTION public.generate_order_number() TO service_role;
 GRANT EXECUTE ON FUNCTION public.create_order(UUID, NUMERIC, TEXT, NUMERIC, NUMERIC, NUMERIC, JSONB) TO service_role;
 GRANT EXECUTE ON FUNCTION public.create_order_item(UUID, TEXT, TEXT, INTEGER, NUMERIC, NUMERIC, TEXT, TEXT, TEXT, TEXT) TO service_role;

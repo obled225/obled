@@ -38,8 +38,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
     NonNullable<Product['businessPacks']>[number] | null
   >(null);
 
-
-
   // Get color image if available, otherwise use main images
   const getDisplayImages = () => {
     const selectedColorObj = product.colors?.find(
@@ -67,7 +65,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
   // Calculate display price based on Pack selection
   const baseDisplayPrice = currentPrice?.basePrice || product.price;
   const packDisplayPrice = selectedPack
-    ? (selectedPack.price || baseDisplayPrice * selectedPack.quantity)
+    ? selectedPack.price || baseDisplayPrice * selectedPack.quantity
     : baseDisplayPrice;
 
   const displayPrice = packDisplayPrice;
@@ -88,7 +86,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
       if (selectedPack) {
         const base = currentPrice?.basePrice || product.price;
         // Calculate effective unit price in the pack
-        const packPrice = selectedPack.price || (base * selectedPack.quantity);
+        const packPrice = selectedPack.price || base * selectedPack.quantity;
         const unitPriceInPack = packPrice / selectedPack.quantity;
         const priceModifier = unitPriceInPack - base;
 
@@ -120,7 +118,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
     try {
       if (selectedPack) {
         const base = currentPrice?.basePrice || product.price;
-        const packPrice = selectedPack.price || (base * selectedPack.quantity);
+        const packPrice = selectedPack.price || base * selectedPack.quantity;
         const unitPriceInPack = packPrice / selectedPack.quantity;
         const priceModifier = unitPriceInPack - base;
 
@@ -288,7 +286,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                         ? 'border-gray-900 bg-gray-900 text-white'
                         : 'border-gray-200 bg-white text-gray-900 hover:border-gray-900',
                       !size.available &&
-                      'cursor-not-allowed border-gray-200 text-gray-400 line-through opacity-50'
+                        'cursor-not-allowed border-gray-200 text-gray-400 line-through opacity-50'
                     )}
                   >
                     {size.name}
@@ -299,40 +297,42 @@ export function ProductDetail({ product }: ProductDetailProps) {
           )}
 
           {/* Pack Selector (Business Only) */}
-          {product.productType === 'business' && product.businessPacks && product.businessPacks.length > 0 && (
-            <div className="mb-6">
-              <p className="text-sm font-medium text-gray-900 mb-3">
-                {t('pack') || 'Pack'}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={() => setSelectedPack(null)}
-                  className={cn(
-                    'flex h-10 px-4 items-center justify-center rounded-md border text-sm font-medium transition-colors',
-                    !selectedPack
-                      ? 'border-gray-900 bg-gray-900 text-white'
-                      : 'border-gray-200 bg-white text-gray-900 hover:border-gray-900'
-                  )}
-                >
-                  Unit (1)
-                </button>
-                {product.businessPacks.map((pack) => (
+          {product.productType === 'business' &&
+            product.businessPacks &&
+            product.businessPacks.length > 0 && (
+              <div className="mb-6">
+                <p className="text-sm font-medium text-gray-900 mb-3">
+                  {t('pack') || 'Pack'}
+                </p>
+                <div className="flex flex-wrap gap-2">
                   <button
-                    key={pack.quantity}
-                    onClick={() => setSelectedPack(pack)}
+                    onClick={() => setSelectedPack(null)}
                     className={cn(
                       'flex h-10 px-4 items-center justify-center rounded-md border text-sm font-medium transition-colors',
-                      selectedPack?.quantity === pack.quantity
+                      !selectedPack
                         ? 'border-gray-900 bg-gray-900 text-white'
                         : 'border-gray-200 bg-white text-gray-900 hover:border-gray-900'
                     )}
                   >
-                    {pack.label || `Pack ${pack.quantity}`}
+                    Unit (1)
                   </button>
-                ))}
+                  {product.businessPacks.map((pack) => (
+                    <button
+                      key={pack.quantity}
+                      onClick={() => setSelectedPack(pack)}
+                      className={cn(
+                        'flex h-10 px-4 items-center justify-center rounded-md border text-sm font-medium transition-colors',
+                        selectedPack?.quantity === pack.quantity
+                          ? 'border-gray-900 bg-gray-900 text-white'
+                          : 'border-gray-200 bg-white text-gray-900 hover:border-gray-900'
+                      )}
+                    >
+                      {pack.label || `Pack ${pack.quantity}`}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
           {/* Quantity */}
           <div className="mb-6 sm:mb-8">

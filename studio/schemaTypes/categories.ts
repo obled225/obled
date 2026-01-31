@@ -12,6 +12,13 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: 'showInHeader',
+      title: 'Show in Header',
+      type: 'boolean',
+      description: 'If true, this category will appear in the main navigation menu (max 3 allowed)',
+      initialValue: false,
+    }),
+    defineField({
       name: 'slug',
       title: 'Slug',
       type: 'slug',

@@ -62,6 +62,7 @@ export type Database = {
           email: string;
           id: string;
           name: string | null;
+          organization: string | null;
           phone: string | null;
           updated_at: string;
           whatsapp: string | null;
@@ -71,6 +72,7 @@ export type Database = {
           email: string;
           id?: string;
           name?: string | null;
+          organization?: string | null;
           phone?: string | null;
           updated_at?: string;
           whatsapp?: string | null;
@@ -80,6 +82,7 @@ export type Database = {
           email?: string;
           id?: string;
           name?: string | null;
+          organization?: string | null;
           phone?: string | null;
           updated_at?: string;
           whatsapp?: string | null;
@@ -406,6 +409,7 @@ export type Database = {
         Args: {
           p_email: string;
           p_name: string;
+          p_organization?: string;
           p_phone?: string;
           p_whatsapp?: string;
         };

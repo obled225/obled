@@ -22,6 +22,8 @@ export default function CheckoutPage() {
     userName: '',
     userEmail: '',
     userPhone: '',
+    userOrganization: '',
+    userWhatsApp: '',
     shippingName: '',
     shippingAddress: '',
     shippingCity: '',
@@ -54,7 +56,9 @@ export default function CheckoutPage() {
         const selectedCurrency = item.product.currency || defaultCurrency;
 
         // Find specific price object from product.prices
-        const priceObj = item.product.prices?.find(p => p.currency === selectedCurrency) || item.product.prices?.[0];
+        const priceObj =
+          item.product.prices?.find((p) => p.currency === selectedCurrency) ||
+          item.product.prices?.[0];
 
         // Determine price ID and quantity
         const variantLomiId = item.selectedVariant?.lomiPriceId;
@@ -66,9 +70,10 @@ export default function CheckoutPage() {
         // If we are using a Pack Price ID, the quantity sent to lomi should be number of packs
         // item.quantity is total items. So packs = total / packSize
         const packSize = item.selectedVariant?.packSize || 1;
-        const quantityToSend = (variantLomiId && packSize > 1)
-          ? (item.quantity / packSize)
-          : item.quantity;
+        const quantityToSend =
+          variantLomiId && packSize > 1
+            ? item.quantity / packSize
+            : item.quantity;
 
         return {
           productId: item.product.id,
@@ -79,9 +84,10 @@ export default function CheckoutPage() {
             ? `${item.selectedVariant.name} - ${item.selectedVariant.value}`
             : undefined,
           quantity: quantityToSend,
-          price: item.product.price + (item.selectedVariant?.priceModifier || 0),
+          price:
+            item.product.price + (item.selectedVariant?.priceModifier || 0),
           productImageUrl: item.product.image,
-          lomiPriceId: effectiveLomiId
+          lomiPriceId: effectiveLomiId,
         };
       });
 
@@ -96,15 +102,17 @@ export default function CheckoutPage() {
           userName: formData.userName,
           userEmail: formData.userEmail,
           userPhone: formData.userPhone || undefined,
+          userOrganization: formData.userOrganization || undefined,
+          userWhatsApp: formData.userWhatsApp || undefined,
           shippingAddress: formData.shippingName
             ? {
-              name: formData.shippingName,
-              address: formData.shippingAddress,
-              city: formData.shippingCity,
-              country: formData.shippingCountry,
-              postalCode: formData.shippingPostalCode,
-              phone: formData.shippingPhone || formData.userPhone,
-            }
+                name: formData.shippingName,
+                address: formData.shippingAddress,
+                city: formData.shippingCity,
+                country: formData.shippingCountry,
+                postalCode: formData.shippingPostalCode,
+                phone: formData.shippingPhone || formData.userPhone,
+              }
             : undefined,
           shippingFee,
           taxAmount: cartSummary.tax,
@@ -119,7 +127,7 @@ export default function CheckoutPage() {
         showError(
           'Error',
           error.message ||
-          'Failed to create checkout session. Please try again.'
+            'Failed to create checkout session. Please try again.'
         );
         setIsSubmitting(false);
         return;
@@ -193,6 +201,20 @@ export default function CheckoutPage() {
                   label="Phone Number"
                   type="tel"
                   value={formData.userPhone}
+                  onChange={handleInputChange}
+                />
+                <Input
+                  name="userOrganization"
+                  label="Organization / Company (Optional)"
+                  type="text"
+                  value={formData.userOrganization}
+                  onChange={handleInputChange}
+                />
+                <Input
+                  name="userWhatsApp"
+                  label="WhatsApp Number (Optional)"
+                  type="tel"
+                  value={formData.userWhatsApp}
                   onChange={handleInputChange}
                 />
               </div>

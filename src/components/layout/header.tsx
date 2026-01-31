@@ -8,16 +8,38 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import Modal from '@/components/ui/modal';
 import { CurrencySelector } from './currency-selector';
+import { CartDrawer } from '@/components/cart/cart-drawer';
+import { Badge } from '@/components/ui/badge';
+import { useCartStore } from '@/lib/store/cart-store';
 
-export function Header() {
+// Define props extended with categories
+import { ProductCategory } from '@/lib/types';
+
+interface HeaderProps {
+  categories?: ProductCategory[];
+}
+
+export function Header({ categories = [] }: HeaderProps) {
   const t = useTranslations('header');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const cartItemCount = useCartStore((state) => state.cart.itemCount);
+
+  // Combine static links with dynamic categories
+  // We'll add categories under a "Shop" dropdown or just list them if few?
+  // User asked: "create a new in the exact current ui a elemmnt in @[src/components/layout/header.tsx] to access directly the relevant category"
+  // I will add them to the main nav
 
   const navLinks = [
     { href: '/', label: t('nav.home') },
     { href: '/shop', label: t('nav.store') },
     { href: '/business', label: t('nav.business') },
+    // Dynamic Categories inserted here
+    ...(categories?.map((c) => ({
+      href: `/shop?category=${c.id}`,
+      label: c.name,
+    })) || []),
     { href: '/about', label: t('nav.about') },
     { href: '/faq', label: t('nav.faq') },
   ];
@@ -57,16 +79,28 @@ export function Header() {
             </Button>
 
             {/* Cart */}
-            <Link href="/cart">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9 sm:h-10 sm:w-10"
-                aria-label={t('cart.ariaLabel')}
-              >
-                <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5" />
-              </Button>
-            </Link>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative h-9 w-9 sm:h-10 sm:w-10"
+              aria-label={t('cart.ariaLabel')}
+              onClick={() => setIsCartOpen(true)}
+            >
+              <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5" />
+              {cartItemCount > 0 && (
+                <Badge
+                  variant="destructive"
+                  className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[10px]"
+                >
+                  {cartItemCount}
+                </Badge>
+              )}
+            </Button>
+
+            <CartDrawer
+              isOpen={isCartOpen}
+              onClose={() => setIsCartOpen(false)}
+            />
 
             {/* Mobile menu */}
             <Button

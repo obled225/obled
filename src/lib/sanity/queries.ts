@@ -683,3 +683,38 @@ export async function getFloatingAnnouncement(): Promise<FloatingAnnouncementDat
     return null;
   }
 }
+
+/**
+ * Get categories for the header (max 3, showInHeader=true)
+ */
+export async function getHeaderCategories(): Promise<ProductCategory[]> {
+  try {
+    const query = `*[_type == "categories" && showInHeader == true && !(_id in path("drafts.**"))] | order(title asc)[0..2] {
+      _id,
+      title,
+      description,
+      "image": image.asset->,
+      "slug": slug.current
+    }`;
+    const docs = await sanityClient.fetch(query);
+    return docs.map(
+      (doc: {
+        slug: string;
+        _id: string;
+        title: string;
+        description: string;
+        image: { _id: string; url: string };
+      }) => ({
+        id: doc.slug || doc._id,
+        name: doc.title,
+        description: doc.description,
+        image: doc.image
+          ? getSanityImageUrl(doc.image) || undefined
+          : undefined,
+      })
+    );
+  } catch (error) {
+    console.error('Error fetching header categories from Sanity:', error);
+    return [];
+  }
+}

@@ -61,7 +61,10 @@ export default function CartPage() {
 
             <div className="flex justify-between items-center pt-4">
               <Link href="/shop">
-                <Button variant="ghost" className="pl-0 hover:pl-2 transition-all">
+                <Button
+                  variant="ghost"
+                  className="pl-0 hover:pl-2 transition-all"
+                >
                   ← Continue Shopping
                 </Button>
               </Link>

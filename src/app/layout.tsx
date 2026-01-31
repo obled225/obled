@@ -8,6 +8,7 @@ import { PageLayout } from '@/components/layout/page-layout';
 import { TranslationProvider } from '@/lib/translations/provider';
 import { MetaPixel } from '@/components/analytics/meta-pixel';
 import { siteUrl } from '@/lib/utils/config';
+import { getHeaderCategories } from '@/lib/sanity/queries';
 
 const poppins = Poppins({
   variable: '--font-poppins',
@@ -140,6 +141,8 @@ export default async function RootLayout({
     sameAs: ['https://www.instagram.com/kysfactoryciv'],
   };
 
+  const categories = await getHeaderCategories();
+
   const localBusinessSchema = {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
@@ -190,7 +193,7 @@ export default async function RootLayout({
         <NextIntlClientProvider messages={messages}>
           <TranslationProvider>
             <MetaPixel />
-            <PageLayout>{children}</PageLayout>
+            <PageLayout categories={categories}>{children}</PageLayout>
             <Toaster />
           </TranslationProvider>
         </NextIntlClientProvider>

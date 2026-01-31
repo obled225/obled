@@ -42,6 +42,8 @@ interface RequestPayload {
   userName: string;
   userEmail: string;
   userPhone?: string;
+  userOrganization?: string;
+  userWhatsApp?: string;
   shippingAddress?: {
     name: string;
     address: string;
@@ -99,13 +101,14 @@ serve(async (req: Request) => {
       'cartItems',
       'userName',
       'userEmail',
+      'shippingAddress', // Ensure validation checks for the object existence
     ];
     for (const field of requiredFields) {
       if (
         !(field in payload) ||
         payload[field] === undefined ||
         payload[field] === null ||
-        String(payload[field]).trim() === ''
+        (typeof payload[field] === 'string' && String(payload[field]).trim() === '')
       ) {
         return new Response(
           JSON.stringify({
@@ -117,6 +120,19 @@ serve(async (req: Request) => {
           }
         );
       }
+    }
+
+    // Explicitly validate address field inside shippingAddress
+    if (!payload.shippingAddress?.address || payload.shippingAddress.address.trim() === '') {
+        return new Response(
+          JSON.stringify({
+            error: `Missing or invalid required field: shippingAddress.address`,
+          }),
+          {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 400,
+          }
+        );
     }
 
     if (!Array.isArray(payload.cartItems) || payload.cartItems.length === 0) {
@@ -169,7 +185,8 @@ serve(async (req: Request) => {
         p_name: payload.userName,
         p_email: payload.userEmail,
         p_phone: payload.userPhone || null,
-        p_whatsapp: payload.userPhone || null,
+        p_whatsapp: payload.userWhatsApp || payload.userPhone || null,
+        p_organization: payload.userOrganization || null,
       }
     );
 
@@ -291,6 +308,10 @@ serve(async (req: Request) => {
       customer_email: payload.userEmail,
       customer_name: payload.userName,
       ...(payload.userPhone && { customer_phone: payload.userPhone }),
+      customer_city: payload.shippingAddress?.city,
+      customer_country: payload.shippingAddress?.country,
+      customer_address: payload.shippingAddress?.address,
+      customer_postal_code: payload.shippingAddress?.postalCode,
       line_items: payload.cartItems.map(item => {
         if (item.lomiPriceId) {
           return {

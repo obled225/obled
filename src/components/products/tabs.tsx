@@ -57,7 +57,9 @@ const ProductInfoTab = ({ product }: ProductTabsProps) => {
           <div>
             <span className="font-semibold">Weight</span>
             <p className="text-gray-700">
-              {product.dimensions?.weight ? `${product.dimensions.weight} kg` : '-'}
+              {product.dimensions?.weight
+                ? `${product.dimensions.weight} kg`
+                : '-'}
             </p>
           </div>
           <div>

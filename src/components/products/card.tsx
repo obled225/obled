@@ -129,10 +129,11 @@ export function ProductCard({ product }: ProductCardProps) {
                 src={imageUrl}
                 alt={`${product.name} - Image ${index + 1}`}
                 fill
-                className={`object-cover transition-opacity duration-500 ${index === currentImageIndex
-                  ? 'opacity-100'
-                  : 'opacity-0 absolute'
-                  }`}
+                className={`object-cover transition-opacity duration-500 ${
+                  index === currentImageIndex
+                    ? 'opacity-100'
+                    : 'opacity-0 absolute'
+                }`}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
               />
             ))}
