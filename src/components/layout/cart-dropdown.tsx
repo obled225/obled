@@ -10,12 +10,14 @@ import { Fragment, useState } from 'react';
 import Link from 'next/link';
 import { ShoppingCart, X } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cart-store';
-import { formatPrice } from '@/lib/actions/utils';
+import { useCurrencyStore } from '@/lib/store/currency-store';
+import { formatPrice } from '@/lib/utils/format';
 import Image from 'next/image';
 
 const CartDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { cart, removeItem, getCartSummary } = useCartStore();
+  const { currency } = useCurrencyStore();
   const cartSummary = getCartSummary();
 
   const open = () => setIsOpen(true);
@@ -100,7 +102,8 @@ const CartDropdown = () => {
                             {formatPrice(
                               (item.product.price +
                                 (item.selectedVariant?.priceModifier || 0)) *
-                                item.quantity
+                              item.quantity,
+                              currency
                             )}
                           </p>
                         </div>

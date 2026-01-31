@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import { Minus, Plus, Share2, ZoomIn, Ruler } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Product, formatPrice, getProductPrice } from '@/lib/types';
@@ -13,6 +12,7 @@ import Modal from '@/components/ui/modal';
 import { SizeGuideContent } from './size-guide-modal';
 import { PortableText } from '@/components/ui/portable-text';
 import { useTranslations } from 'next-intl';
+import { FullscreenGallery } from '@/components/products/fullscreen-gallery';
 
 interface ProductDetailProps {
   product: Product;
@@ -30,9 +30,24 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const [selectedSize, setSelectedSize] = useState(
     product.sizes?.find((s) => s.available)?.name || ''
   );
+
+  // Get color image if available, otherwise use main images
+  const getDisplayImages = () => {
+    const selectedColorObj = product.colors?.find(
+      (c) => c.name === selectedColor
+    );
+    if (selectedColorObj?.image) {
+      // If color has an image, use it as the main image
+      return [selectedColorObj.image, ...(product.images || [])];
+    }
+    return product.images || [product.image].filter(Boolean);
+  };
+
+  const displayImages = getDisplayImages();
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
+  const [isFullscreenGalleryOpen, setIsFullscreenGalleryOpen] = useState(false);
 
   // Get price for selected currency
   const currentPrice =
@@ -43,11 +58,11 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const displayCurrency = currentPrice?.currency || product.currency;
   const displayOriginalPrice = currentPrice?.originalPrice;
 
-  // Filter out empty or invalid image URLs
-  const validImages = (product.images || [product.image]).filter(
-    (img): img is string => Boolean(img && img.trim() && img !== '')
-  );
-  const images = validImages.length > 0 ? validImages : [];
+  // Reset selected image when color changes
+  const handleColorChange = (colorName: string) => {
+    setSelectedColor(colorName);
+    setSelectedImage(0); // Reset to first image when color changes
+  };
 
   const handleAddToCart = async () => {
     setIsAdding(true);
@@ -68,33 +83,35 @@ export function ProductDetail({ product }: ProductDetailProps) {
         {/* Image Gallery */}
         <div className="space-y-4">
           {/* Main Image */}
-          <div className="relative aspect-3/4 overflow-hidden bg-gray-100">
-            {images.length > 0 && images[selectedImage] ? (
-              <Image
-                src={images[selectedImage]}
-                alt={product.name}
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                priority
-              />
+          <div className="relative aspect-3/4 overflow-hidden bg-gray-100 rounded-md cursor-pointer group">
+            {displayImages.length > 0 && displayImages[selectedImage] ? (
+              <>
+                {/* Use regular img tag for unoptimized best quality */}
+                <img
+                  src={displayImages[selectedImage]}
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                  onClick={() => setIsFullscreenGalleryOpen(true)}
+                />
+                <button
+                  onClick={() => setIsFullscreenGalleryOpen(true)}
+                  className="absolute left-4 top-4 rounded-full bg-white/80 p-2 backdrop-blur-sm hover:bg-white transition-colors z-10"
+                  aria-label="Zoom"
+                >
+                  <ZoomIn className="h-4 w-4" />
+                </button>
+              </>
             ) : (
               <div className="flex items-center justify-center h-full text-gray-400">
                 <span>No image available</span>
               </div>
             )}
-            <button
-              className="absolute left-4 top-4 rounded-full bg-white/80 p-2 backdrop-blur-sm hover:bg-white transition-colors"
-              aria-label="Zoom"
-            >
-              <ZoomIn className="h-4 w-4" />
-            </button>
           </div>
 
           {/* Thumbnail Gallery */}
-          {images.length > 1 && (
+          {displayImages.length > 1 && (
             <div className="grid grid-cols-4 gap-2 sm:gap-4">
-              {images.map(
+              {displayImages.map(
                 (image, index) =>
                   image && (
                     <button
@@ -105,12 +122,11 @@ export function ProductDetail({ product }: ProductDetailProps) {
                         selectedImage === index && 'ring-2 ring-blue-600'
                       )}
                     >
-                      <Image
+                      {/* Use regular img tag for unoptimized best quality */}
+                      <img
                         src={image}
                         alt={`${product.name} - Image ${index + 1}`}
-                        fill
-                        className="object-cover"
-                        sizes="25vw"
+                        className="w-full h-full object-cover"
                       />
                     </button>
                   )
@@ -154,7 +170,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 {product.colors.map((color) => (
                   <button
                     key={color.name}
-                    onClick={() => setSelectedColor(color.name)}
+                    onClick={() => handleColorChange(color.name)}
                     disabled={!color.available}
                     className={cn(
                       'relative h-8 w-8 rounded-full border-2 transition-all',
@@ -198,7 +214,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                         ? 'border-gray-900 bg-gray-900 text-white'
                         : 'border-gray-200 bg-white text-gray-900 hover:border-gray-900',
                       !size.available &&
-                        'cursor-not-allowed border-gray-200 text-gray-400 line-through opacity-50'
+                      'cursor-not-allowed border-gray-200 text-gray-400 line-through opacity-50'
                     )}
                   >
                     {size.name}
@@ -300,12 +316,21 @@ export function ProductDetail({ product }: ProductDetailProps) {
         isOpen={isSizeGuideOpen}
         close={() => setIsSizeGuideOpen(false)}
         size="medium"
-        noBackdrop={true}
       >
         <Modal.Body>
-          <SizeGuideContent onClose={() => setIsSizeGuideOpen(false)} />
+          <div className="w-full max-w-full">
+            <SizeGuideContent onClose={() => setIsSizeGuideOpen(false)} />
+          </div>
         </Modal.Body>
       </Modal>
+
+      {/* Fullscreen Image Gallery */}
+      <FullscreenGallery
+        images={displayImages}
+        initialIndex={selectedImage}
+        isOpen={isFullscreenGalleryOpen}
+        onClose={() => setIsFullscreenGalleryOpen(false)}
+      />
     </div>
   );
 }

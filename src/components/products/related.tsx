@@ -1,7 +1,10 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Product } from '@/lib/types';
-import { formatPrice } from '@/lib/actions/utils';
+import { formatPrice } from '@/lib/utils/format';
+import { useCurrencyStore } from '@/lib/store/currency-store';
 
 type RelatedProductsProps = {
   products: Product[];
@@ -14,6 +17,8 @@ export default function RelatedProducts({
   title = 'Related Products',
   description = 'You might also want to check out these products.',
 }: RelatedProductsProps) {
+  const { currency } = useCurrencyStore();
+
   if (!products.length) {
     return null;
   }
@@ -61,12 +66,12 @@ export default function RelatedProducts({
 
                 <div className="flex items-center space-x-2">
                   <span className="font-semibold text-gray-900">
-                    {formatPrice(product.price)}
+                    {formatPrice(product.price, currency)}
                   </span>
                   {product.originalPrice &&
                     product.originalPrice > product.price && (
                       <span className="text-sm text-gray-500 line-through">
-                        {formatPrice(product.originalPrice)}
+                        {formatPrice(product.originalPrice, currency)}
                       </span>
                     )}
                 </div>

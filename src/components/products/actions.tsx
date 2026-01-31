@@ -3,8 +3,9 @@
 import { useState, useMemo } from 'react';
 import { Product, ProductVariant } from '@/lib/types';
 import { useCartStore } from '@/lib/store/cart-store';
+import { useCurrencyStore } from '@/lib/store/currency-store';
 import { Button } from '@/components/ui/button';
-import { formatPrice } from '@/lib/actions/utils';
+import { formatPrice } from '@/lib/utils/format';
 import { Loader2 } from 'lucide-react';
 
 type ProductActionsProps = {
@@ -13,6 +14,7 @@ type ProductActionsProps = {
 
 const ProductActions = ({ product }: ProductActionsProps) => {
   const { addItem } = useCartStore();
+  const { currency } = useCurrencyStore();
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
     product.variants?.[0] || null
   );
@@ -67,11 +69,10 @@ const ProductActions = ({ product }: ProductActionsProps) => {
             {product.variants.map((variant: ProductVariant) => (
               <label
                 key={variant.id}
-                className={`block p-3 border rounded-lg cursor-pointer transition-colors ${
-                  selectedVariant?.id === variant.id
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
+                className={`block p-3 border rounded-lg cursor-pointer transition-colors ${selectedVariant?.id === variant.id
+                  ? 'border-blue-500 bg-blue-50'
+                  : 'border-gray-200 hover:border-gray-300'
+                  }`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
@@ -133,11 +134,11 @@ const ProductActions = ({ product }: ProductActionsProps) => {
       {/* Price Display */}
       <div className="flex items-center justify-between py-4 border-t border-b">
         <span className="text-lg font-semibold text-gray-900">
-          Total: {formatPrice(finalPrice * quantity)}
+          Total: {formatPrice(finalPrice * quantity, currency)}
         </span>
         {quantity > 1 && (
           <span className="text-sm text-gray-600">
-            ({formatPrice(finalPrice)} each)
+            ({formatPrice(finalPrice, currency)} each)
           </span>
         )}
       </div>

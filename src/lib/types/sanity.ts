@@ -17,7 +17,7 @@ import type {
  */
 export interface SanityProductExpanded extends Omit<
   SanityProductRaw,
-  'categories' | 'prices' | 'colors' | 'sizes' | 'description'
+  'categories' | 'prices' | 'colors' | 'sizes' | 'description' | 'dimensions'
 > {
   categories?: Array<{
     _id: string;
@@ -51,10 +51,28 @@ export interface SanityProductExpanded extends Omit<
       };
     };
   }>;
-  sizes?: Array<{
-    name: string;
-    available?: boolean;
-  }>;
+  sizes?: {
+    xxs?: boolean;
+    xs?: boolean;
+    s?: boolean;
+    m?: boolean;
+    l?: boolean;
+    xl?: boolean;
+    xxl?: boolean;
+  };
+  variant?: {
+    _id: string;
+    name?: string;
+    slug?: string;
+  };
+  productType?: 'normal' | 'collab' | 'business';
+  lomiProductId?: string;
+  dimensions?: {
+    length?: number;
+    width?: number;
+    height?: number;
+    weight?: number;
+  };
   description?: PortableTextBlock[];
 }
 
@@ -142,23 +160,21 @@ export interface Product {
   inStock: boolean;
   stockQuantity: number;
   sku: string;
-  weight?: number;
   dimensions?: {
     length?: number;
     width?: number;
     height?: number;
+    weight?: number;
   };
-  variants?: Array<{
+  variant?: {
     id: string;
     name: string;
-    value: string;
-    priceModifier: number;
-    stockQuantity: number;
-    sku: string;
-  }>;
+    slug: string;
+  };
+  productType: 'normal' | 'collab' | 'business';
+  lomiProductId?: string;
   createdAt: Date;
   updatedAt: Date;
-  tags: string[];
 }
 
 export interface ProductVariant {
@@ -223,9 +239,8 @@ export function getProductById(
   return products.find((p) => p.id === id);
 }
 
-export function formatPrice(price: number, currency: string = 'USD'): string {
-  return `$${price.toFixed(2)} ${currency}`;
-}
+// Re-export formatPrice from utils/format for backward compatibility
+export { formatPrice } from '@/lib/utils/format';
 
 /**
  * Get product price for a specific currency

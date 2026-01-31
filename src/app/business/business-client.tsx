@@ -4,10 +4,12 @@ import { ProductGrid } from '@/components/products/grid';
 import { Product } from '@/lib/types';
 import { useTranslations } from 'next-intl';
 
-export default function BusinessClient() {
+interface BusinessClientProps {
+  products: Product[];
+}
+
+export default function BusinessClient({ products }: BusinessClientProps) {
   const t = useTranslations('products');
-  // TODO: Fetch pack products from Sanity CMS
-  const packProducts: Product[] = [];
 
   return (
     <main className="grow">
@@ -16,7 +18,7 @@ export default function BusinessClient() {
         <h2 className="text-2xl sm:text-3xl font-medium text-foreground mb-8">
           {t('sections.ourPacks')}
         </h2>
-        <ProductGrid products={packProducts} />
+        <ProductGrid products={products} />
       </section>
     </main>
   );

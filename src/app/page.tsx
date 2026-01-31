@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { getLocale } from 'next-intl/server';
 import { ProductGrid } from '@/components/products/grid';
 import { siteUrl } from '@/lib/utils/config';
+import { getAllProducts } from '@/lib/sanity/queries';
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
@@ -21,11 +22,12 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function Home() {
+export default async function Home() {
+  const products = await getAllProducts();
   return (
     <main className="grow">
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12">
-        <ProductGrid products={[]} />
+        <ProductGrid products={products} />
       </section>
     </main>
   );

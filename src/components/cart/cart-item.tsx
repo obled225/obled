@@ -1,7 +1,10 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCartStore } from '@/lib/store/cart-store';
-import { formatPrice } from '@/lib/actions/utils';
+import { useCurrencyStore } from '@/lib/store/currency-store';
+import { formatPrice } from '@/lib/utils/format';
 import { Trash2, Plus, Minus } from 'lucide-react';
 import { CartItem as CartItemType } from '@/lib/types';
 
@@ -12,6 +15,7 @@ interface CartItemProps {
 
 export function CartItem({ item, showControls = true }: CartItemProps) {
   const { updateQuantity, removeItem } = useCartStore();
+  const { currency } = useCurrencyStore();
 
   const itemTotal =
     (item.product.price + (item.selectedVariant?.priceModifier || 0)) *
@@ -88,7 +92,7 @@ export function CartItem({ item, showControls = true }: CartItemProps) {
 
           <div className="flex flex-col items-end gap-2">
             <p className="text-sm sm:text-base font-semibold text-gray-900">
-              {formatPrice(itemTotal)}
+              {formatPrice(itemTotal, currency)}
             </p>
             {showControls && (
               <button

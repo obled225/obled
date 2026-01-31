@@ -54,33 +54,37 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
       : undefined,
   }));
 
-  // Transform sizes array
-  const sizes = (doc.sizes || []).map((size) => ({
-    name: size.name || '',
-    available: size.available !== false,
-  }));
+  // Transform sizes from boolean object to array format
+  const sizesArray: Array<{ name: string; available: boolean }> = [];
+  if (doc.sizes && typeof doc.sizes === 'object') {
+    const sizeMap: Record<string, string> = {
+      xxs: 'XXS',
+      xs: 'XS',
+      s: 'S',
+      m: 'M',
+      l: 'L',
+      xl: 'XL',
+      xxl: 'XXL',
+    };
+    Object.entries(doc.sizes).forEach(([key, value]) => {
+      if (typeof value === 'boolean' && value && sizeMap[key]) {
+        sizesArray.push({
+          name: sizeMap[key],
+          available: true,
+        });
+      }
+    });
+  }
+  const sizes = sizesArray.length > 0 ? sizesArray : undefined;
 
-  // Transform variants array
-  const variants = (doc.variants || []).map(
-    (
-      variant: {
-        _key?: string;
-        title?: string;
-        priceModifier?: number;
-        inventory?: number;
-        sku?: string;
-        options?: Array<{ name?: string; value?: string }>;
-      },
-      index: number
-    ) => ({
-      id: variant._key || `variant-${index}`,
-      name: variant.title || '',
-      value: variant.options?.[0]?.value || '',
-      priceModifier: variant.priceModifier || 0,
-      stockQuantity: variant.inventory || 0,
-      sku: variant.sku || '',
-    })
-  );
+  // Handle variant reference (single product reference)
+  const variant = doc.variant
+    ? {
+        id: doc.variant._id || '',
+        name: doc.variant.name || '',
+        slug: doc.variant.slug || '',
+      }
+    : undefined;
 
   const category: ProductCategory = doc.categories?.[0]
     ? {
@@ -115,14 +119,21 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
     inStock: doc.inStock || false,
     stockQuantity: doc.stockQuantity || 0,
     colors: colors.length > 0 ? colors : undefined,
-    sizes: sizes.length > 0 ? sizes : undefined,
+    sizes: sizes && sizes.length > 0 ? sizes : undefined,
     description: doc.description as PortableTextBlock[] | undefined,
     category,
     sku: doc.sku || doc._id,
-    weight: doc.weight,
-    dimensions: doc.dimensions,
-    variants: variants.length > 0 ? variants : undefined,
-    tags: doc.tags || [],
+    dimensions: doc.dimensions
+      ? {
+          length: doc.dimensions.length,
+          width: doc.dimensions.width,
+          height: doc.dimensions.height,
+          weight: doc.dimensions.weight,
+        }
+      : undefined,
+    variant,
+    productType: doc.productType || 'normal',
+    lomiProductId: doc.lomiProductId,
     createdAt: doc._createdAt ? new Date(doc._createdAt) : new Date(),
     updatedAt: doc._updatedAt ? new Date(doc._updatedAt) : new Date(),
   };
@@ -135,6 +146,8 @@ const ALL_PRODUCTS_QUERY = `*[_type == "products" && !(_id in path("drafts.**"))
   _updatedAt,
   name,
   "slug": slug.current,
+  productType,
+  lomiProductId,
   prices[] {
     currency,
     basePrice,
@@ -145,9 +158,7 @@ const ALL_PRODUCTS_QUERY = `*[_type == "products" && !(_id in path("drafts.**"))
   inStock,
   stockQuantity,
   sku,
-  weight,
   dimensions,
-  tags,
   "images": images[].asset->,
   "categories": categories[]->{
     _id,
@@ -162,20 +173,11 @@ const ALL_PRODUCTS_QUERY = `*[_type == "products" && !(_id in path("drafts.**"))
     available,
     "image": image.asset->
   },
-  sizes[] {
+  sizes,
+  "variant": variant->{
+    _id,
     name,
-    available
-  },
-  "variants": variants[] {
-    _key,
-    title,
-    priceModifier,
-    inventory,
-    sku,
-    "options": options[] {
-      name,
-      value
-    }
+    "slug": slug.current
   }
 }`;
 
@@ -186,44 +188,8 @@ const PRODUCT_BY_SLUG_QUERY = `*[_type == "products" && slug.current == $slug &&
   _updatedAt,
   name,
   "slug": slug.current,
-  basePrice,
-  originalPrice,
-  currency,
-  description,
-  inStock,
-  stockQuantity,
-  sku,
-  weight,
-  dimensions,
-  tags,
-  "images": images[].asset->,
-  "categories": categories[]->{
-    _id,
-    "slug": slug.current,
-    title,
-    description,
-    "image": image.asset->
-  },
-  "variants": variants[] {
-    _key,
-    title,
-    priceModifier,
-    inventory,
-    sku,
-    "options": options[] {
-      name,
-      value
-    }
-  }
-}`;
-
-// GROQ query to get products by category
-const PRODUCTS_BY_CATEGORY_QUERY = `*[_type == "products" && $categoryId in categories[]._ref && !(_id in path("drafts.**"))] | order(_createdAt desc) {
-  _id,
-  _createdAt,
-  _updatedAt,
-  name,
-  "slug": slug.current,
+  productType,
+  lomiProductId,
   prices[] {
     currency,
     basePrice,
@@ -234,9 +200,7 @@ const PRODUCTS_BY_CATEGORY_QUERY = `*[_type == "products" && $categoryId in cate
   inStock,
   stockQuantity,
   sku,
-  weight,
   dimensions,
-  tags,
   "images": images[].asset->,
   "categories": categories[]->{
     _id,
@@ -251,20 +215,53 @@ const PRODUCTS_BY_CATEGORY_QUERY = `*[_type == "products" && $categoryId in cate
     available,
     "image": image.asset->
   },
-  sizes[] {
+  sizes,
+  "variant": variant->{
+    _id,
     name,
-    available
+    "slug": slug.current
+  }
+}`;
+
+// GROQ query to get products by category
+const PRODUCTS_BY_CATEGORY_QUERY = `*[_type == "products" && $categoryId in categories[]._ref && !(_id in path("drafts.**"))] | order(_createdAt desc) {
+  _id,
+  _createdAt,
+  _updatedAt,
+  name,
+  "slug": slug.current,
+  productType,
+  lomiProductId,
+  prices[] {
+    currency,
+    basePrice,
+    originalPrice,
+    lomiPriceId
   },
-  "variants": variants[] {
-    _key,
+  description,
+  inStock,
+  stockQuantity,
+  sku,
+  dimensions,
+  "images": images[].asset->,
+  "categories": categories[]->{
+    _id,
+    "slug": slug.current,
     title,
-    priceModifier,
-    inventory,
-    sku,
-    "options": options[] {
-      name,
-      value
-    }
+    description,
+    "image": image.asset->
+  },
+  colors[] {
+    name,
+    value,
+    available,
+    "image": image.asset->
+  },
+  sizes,
+  "variant": variant->{
+    _id,
+    name,
+    "slug": slug.current
   }
 }`;
 
@@ -275,16 +272,19 @@ const FEATURED_PRODUCTS_QUERY = `*[_type == "products" && featured == true && !(
   _updatedAt,
   name,
   "slug": slug.current,
-  basePrice,
-  originalPrice,
-  currency,
+  productType,
+  lomiProductId,
+  prices[] {
+    currency,
+    basePrice,
+    originalPrice,
+    lomiPriceId
+  },
   description,
   inStock,
   stockQuantity,
   sku,
-  weight,
   dimensions,
-  tags,
   "images": images[].asset->,
   "categories": categories[]->{
     _id,
@@ -293,16 +293,17 @@ const FEATURED_PRODUCTS_QUERY = `*[_type == "products" && featured == true && !(
     description,
     "image": image.asset->
   },
-  "variants": variants[] {
-    _key,
-    title,
-    priceModifier,
-    inventory,
-    sku,
-    "options": options[] {
-      name,
-      value
-    }
+  colors[] {
+    name,
+    value,
+    available,
+    "image": image.asset->
+  },
+  sizes,
+  "variant": variant->{
+    _id,
+    name,
+    "slug": slug.current
   }
 }`;
 
@@ -315,6 +316,112 @@ export async function getAllProducts(): Promise<Product[]> {
     return docs.map(transformSanityProduct);
   } catch (error) {
     console.error('Error fetching all products from Sanity:', error);
+    return [];
+  }
+}
+
+/**
+ * Get products for shop page (normal and collab, excluding business)
+ */
+export async function getShopProducts(): Promise<Product[]> {
+  try {
+    const query = `*[_type == "products" && productType != "business" && !(_id in path("drafts.**"))] | order(_createdAt desc) {
+      _id,
+      _createdAt,
+      _updatedAt,
+      name,
+      "slug": slug.current,
+      productType,
+      lomiProductId,
+      prices[] {
+        currency,
+        basePrice,
+        originalPrice,
+        lomiPriceId
+      },
+      description,
+      inStock,
+      stockQuantity,
+      sku,
+      dimensions,
+      "images": images[].asset->,
+      "categories": categories[]->{
+        _id,
+        "slug": slug.current,
+        title,
+        description,
+        "image": image.asset->
+      },
+      colors[] {
+        name,
+        value,
+        available,
+        "image": image.asset->
+      },
+      sizes,
+      "variant": variant->{
+        _id,
+        name,
+        "slug": slug.current
+      }
+    }`;
+    const docs = await sanityClient.fetch(query);
+    return docs.map(transformSanityProduct);
+  } catch (error) {
+    console.error('Error fetching shop products from Sanity:', error);
+    return [];
+  }
+}
+
+/**
+ * Get products for business page (only business type)
+ */
+export async function getBusinessProducts(): Promise<Product[]> {
+  try {
+    const query = `*[_type == "products" && productType == "business" && !(_id in path("drafts.**"))] | order(_createdAt desc) {
+      _id,
+      _createdAt,
+      _updatedAt,
+      name,
+      "slug": slug.current,
+      productType,
+      lomiProductId,
+      prices[] {
+        currency,
+        basePrice,
+        originalPrice,
+        lomiPriceId
+      },
+      description,
+      inStock,
+      stockQuantity,
+      sku,
+      dimensions,
+      "images": images[].asset->,
+      "categories": categories[]->{
+        _id,
+        "slug": slug.current,
+        title,
+        description,
+        "image": image.asset->
+      },
+      colors[] {
+        name,
+        value,
+        available,
+        "image": image.asset->
+      },
+      sizes,
+      "variant": variant->{
+        _id,
+        name,
+        "slug": slug.current
+      }
+    }`;
+    const docs = await sanityClient.fetch(query);
+    return docs.map(transformSanityProduct);
+  } catch (error) {
+    console.error('Error fetching business products from Sanity:', error);
     return [];
   }
 }
@@ -382,6 +489,8 @@ export async function getProductById(id: string): Promise<Product | null> {
       _updatedAt,
       name,
       "slug": slug.current,
+      productType,
+      lomiProductId,
       prices[] {
         currency,
         basePrice,
@@ -392,9 +501,7 @@ export async function getProductById(id: string): Promise<Product | null> {
       inStock,
       stockQuantity,
       sku,
-      weight,
       dimensions,
-      tags,
       "images": images[].asset->,
       "categories": categories[]->{
         _id,
@@ -409,20 +516,11 @@ export async function getProductById(id: string): Promise<Product | null> {
         available,
         "image": image.asset->
       },
-      sizes[] {
+      sizes,
+      "variant": variant->{
+        _id,
         name,
-        available
-      },
-      "variants": variants[] {
-        _key,
-        title,
-        priceModifier,
-        inventory,
-        sku,
-        "options": options[] {
-          name,
-          value
-        }
+        "slug": slug.current
       }
     }`;
     const doc = await sanityClient.fetch(query, { id });

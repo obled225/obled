@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { getLocale } from 'next-intl/server';
 import BusinessClient from './business-client';
 import { siteUrl } from '@/lib/utils/config';
+import { getBusinessProducts } from '@/lib/sanity/queries';
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
@@ -21,6 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function BusinessPage() {
-  return <BusinessClient />;
+export default async function BusinessPage() {
+  const products = await getBusinessProducts();
+  return <BusinessClient products={products} />;
 }

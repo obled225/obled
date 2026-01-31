@@ -8,8 +8,19 @@ export function CurrencySelector() {
   const t = useTranslations('header.currency');
   const { currency, toggleCurrency } = useCurrencyStore();
 
-  // Display "F CFA" when currency is XOF, otherwise display the currency code
-  const displayText = currency === 'XOF' ? 'F CFA' : currency;
+  // Display format: F CFA / EUR € / USD $
+  const getDisplayText = () => {
+    switch (currency) {
+      case 'XOF':
+        return 'F CFA';
+      case 'EUR':
+        return 'EUR €';
+      case 'USD':
+        return 'USD $';
+      default:
+        return 'F CFA';
+    }
+  };
 
   const handleCurrencyToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -24,7 +35,7 @@ export function CurrencySelector() {
       className="px-3 h-9"
       aria-label={t('ariaLabel')}
     >
-      <span className="text-sm font-medium">{displayText}</span>
+      <span className="text-sm font-medium">{getDisplayText()}</span>
     </Button>
   );
 }

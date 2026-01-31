@@ -1,8 +1,11 @@
+'use client';
+
 import Link from 'next/link';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/lib/store/cart-store';
-import { formatPrice } from '@/lib/actions/utils';
+import { useCurrencyStore } from '@/lib/store/currency-store';
+import { formatPrice } from '@/lib/utils/format';
 import { ShippingCalculator } from './shipping-calculator';
 
 interface CartSummaryProps {
@@ -19,6 +22,7 @@ export function CartSummary({
   className = '',
 }: CartSummaryProps) {
   const { cart } = useCartStore();
+  const { currency } = useCurrencyStore();
   const cartSummary = useCartStore().getCartSummary();
   const [selectedShipping, setSelectedShipping] = useState('standard');
   const [shippingCost, setShippingCost] = useState(0);
@@ -55,7 +59,7 @@ export function CartSummary({
               Subtotal ({cart.itemCount} items)
             </span>
             <span className="font-medium">
-              {formatPrice(cartSummary.subtotal)}
+              {formatPrice(cartSummary.subtotal, currency)}
             </span>
           </div>
 
@@ -65,20 +69,20 @@ export function CartSummary({
               {shippingCost === 0 ? (
                 <span className="text-green-600">Free</span>
               ) : (
-                formatPrice(shippingCost)
+                formatPrice(shippingCost, currency)
               )}
             </span>
           </div>
 
           <div className="flex justify-between text-sm">
             <span className="text-gray-600">Tax</span>
-            <span className="font-medium">{formatPrice(cartSummary.tax)}</span>
+            <span className="font-medium">{formatPrice(cartSummary.tax, currency)}</span>
           </div>
 
           {cartSummary.discount > 0 && (
             <div className="flex justify-between text-sm text-green-600">
               <span>Discount</span>
-              <span>-{formatPrice(cartSummary.discount)}</span>
+              <span>-{formatPrice(cartSummary.discount, currency)}</span>
             </div>
           )}
         </div>
@@ -86,14 +90,14 @@ export function CartSummary({
         <div className="border-t pt-4 mb-6">
           <div className="flex justify-between text-base sm:text-lg font-semibold">
             <span>Total</span>
-            <span>{formatPrice(finalTotal)}</span>
+            <span>{formatPrice(finalTotal, currency)}</span>
           </div>
         </div>
 
         {cartSummary.subtotal < 50 && (
           <div className="bg-blue-50 border border-blue-200 rounded-md p-3 mb-4">
             <p className="text-sm text-blue-800">
-              Add {formatPrice(50 - cartSummary.subtotal)} more for free
+              Add {formatPrice(50 - cartSummary.subtotal, currency)} more for free
               shipping!
             </p>
           </div>

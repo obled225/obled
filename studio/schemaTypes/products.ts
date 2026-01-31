@@ -62,7 +62,6 @@ export default defineType({
               title: 'lomi. Price ID',
               type: 'string',
               description: 'The price ID from lomi. payment processor for this currency',
-              validation: (Rule) => Rule.required(),
             },
           ],
           preview: {
@@ -135,6 +134,12 @@ export default defineType({
       description: 'Stock Keeping Unit',
     }),
     defineField({
+      name: 'lomiProductId',
+      title: 'lomi. Product ID',
+      type: 'string',
+      description: 'Optional: The product ID from lomi. payment processor',
+    }),
+    defineField({
       name: 'colors',
       title: 'Colors',
       type: 'array',
@@ -161,7 +166,7 @@ export default defineType({
               name: 'image',
               title: 'Color Image',
               type: 'image',
-              description: 'Optional image showing this color variant',
+              description: 'Image to show when this color is selected',
               options: {
                 hotspot: true,
               },
@@ -192,47 +197,78 @@ export default defineType({
     }),
     defineField({
       name: 'sizes',
-      title: 'Sizes',
-      type: 'array',
-      description: 'Available sizes for this product',
-      of: [
+      title: 'Available Sizes',
+      type: 'object',
+      description: 'Check the sizes available for this product',
+      options: {
+        columns: 2,
+      },
+      fields: [
         {
-          type: 'object',
-          fields: [
-            {
-              name: 'name',
-              title: 'Size Name',
-              type: 'string',
-              description: 'e.g., XS, S, M, L, XL, XXL',
-              validation: (Rule) => Rule.required(),
-            },
-            {
-              name: 'available',
-              title: 'Available',
-              type: 'boolean',
-              description: 'Whether this size is currently available',
-              initialValue: true,
-            },
-          ],
-          preview: {
-            select: {
-              name: 'name',
-              available: 'available',
-            },
-            prepare({name, available}) {
-              return {
-                title: name || 'Unnamed Size',
-                subtitle: available ? 'Available' : 'Unavailable',
-              };
-            },
-          },
+          name: 'xxs',
+          title: 'XXS',
+          type: 'boolean',
+          initialValue: false,
+        },
+        {
+          name: 'xs',
+          title: 'XS',
+          type: 'boolean',
+          initialValue: false,
+        },
+        {
+          name: 's',
+          title: 'S',
+          type: 'boolean',
+          initialValue: false,
+        },
+        {
+          name: 'm',
+          title: 'M',
+          type: 'boolean',
+          initialValue: false,
+        },
+        {
+          name: 'l',
+          title: 'L',
+          type: 'boolean',
+          initialValue: false,
+        },
+        {
+          name: 'xl',
+          title: 'XL',
+          type: 'boolean',
+          initialValue: false,
+        },
+        {
+          name: 'xxl',
+          title: 'XXL',
+          type: 'boolean',
+          initialValue: false,
         },
       ],
+    }),
+    defineField({
+      name: 'productType',
+      title: 'Product Type',
+      type: 'string',
+      description: 'Determines where this product appears: Business products go to /business, Normal and Collab products go to /shop',
+      options: {
+        list: [
+          {title: 'Normal', value: 'normal'},
+          {title: 'Collab', value: 'collab'},
+          {title: 'Business (B2B)', value: 'business'},
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'normal',
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'categories',
       title: 'Categories',
       type: 'array',
+      description: 'Product categories for filtering and organization (e.g., T-Shirts, Long Sleeves, etc.)',
       of: [{type: 'reference', to: [{type: 'categories'}]}],
     }),
     defineField({
@@ -243,25 +279,10 @@ export default defineType({
       description: 'Show this product in featured sections',
     }),
     defineField({
-      name: 'tags',
-      title: 'Tags',
-      type: 'array',
-      of: [{type: 'string'}],
-      options: {
-        layout: 'tags',
-      },
-    }),
-    defineField({
-      name: 'weight',
-      title: 'Weight (kg)',
-      type: 'number',
-      description: 'Product weight in kilograms',
-    }),
-    defineField({
       name: 'dimensions',
       title: 'Dimensions',
       type: 'object',
-      description: 'Product dimensions in centimeters',
+      description: 'Product dimensions and weight',
       fields: [
         {
           name: 'length',
@@ -281,88 +302,20 @@ export default defineType({
           type: 'number',
           description: 'Height in centimeters',
         },
+        {
+          name: 'weight',
+          title: 'Weight (kg)',
+          type: 'number',
+          description: 'Product weight in kilograms',
+        },
       ],
     }),
     defineField({
-      name: 'variants',
-      title: 'Variants',
-      type: 'array',
-      description: 'Product variants (combinations of options)',
-      of: [
-        {
-          type: 'object',
-          fields: [
-            {
-              name: 'title',
-              title: 'Variant Title',
-              type: 'string',
-              description: 'Display name for this variant',
-              validation: (Rule) => Rule.required(),
-            },
-            {
-              name: 'priceModifier',
-              title: 'Price Modifier',
-              type: 'number',
-              description: 'Additional price for this variant (can be negative)',
-              initialValue: 0,
-            },
-            {
-              name: 'inventory',
-              title: 'Stock Quantity',
-              type: 'number',
-              description: 'Stock quantity for this specific variant',
-              initialValue: 0,
-              validation: (Rule) => Rule.min(0),
-            },
-            {
-              name: 'sku',
-              title: 'Variant SKU',
-              type: 'string',
-              description: 'Stock Keeping Unit for this specific variant',
-            },
-            {
-              name: 'options',
-              title: 'Options',
-              type: 'array',
-              description: 'Specific options that define this variant',
-              of: [
-                {
-                  type: 'object',
-                  fields: [
-                    {
-                      name: 'name',
-                      title: 'Option Name',
-                      type: 'string',
-                      description: 'e.g., Color, Size',
-                      validation: (Rule) => Rule.required(),
-                    },
-                    {
-                      name: 'value',
-                      title: 'Option Value',
-                      type: 'string',
-                      description: 'e.g., Red, Large',
-                      validation: (Rule) => Rule.required(),
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-          preview: {
-            select: {
-              title: 'title',
-              priceModifier: 'priceModifier',
-              inventory: 'inventory',
-            },
-            prepare({title, priceModifier, inventory}) {
-              return {
-                title: title || 'Unnamed Variant',
-                subtitle: `${inventory || 0} in stock${priceModifier ? ` (+$${priceModifier})` : ''}`,
-              };
-            },
-          },
-        },
-      ],
+      name: 'variant',
+      title: 'Variant Product',
+      type: 'reference',
+      to: [{type: 'products'}],
+      description: 'Link to a related product variant (e.g., if this is short sleeves, link to the long sleeves variant)',
     }),
   ],
   preview: {

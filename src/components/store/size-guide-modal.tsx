@@ -26,20 +26,24 @@ export function SizeGuideContent({ onClose }: { onClose?: () => void }) {
   const convertToInches = (cm: number) => Math.round((cm / 2.54) * 10) / 10;
 
   return (
-    <div className="w-full">
-      <div className="flex items-center justify-between mb-6">
+    <div className="w-full max-w-full space-y-6">
+      <div className="flex items-center justify-between">
         <h2 className="text-lg sm:text-xl font-bold tracking-wider">
           {t('sizeGuide.title')}
         </h2>
         {onClose && (
-          <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded">
+          <button
+            onClick={onClose}
+            className="md:hidden p-1 hover:bg-gray-100 rounded touch-target"
+            aria-label="Close size guide"
+          >
             <X className="h-5 w-5" />
           </button>
         )}
       </div>
 
       {/* Unit Toggle */}
-      <div className="flex justify-center mb-6">
+      <div className="flex justify-center">
         <div className="inline-flex rounded-full bg-gray-100 p-1">
           <button
             onClick={() => setUnit('INCHES')}
@@ -99,6 +103,15 @@ export function SizeGuideContent({ onClose }: { onClose?: () => void }) {
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Size Guide Image - directly below table in same scrollable container */}
+      <div className="w-full">
+        <img
+          src="/sizeguide.webp"
+          alt="Size Guide Visual"
+          className="w-full h-auto rounded-lg border border-gray-200"
+        />
       </div>
     </div>
   );

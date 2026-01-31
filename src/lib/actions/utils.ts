@@ -10,12 +10,10 @@ export function clx(...inputs: ClassValue[]) {
   return cn(...inputs);
 }
 
-export function formatPrice(price: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(price);
-}
+// Re-export formatPrice from utils/format
+// Note: This function now requires currency parameter, but kept for backward compatibility
+// New code should import from '@/lib/utils/format' directly
+export { formatPrice } from '@/lib/utils/format';
 
 export function formatDate(date: Date): string {
   return new Intl.DateTimeFormat('en-US', {
