@@ -4,14 +4,12 @@ import { useState } from 'react';
 import { ProductGrid } from '@/components/products/grid';
 import { ProductFilters } from '@/components/products/filters';
 import { Product } from '@/lib/types';
-import { useTranslations } from 'next-intl';
 
 interface BusinessClientProps {
   products: Product[];
 }
 
 export default function BusinessClient({ products }: BusinessClientProps) {
-  const t = useTranslations('products');
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
 
   return (

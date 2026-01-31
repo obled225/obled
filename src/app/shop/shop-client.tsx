@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { ProductGrid } from '@/components/products/grid';
 import { ProductFilters } from '@/components/products/filters';
-import { useTranslations } from 'next-intl';
 import { Product } from '@/lib/types';
 
 interface ShopClientProps {
@@ -11,7 +10,6 @@ interface ShopClientProps {
 }
 
 export default function ShopClient({ products }: ShopClientProps) {
-  const t = useTranslations('products');
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
 
   return (

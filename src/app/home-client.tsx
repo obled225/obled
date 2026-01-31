@@ -34,7 +34,7 @@ export default function HomeClient({ products }: HomeClientProps) {
   // Update filtered products when products prop changes
   useEffect(() => {
     setFilteredProducts(productsWithCategories);
-  }, [products]); // Only depend on products, not productsWithCategories
+  }, [productsWithCategories]);
 
   return (
     <main className="grow">

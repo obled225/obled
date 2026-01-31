@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useLayoutEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Product, formatPrice, getProductPrice } from '@/lib/types';
@@ -33,7 +33,7 @@ export function ProductCard({ product }: ProductCardProps) {
     allImages.length > 0 && allImages[0] && allImages[0].trim() !== '';
 
   // Handle hover state changes
-  useEffect(() => {
+  useLayoutEffect(() => {
     // Clear any existing intervals/timeouts
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -45,8 +45,7 @@ export function ProductCard({ product }: ProductCardProps) {
     }
 
     if (!isHovering) {
-      // Reset to image 1 when hover ends
-      setCurrentImageIndex(0);
+      // Reset logic is handled in onMouseLeave
       return;
     }
 
@@ -60,6 +59,7 @@ export function ProductCard({ product }: ProductCardProps) {
         : 1; // First time - start from image 2
 
     // Immediately show the starting image
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentImageIndex(startIndex);
     lastSeenIndexRef.current = startIndex;
 
@@ -115,7 +115,10 @@ export function ProductCard({ product }: ProductCardProps) {
       href={`/products/${product.slug}`}
       className="group block"
       onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
+      onMouseLeave={() => {
+        setIsHovering(false);
+        setCurrentImageIndex(0);
+      }}
     >
       <div className="relative aspect-3/4 overflow-hidden bg-gray-100 rounded-md">
         {hasValidImage ? (
@@ -126,11 +129,10 @@ export function ProductCard({ product }: ProductCardProps) {
                 src={imageUrl}
                 alt={`${product.name} - Image ${index + 1}`}
                 fill
-                className={`object-cover transition-opacity duration-500 ${
-                  index === currentImageIndex
-                    ? 'opacity-100'
-                    : 'opacity-0 absolute'
-                }`}
+                className={`object-cover transition-opacity duration-500 ${index === currentImageIndex
+                  ? 'opacity-100'
+                  : 'opacity-0 absolute'
+                  }`}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
               />
             ))}
