@@ -3,7 +3,9 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, X } from 'lucide-react';
-import { Product } from '@/lib/types';
+import { Product, getProductPrice } from '@/lib/types';
+import { useCurrencyStore } from '@/lib/store/currency-store';
+import { formatPrice } from '@/lib/utils/format';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
@@ -13,6 +15,7 @@ interface SearchBarProps {
 
 export function SearchBar({ className }: SearchBarProps) {
   const t = useTranslations('header');
+  const { currency } = useCurrencyStore();
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [results, setResults] = useState<Product[]>([]);
@@ -100,39 +103,50 @@ export function SearchBar({ className }: SearchBarProps) {
             <div className="text-xs text-gray-500 mb-2 px-2">
               {results.length} {t('search.resultsFound')}
             </div>
-            {results.map((product) => (
-              <button
-                key={product.id}
-                onClick={() => {
-                  router.push(`/products/${product.slug}`);
-                  setIsOpen(false);
-                  setQuery('');
-                }}
-                className="w-full text-left p-3 hover:bg-gray-50 rounded-md transition-colors"
-              >
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gray-100 rounded shrink-0 overflow-hidden">
-                    {product.images && product.images[0] && (
-                      <Image
-                        src={product.images[0]}
-                        alt={product.name}
-                        className="w-full h-full object-cover"
-                        width={500}
-                        height={500}
-                      />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-medium text-gray-900 truncate">
-                      {product.name}
+            {results.map((product) => {
+              // Get price for selected currency
+              const currentPrice =
+                getProductPrice(product, currency) ||
+                getProductPrice(product, 'XOF') ||
+                product.prices[0];
+              const displayPrice = currentPrice?.basePrice || product.price;
+              const displayCurrency =
+                currentPrice?.currency || product.currency;
+
+              return (
+                <button
+                  key={product.id}
+                  onClick={() => {
+                    router.push(`/products/${product.slug}`);
+                    setIsOpen(false);
+                    setQuery('');
+                  }}
+                  className="w-full text-left p-3 hover:bg-gray-50 rounded-md transition-colors"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-gray-100 rounded shrink-0 overflow-hidden">
+                      {product.images && product.images[0] && (
+                        <Image
+                          src={product.images[0]}
+                          alt={product.name}
+                          className="w-full h-full object-cover"
+                          width={500}
+                          height={500}
+                        />
+                      )}
                     </div>
-                    <div className="text-sm text-gray-600 truncate">
-                      ${product.price.toFixed(2)}
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-gray-900 truncate">
+                        {product.name}
+                      </div>
+                      <div className="text-sm text-gray-600 truncate">
+                        {formatPrice(displayPrice, displayCurrency)}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </button>
-            ))}
+                </button>
+              );
+            })}
           </div>
           <div className="border-t border-gray-200 p-2">
             <button

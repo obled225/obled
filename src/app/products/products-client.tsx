@@ -38,10 +38,7 @@ export default function ProductsClient({ products }: ProductsClientProps) {
             product.description
               .join(' ')
               .toLowerCase()
-              .includes(searchQuery.toLowerCase())) ||
-          product.tags.some((tag: string) =>
-            tag.toLowerCase().includes(searchQuery.toLowerCase())
-          )
+              .includes(searchQuery.toLowerCase()))
       );
     }
 
@@ -68,13 +65,6 @@ export default function ProductsClient({ products }: ProductsClientProps) {
     if (filters.inStock !== undefined) {
       filtered = filtered.filter(
         (product) => product.inStock === filters.inStock
-      );
-    }
-
-    // Apply tag filters
-    if (filters.tags && filters.tags.length > 0) {
-      filtered = filtered.filter((product) =>
-        filters.tags!.some((tag) => product.tags.includes(tag))
       );
     }
 

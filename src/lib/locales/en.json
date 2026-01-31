@@ -28,8 +28,11 @@
   "products": {
     "empty": {
       "title": "Our store is still being set up",
-      "description": "We don't have any products available yet, but we're working hard to add them soon!",
-      "suggestion": "Check back later for our latest collection."
+      "description": "We don't have any products available yet, but we're working hard to add them soon!"
+    },
+    "emptyBusiness": {
+      "title": "No packs available at the moment",
+      "description": "We're currently preparing our offers."
     },
     "outOfStock": "Out of stock",
     "from": "From",
@@ -60,6 +63,27 @@
     "sections": {
       "allProducts": "All products",
       "ourPacks": "Our packs"
+    },
+    "filters": {
+      "availability": {
+        "title": "Availability",
+        "inStock": "In stock",
+        "outOfStock": "Out of stock",
+        "products": "products"
+      },
+      "sort": {
+        "title": "Sort by",
+        "options": {
+          "featured": "Featured",
+          "price-asc": "Price: Low to High",
+          "price-desc": "Price: High to Low",
+          "date-asc": "Date: Oldest First",
+          "date-desc": "Date: Newest First"
+        }
+      },
+      "reset": "Reset",
+      "productCount": "product",
+      "productCount_plural": "products"
     }
   },
   "footer": {

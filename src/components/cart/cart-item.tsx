@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useCartStore } from '@/lib/store/cart-store';
 import { useCurrencyStore } from '@/lib/store/currency-store';
 import { formatPrice } from '@/lib/utils/format';
+import { getProductPrice } from '@/lib/types';
 import { Trash2, Plus, Minus } from 'lucide-react';
 import { CartItem as CartItemType } from '@/lib/types';
 
@@ -17,9 +18,16 @@ export function CartItem({ item, showControls = true }: CartItemProps) {
   const { updateQuantity, removeItem } = useCartStore();
   const { currency } = useCurrencyStore();
 
+  // Get price for selected currency
+  const currentPrice =
+    getProductPrice(item.product, currency) ||
+    getProductPrice(item.product, 'XOF') ||
+    item.product.prices[0];
+  const basePrice = currentPrice?.basePrice || item.product.price;
+  const displayCurrency = currentPrice?.currency || item.product.currency;
+
   const itemTotal =
-    (item.product.price + (item.selectedVariant?.priceModifier || 0)) *
-    item.quantity;
+    (basePrice + (item.selectedVariant?.priceModifier || 0)) * item.quantity;
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 hover:shadow-sm transition-shadow">
@@ -57,7 +65,8 @@ export function CartItem({ item, showControls = true }: CartItemProps) {
 
             <p className="text-sm text-gray-600 mt-1">
               {formatPrice(
-                item.product.price + (item.selectedVariant?.priceModifier || 0)
+                basePrice + (item.selectedVariant?.priceModifier || 0),
+                displayCurrency
               )}{' '}
               each
             </p>
@@ -92,7 +101,7 @@ export function CartItem({ item, showControls = true }: CartItemProps) {
 
           <div className="flex flex-col items-end gap-2">
             <p className="text-sm sm:text-base font-semibold text-gray-900">
-              {formatPrice(itemTotal, currency)}
+              {formatPrice(itemTotal, displayCurrency)}
             </p>
             {showControls && (
               <button

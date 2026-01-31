@@ -1,6 +1,6 @@
 /**
  * Currency formatting utilities
- * 
+ *
  * Formats:
  * - XOF: "15 000 F CFA" (French number format with spaces as thousand separators)
  * - USD: "55 $" (space before symbol, symbol on right)
@@ -21,33 +21,37 @@ function formatFrenchNumber(value: number): string {
 
 /**
  * Format a price with the appropriate currency format
- * 
+ *
  * @param price - The price value
  * @param currency - The currency code (XOF, USD, or EUR) - accepts string for backward compatibility
  * @returns Formatted price string with currency symbol on the right
- * 
+ *
  * @example
  * formatPrice(15000, 'XOF') // "15 000 F CFA"
  * formatPrice(55, 'USD') // "55 $"
  * formatPrice(55, 'EUR') // "55 €"
  */
-export function formatPrice(price: number, currency: Currency | string = 'XOF'): string {
-  const numericValue = typeof price === 'number' ? price : parseFloat(String(price)) || 0;
+export function formatPrice(
+  price: number,
+  currency: Currency | string = 'XOF'
+): string {
+  const numericValue =
+    typeof price === 'number' ? price : parseFloat(String(price)) || 0;
   const normalizedCurrency = (currency as string).toUpperCase() as Currency;
 
   switch (normalizedCurrency) {
     case 'XOF':
       // French format: "15 000 F CFA"
       return `${formatFrenchNumber(numericValue)} F CFA`;
-    
+
     case 'USD':
       // Format: "55 $" (space before symbol)
       return `${formatFrenchNumber(numericValue)} $`;
-    
+
     case 'EUR':
       // Format: "55 €" (space before symbol)
       return `${formatFrenchNumber(numericValue)} €`;
-    
+
     default:
       // Fallback to XOF format
       return `${formatFrenchNumber(numericValue)} F CFA`;
@@ -56,7 +60,7 @@ export function formatPrice(price: number, currency: Currency | string = 'XOF'):
 
 /**
  * Get currency display name
- * 
+ *
  * @param currency - The currency code
  * @returns Display name for the currency
  */
@@ -75,7 +79,7 @@ export function getCurrencyDisplayName(currency: Currency): string {
 
 /**
  * Get currency full name
- * 
+ *
  * @param currency - The currency code
  * @returns Full name for the currency
  */

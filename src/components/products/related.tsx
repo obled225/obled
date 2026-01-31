@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Product } from '@/lib/types';
+import { Product, getProductPrice } from '@/lib/types';
 import { formatPrice } from '@/lib/utils/format';
 import { useCurrencyStore } from '@/lib/store/currency-store';
 
@@ -35,54 +35,67 @@ export default function RelatedProducts({
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {products.map((product) => (
-          <div key={product.id} className="group">
-            <Link href={`/products/${product.slug}`} className="block">
-              <div className="relative aspect-square overflow-hidden bg-gray-100 rounded-lg mb-4 group-hover:shadow-lg transition-shadow">
-                {product.images && product.images[0] ? (
-                  <Image
-                    src={product.images[0]}
-                    alt={product.name}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                    <span className="text-gray-400 text-sm">No image</span>
-                  </div>
-                )}
+        {products.map((product) => {
+          // Get price for selected currency
+          const currentPrice =
+            getProductPrice(product, currency) ||
+            getProductPrice(product, 'XOF') ||
+            product.prices[0];
+          const displayPrice = currentPrice?.basePrice || product.price;
+          const displayCurrency = currentPrice?.currency || product.currency;
+          const displayOriginalPrice = currentPrice?.originalPrice;
 
-                {!product.inStock && (
-                  <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                    <span className="text-white font-medium">Out of Stock</span>
-                  </div>
-                )}
-              </div>
+          return (
+            <div key={product.id} className="group">
+              <Link href={`/products/${product.slug}`} className="block">
+                <div className="relative aspect-square overflow-hidden bg-gray-100 rounded-lg mb-4 group-hover:shadow-lg transition-shadow">
+                  {product.images && product.images[0] ? (
+                    <Image
+                      src={product.images[0]}
+                      alt={product.name}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                      <span className="text-gray-400 text-sm">No image</span>
+                    </div>
+                  )}
 
-              <div className="space-y-1">
-                <h3 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
-                  {product.name}
-                </h3>
-
-                <div className="flex items-center space-x-2">
-                  <span className="font-semibold text-gray-900">
-                    {formatPrice(product.price, currency)}
-                  </span>
-                  {product.originalPrice &&
-                    product.originalPrice > product.price && (
-                      <span className="text-sm text-gray-500 line-through">
-                        {formatPrice(product.originalPrice, currency)}
+                  {!product.inStock && (
+                    <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                      <span className="text-white font-medium">
+                        Out of Stock
                       </span>
-                    )}
+                    </div>
+                  )}
                 </div>
 
-                <p className="text-sm text-gray-600 line-clamp-2">
-                  {product.category.name}
-                </p>
-              </div>
-            </Link>
-          </div>
-        ))}
+                <div className="space-y-1">
+                  <h3 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
+                    {product.name}
+                  </h3>
+
+                  <div className="flex items-center space-x-2">
+                    <span className="font-semibold text-gray-900">
+                      {formatPrice(displayPrice, displayCurrency)}
+                    </span>
+                    {displayOriginalPrice &&
+                      displayOriginalPrice > displayPrice && (
+                        <span className="text-sm text-gray-500 line-through">
+                          {formatPrice(displayOriginalPrice, displayCurrency)}
+                        </span>
+                      )}
+                  </div>
+
+                  <p className="text-sm text-gray-600 line-clamp-2">
+                    {product.category.name}
+                  </p>
+                </div>
+              </Link>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

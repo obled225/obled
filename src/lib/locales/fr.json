@@ -28,8 +28,11 @@
   "products": {
     "empty": {
       "title": "Notre boutique est en cours de configuration",
-      "description": "Nous n'avons pas encore de produits disponibles, mais nous travaillons dur pour les ajouter bientôt !",
-      "suggestion": "Revenez plus tard pour découvrir notre dernière collection."
+      "description": "Nous n'avons pas encore de produits disponibles, mais nous travaillons dur pour les ajouter bientôt !"
+    },
+    "emptyBusiness": {
+      "title": "Aucun pack disponible pour le moment",
+      "description": "Nous préparons actuellement nos offres professionnelles."
     },
     "outOfStock": "Rupture de stock",
     "from": "À partir de",
@@ -60,6 +63,27 @@
     "sections": {
       "allProducts": "Tous les produits",
       "ourPacks": "Nos packs"
+    },
+    "filters": {
+      "availability": {
+        "title": "Disponibilité",
+        "inStock": "En stock",
+        "outOfStock": "En rupture de stock",
+        "products": "produits"
+      },
+      "sort": {
+        "title": "Trier par",
+        "options": {
+          "featured": "En vedette",
+          "price-asc": "Prix : Croissant",
+          "price-desc": "Prix : Décroissant",
+          "date-asc": "Date : Plus ancien",
+          "date-desc": "Date : Plus récent"
+        }
+      },
+      "reset": "Réinitialiser",
+      "productCount": "produit",
+      "productCount_plural": "produits"
     }
   },
   "footer": {

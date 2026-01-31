@@ -1,5 +1,9 @@
+'use client';
+
 import React, { Suspense } from 'react';
-import { Product } from '@/lib/types';
+import { Product, getProductPrice } from '@/lib/types';
+import { useCurrencyStore } from '@/lib/store/currency-store';
+import { formatPrice } from '@/lib/utils/format';
 import ImageGallery from './image-gallery';
 import ProductActions from './actions';
 import ProductTabs from './tabs';
@@ -12,6 +16,17 @@ type ProductTemplateProps = {
 };
 
 const ProductTemplate: React.FC<ProductTemplateProps> = ({ product }) => {
+  const { currency } = useCurrencyStore();
+
+  // Get price for selected currency
+  const currentPrice =
+    getProductPrice(product, currency) ||
+    getProductPrice(product, 'XOF') ||
+    product.prices[0];
+  const displayPrice = currentPrice?.basePrice || product.price;
+  const displayCurrency = currentPrice?.currency || product.currency;
+  const displayOriginalPrice = currentPrice?.originalPrice;
+
   // TODO: Get related products from Sanity CMS
   const relatedProducts: Product[] = [];
 
@@ -32,11 +47,11 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({ product }) => {
                 {product.name}
               </h1>
               <p className="text-lg sm:text-xl font-semibold text-blue-600 mb-4">
-                ${product.price.toFixed(2)}
-                {product.originalPrice &&
-                  product.originalPrice > product.price && (
+                {formatPrice(displayPrice, displayCurrency)}
+                {displayOriginalPrice &&
+                  displayOriginalPrice > displayPrice && (
                     <span className="ml-2 text-base sm:text-lg text-gray-500 line-through">
-                      ${product.originalPrice.toFixed(2)}
+                      {formatPrice(displayOriginalPrice, displayCurrency)}
                     </span>
                   )}
               </p>
@@ -67,23 +82,6 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({ product }) => {
 
             {/* Product Actions */}
             <ProductActions product={product} />
-
-            {/* Product Tags */}
-            {product.tags.length > 0 && (
-              <div>
-                <h3 className="text-sm font-medium text-gray-900 mb-2">Tags</h3>
-                <div className="flex flex-wrap gap-2">
-                  {product.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </div>
 

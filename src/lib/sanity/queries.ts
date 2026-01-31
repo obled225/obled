@@ -134,6 +134,7 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
     variant,
     productType: doc.productType || 'normal',
     lomiProductId: doc.lomiProductId,
+    featured: doc.featured || false,
     createdAt: doc._createdAt ? new Date(doc._createdAt) : new Date(),
     updatedAt: doc._updatedAt ? new Date(doc._updatedAt) : new Date(),
   };
@@ -148,6 +149,7 @@ const ALL_PRODUCTS_QUERY = `*[_type == "products" && !(_id in path("drafts.**"))
   "slug": slug.current,
   productType,
   lomiProductId,
+  featured,
   prices[] {
     currency,
     basePrice,
@@ -190,6 +192,7 @@ const PRODUCT_BY_SLUG_QUERY = `*[_type == "products" && slug.current == $slug &&
   "slug": slug.current,
   productType,
   lomiProductId,
+  featured,
   prices[] {
     currency,
     basePrice,
@@ -232,6 +235,7 @@ const PRODUCTS_BY_CATEGORY_QUERY = `*[_type == "products" && $categoryId in cate
   "slug": slug.current,
   productType,
   lomiProductId,
+  featured,
   prices[] {
     currency,
     basePrice,
@@ -274,6 +278,7 @@ const FEATURED_PRODUCTS_QUERY = `*[_type == "products" && featured == true && !(
   "slug": slug.current,
   productType,
   lomiProductId,
+  featured,
   prices[] {
     currency,
     basePrice,
@@ -333,6 +338,7 @@ export async function getShopProducts(): Promise<Product[]> {
       "slug": slug.current,
       productType,
       lomiProductId,
+      featured,
       prices[] {
         currency,
         basePrice,
@@ -386,6 +392,7 @@ export async function getBusinessProducts(): Promise<Product[]> {
       "slug": slug.current,
       productType,
       lomiProductId,
+      featured,
       prices[] {
         currency,
         basePrice,

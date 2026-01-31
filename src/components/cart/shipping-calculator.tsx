@@ -109,7 +109,8 @@ export function ShippingCalculator({
         <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-blue-900">
-              Add {formatPrice(amountForFreeShipping, currency)} more for FREE shipping!
+              Add {formatPrice(amountForFreeShipping, currency)} more for FREE
+              shipping!
             </span>
           </div>
           <div className="w-full bg-blue-200 rounded-full h-2">
@@ -122,7 +123,9 @@ export function ShippingCalculator({
           </div>
           <div className="flex justify-between text-xs text-blue-700 mt-1">
             <span>{formatPrice(subtotal, currency)} spent</span>
-            <span>{formatPrice(freeShippingThreshold, currency)} for free shipping</span>
+            <span>
+              {formatPrice(freeShippingThreshold, currency)} for free shipping
+            </span>
           </div>
         </div>
       )}
@@ -132,10 +135,11 @@ export function ShippingCalculator({
         {availableOptions.map((option) => (
           <label
             key={option.id}
-            className={`block p-4 border rounded-lg cursor-pointer transition-colors ${selectedShipping === option.id
-              ? 'border-blue-500 bg-blue-50'
-              : 'border-gray-200 hover:border-gray-300'
-              }`}
+            className={`block p-4 border rounded-lg cursor-pointer transition-colors ${
+              selectedShipping === option.id
+                ? 'border-blue-500 bg-blue-50'
+                : 'border-gray-200 hover:border-gray-300'
+            }`}
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center">
@@ -170,7 +174,9 @@ export function ShippingCalculator({
               </div>
               <div className="text-right">
                 <span className="font-semibold text-gray-900">
-                  {option.price === 0 ? 'FREE' : formatPrice(option.price, currency)}
+                  {option.price === 0
+                    ? 'FREE'
+                    : formatPrice(option.price, currency)}
                 </span>
               </div>
             </div>

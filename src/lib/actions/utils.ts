@@ -42,7 +42,7 @@ export function getPercentageDiff(
 }
 
 export function isSimpleProduct(product: Product): boolean {
-  return product.variants?.length === 1 || !product.variants;
+  return product.variant ? false : true;
 }
 
 export function sortProducts(products: Product[], sortBy: string): Product[] {

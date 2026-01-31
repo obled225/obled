@@ -13,6 +13,7 @@ import { SizeGuideContent } from './size-guide-modal';
 import { PortableText } from '@/components/ui/portable-text';
 import { useTranslations } from 'next-intl';
 import { FullscreenGallery } from '@/components/products/fullscreen-gallery';
+import Image from 'next/image';
 
 interface ProductDetailProps {
   product: Product;
@@ -87,11 +88,14 @@ export function ProductDetail({ product }: ProductDetailProps) {
             {displayImages.length > 0 && displayImages[selectedImage] ? (
               <>
                 {/* Use regular img tag for unoptimized best quality */}
-                <img
+                <Image
                   src={displayImages[selectedImage]}
                   alt={product.name}
                   className="w-full h-full object-cover"
                   onClick={() => setIsFullscreenGalleryOpen(true)}
+                  width={1000}
+                  height={1000}
+                  unoptimized
                 />
                 <button
                   onClick={() => setIsFullscreenGalleryOpen(true)}
@@ -123,10 +127,13 @@ export function ProductDetail({ product }: ProductDetailProps) {
                       )}
                     >
                       {/* Use regular img tag for unoptimized best quality */}
-                      <img
+                      <Image
                         src={image}
                         alt={`${product.name} - Image ${index + 1}`}
                         className="w-full h-full object-cover"
+                        width={1000}
+                        height={1000}
+                        unoptimized
                       />
                     </button>
                   )
@@ -214,7 +221,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                         ? 'border-gray-900 bg-gray-900 text-white'
                         : 'border-gray-200 bg-white text-gray-900 hover:border-gray-900',
                       !size.available &&
-                      'cursor-not-allowed border-gray-200 text-gray-400 line-through opacity-50'
+                        'cursor-not-allowed border-gray-200 text-gray-400 line-through opacity-50'
                     )}
                   >
                     {size.name}

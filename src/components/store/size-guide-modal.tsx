@@ -5,6 +5,7 @@ import { X } from 'lucide-react';
 import { sizeGuide } from '@/lib/types';
 import { cn } from '@/lib/actions/utils';
 import { useTranslations } from 'next-intl';
+import Image from 'next/image';
 
 export function SizeGuideModal() {
   const t = useTranslations('products');
@@ -107,10 +108,13 @@ export function SizeGuideContent({ onClose }: { onClose?: () => void }) {
 
       {/* Size Guide Image - directly below table in same scrollable container */}
       <div className="w-full">
-        <img
+        <Image
           src="/sizeguide.webp"
           alt="Size Guide Visual"
+          width={1000}
+          height={1000}
           className="w-full h-auto rounded-lg border border-gray-200"
+          unoptimized
         />
       </div>
     </div>

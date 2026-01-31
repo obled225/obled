@@ -5,9 +5,14 @@ import { useTranslations } from 'next-intl';
 interface ProductGridProps {
   products: Product[];
   loading?: boolean;
+  emptyStateKey?: 'empty' | 'emptyBusiness';
 }
 
-export function ProductGrid({ products, loading = false }: ProductGridProps) {
+export function ProductGrid({
+  products,
+  loading = false,
+  emptyStateKey = 'empty',
+}: ProductGridProps) {
   const t = useTranslations('products');
 
   if (loading) {
@@ -37,13 +42,10 @@ export function ProductGrid({ products, loading = false }: ProductGridProps) {
         <div className="bg-background border border-border rounded-lg overflow-hidden max-w-md w-full">
           <div className="p-4 sm:p-6 text-center">
             <h2 className="text-lg sm:text-xl md:text-2xl font-medium text-foreground mb-3 sm:mb-4">
-              {t('empty.title')}
+              {t(`${emptyStateKey}.title`)}
             </h2>
-            <p className="text-sm sm:text-base md:text-lg text-foreground/80 mb-3 sm:mb-4">
-              {t('empty.description')}
-            </p>
-            <p className="text-xs sm:text-sm md:text-base text-foreground/70">
-              {t('empty.suggestion')}
+            <p className="text-sm sm:text-base md:text-lg text-foreground/80">
+              {t(`${emptyStateKey}.description`)}
             </p>
           </div>
         </div>

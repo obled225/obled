@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { cn } from '@/lib/actions/utils';
+import Image from 'next/image';
 
 interface FullscreenGalleryProps {
   images: string[];
@@ -25,7 +25,9 @@ export function FullscreenGallery({
   // Update current index when initialIndex changes
   useEffect(() => {
     if (isOpen) {
-      setCurrentIndex(initialIndex);
+      setTimeout(() => {
+        setCurrentIndex(initialIndex);
+      }, 100);
     }
   }, [initialIndex, isOpen]);
 
@@ -141,7 +143,7 @@ export function FullscreenGallery({
 
     const container = containerRef.current;
     container.style.scrollbarWidth = 'none'; // Firefox
-    container.style.msOverflowStyle = 'none'; // IE/Edge
+    // container.style.msOverflowStyle = 'none'; // IE/Edge
 
     // Add webkit scrollbar hide via style tag
     const styleId = 'gallery-scrollbar-hide';
@@ -212,12 +214,15 @@ export function FullscreenGallery({
             >
               {/* Container with 3:4 aspect ratio to match product detail page */}
               <div className="w-full max-w-[70vh] aspect-3/4 rounded-md overflow-hidden">
-                <img
+                <Image
                   src={image}
                   alt={`Product image ${index + 1}`}
                   className="w-full h-full object-cover select-none"
                   draggable={false}
                   loading={index <= currentIndex + 1 ? 'eager' : 'lazy'}
+                  width={1000}
+                  height={1000}
+                  unoptimized
                 />
               </div>
             </div>

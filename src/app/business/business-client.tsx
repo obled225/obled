@@ -1,6 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import { ProductGrid } from '@/components/products/grid';
+import { ProductFilters } from '@/components/products/filters';
 import { Product } from '@/lib/types';
 import { useTranslations } from 'next-intl';
 
@@ -10,15 +12,22 @@ interface BusinessClientProps {
 
 export default function BusinessClient({ products }: BusinessClientProps) {
   const t = useTranslations('products');
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
 
   return (
     <main className="grow">
       {/* Pack Products */}
       <section className="mx-auto max-w-7xl px-4 py-6  border-border">
-        <h2 className="text-2xl sm:text-3xl font-medium text-foreground mb-8">
-          {t('sections.ourPacks')}
-        </h2>
-        <ProductGrid products={products} />
+        {products.length > 0 && (
+          <ProductFilters
+            products={products}
+            onFilterChange={setFilteredProducts}
+          />
+        )}
+        <ProductGrid
+          products={filteredProducts}
+          emptyStateKey="emptyBusiness"
+        />
       </section>
     </main>
   );

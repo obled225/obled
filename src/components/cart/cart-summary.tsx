@@ -76,7 +76,9 @@ export function CartSummary({
 
           <div className="flex justify-between text-sm">
             <span className="text-gray-600">Tax</span>
-            <span className="font-medium">{formatPrice(cartSummary.tax, currency)}</span>
+            <span className="font-medium">
+              {formatPrice(cartSummary.tax, currency)}
+            </span>
           </div>
 
           {cartSummary.discount > 0 && (
@@ -97,8 +99,8 @@ export function CartSummary({
         {cartSummary.subtotal < 50 && (
           <div className="bg-blue-50 border border-blue-200 rounded-md p-3 mb-4">
             <p className="text-sm text-blue-800">
-              Add {formatPrice(50 - cartSummary.subtotal, currency)} more for free
-              shipping!
+              Add {formatPrice(50 - cartSummary.subtotal, currency)} more for
+              free shipping!
             </p>
           </div>
         )}

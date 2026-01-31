@@ -12,6 +12,7 @@ import { ShoppingCart, X } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cart-store';
 import { useCurrencyStore } from '@/lib/store/currency-store';
 import { formatPrice } from '@/lib/utils/format';
+import { getProductPrice } from '@/lib/types';
 import Image from 'next/image';
 
 const CartDropdown = () => {
@@ -63,60 +64,72 @@ const CartDropdown = () => {
               {cart.items.length > 0 ? (
                 <>
                   <div className="max-h-64 sm:max-h-80 overflow-y-auto space-y-3 sm:space-y-4">
-                    {cart.items.map((item) => (
-                      <div
-                        key={item.id}
-                        className="flex items-center gap-2 sm:gap-4"
-                      >
-                        <div className="relative w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 rounded-md overflow-hidden shrink-0">
-                          {item.product.images && item.product.images[0] ? (
-                            <Image
-                              src={item.product.images[0]}
-                              alt={item.product.name}
-                              fill
-                              className="object-cover"
-                              sizes="64px"
-                            />
-                          ) : (
-                            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                              <span className="text-gray-400 text-xs">
-                                No image
-                              </span>
-                            </div>
-                          )}
-                        </div>
+                    {cart.items.map((item) => {
+                      // Get price for selected currency
+                      const currentPrice =
+                        getProductPrice(item.product, currency) ||
+                        getProductPrice(item.product, 'XOF') ||
+                        item.product.prices[0];
+                      const basePrice =
+                        currentPrice?.basePrice || item.product.price;
+                      const displayCurrency =
+                        currentPrice?.currency || item.product.currency;
 
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-medium text-xs sm:text-sm line-clamp-1">
-                            {item.product.name}
-                          </h4>
-                          {item.selectedVariant && (
-                            <p className="text-xs text-gray-600 line-clamp-1">
-                              {item.selectedVariant.name}
-                            </p>
-                          )}
-                          <p className="text-xs sm:text-sm">
-                            Qty: {item.quantity}
-                          </p>
-                          <p className="font-medium text-xs sm:text-sm">
-                            {formatPrice(
-                              (item.product.price +
-                                (item.selectedVariant?.priceModifier || 0)) *
-                              item.quantity,
-                              currency
-                            )}
-                          </p>
-                        </div>
-
-                        <button
-                          onClick={() => removeItem(item.id)}
-                          className="p-1 hover:bg-gray-100 rounded shrink-0 touch-target"
-                          aria-label="Remove item"
+                      return (
+                        <div
+                          key={item.id}
+                          className="flex items-center gap-2 sm:gap-4"
                         >
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
-                    ))}
+                          <div className="relative w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 rounded-md overflow-hidden shrink-0">
+                            {item.product.images && item.product.images[0] ? (
+                              <Image
+                                src={item.product.images[0]}
+                                alt={item.product.name}
+                                fill
+                                className="object-cover"
+                                sizes="64px"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                                <span className="text-gray-400 text-xs">
+                                  No image
+                                </span>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-medium text-xs sm:text-sm line-clamp-1">
+                              {item.product.name}
+                            </h4>
+                            {item.selectedVariant && (
+                              <p className="text-xs text-gray-600 line-clamp-1">
+                                {item.selectedVariant.name}
+                              </p>
+                            )}
+                            <p className="text-xs sm:text-sm">
+                              Qty: {item.quantity}
+                            </p>
+                            <p className="font-medium text-xs sm:text-sm">
+                              {formatPrice(
+                                (basePrice +
+                                  (item.selectedVariant?.priceModifier || 0)) *
+                                  item.quantity,
+                                displayCurrency
+                              )}
+                            </p>
+                          </div>
+
+                          <button
+                            onClick={() => removeItem(item.id)}
+                            className="p-1 hover:bg-gray-100 rounded shrink-0 touch-target"
+                            aria-label="Remove item"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      );
+                    })}
                   </div>
 
                   <div className="border-t pt-3 sm:pt-4 mt-3 sm:mt-4">
@@ -125,7 +138,7 @@ const CartDropdown = () => {
                         Subtotal:
                       </span>
                       <span className="font-semibold text-sm sm:text-base">
-                        {formatPrice(cartSummary.subtotal)}
+                        {formatPrice(cartSummary.subtotal, currency)}
                       </span>
                     </div>
 

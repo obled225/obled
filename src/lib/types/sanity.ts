@@ -67,6 +67,7 @@ export interface SanityProductExpanded extends Omit<
   };
   productType?: 'normal' | 'collab' | 'business';
   lomiProductId?: string;
+  featured?: boolean;
   dimensions?: {
     length?: number;
     width?: number;
@@ -173,6 +174,7 @@ export interface Product {
   };
   productType: 'normal' | 'collab' | 'business';
   lomiProductId?: string;
+  featured?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -200,7 +202,6 @@ export interface ProductFilters {
   minPrice?: number;
   maxPrice?: number;
   inStock?: boolean;
-  tags?: string[];
   search?: string;
 }
 
