@@ -1,5 +1,10 @@
 import { sanityClient } from './sanity';
-import { Product, ProductVariant, ProductCategory } from '@/lib/types/sanity';
+import {
+  Product,
+  ProductCategory,
+  ProductPrice,
+  PortableTextBlock,
+} from '@/lib/types/sanity';
 import { getSanityImageUrl } from './sanity';
 import type { SanityProductExpanded } from '@/lib/types/sanity';
 
@@ -7,57 +12,75 @@ import type { SanityProductExpanded } from '@/lib/types/sanity';
 function transformSanityProduct(doc: SanityProductExpanded): Product {
   const images =
     doc.images
-      ?.map((img) =>
-        img.asset ? getSanityImageUrl(img.asset, 800, 600) : null
-      )
-      .filter((url): url is string => url !== null) || [];
+      ?.map((img) => {
+        // Handle different asset structures from GROQ queries
+        // When using images[].asset->, the asset is resolved
+        // img might be the asset itself, or img.asset might be the asset
+        const asset = img?.asset || img;
+        if (!asset) return null;
 
-  const variants: ProductVariant[] =
-    doc.variants?.map((variant, index: number) => ({
+        try {
+          const url = getSanityImageUrl(asset, 800, 600);
+          return url;
+        } catch (error) {
+          console.error('Error generating image URL:', error, { img, asset });
+          return null;
+        }
+      })
+      .filter((url): url is string => url !== null && url !== '') || [];
+
+  // Transform prices array
+  const prices: ProductPrice[] = (doc.prices || []).map((price) => ({
+    currency: (price.currency || 'XOF') as 'XOF' | 'USD' | 'EUR',
+    basePrice: price.basePrice || 0,
+    originalPrice: price.originalPrice,
+    lomiPriceId: price.lomiPriceId || '',
+  }));
+
+  // Get first price as default (for backward compatibility)
+  const defaultPrice = prices[0] || {
+    currency: 'XOF' as const,
+    basePrice: 0,
+    lomiPriceId: '',
+  };
+
+  // Transform colors array
+  const colors = (doc.colors || []).map((color) => ({
+    name: color.name || '',
+    value: color.value || '',
+    available: color.available !== false,
+    image: color.image?.asset
+      ? getSanityImageUrl(color.image.asset) || undefined
+      : undefined,
+  }));
+
+  // Transform sizes array
+  const sizes = (doc.sizes || []).map((size) => ({
+    name: size.name || '',
+    available: size.available !== false,
+  }));
+
+  // Transform variants array
+  const variants = (doc.variants || []).map(
+    (
+      variant: {
+        _key?: string;
+        title?: string;
+        priceModifier?: number;
+        inventory?: number;
+        sku?: string;
+        options?: Array<{ name?: string; value?: string }>;
+      },
+      index: number
+    ) => ({
       id: variant._key || `variant-${index}`,
-      name: variant.title || 'Variant',
-      value: variant.options?.map((opt) => opt.value).join(' - ') || '',
+      name: variant.title || '',
+      value: variant.options?.[0]?.value || '',
       priceModifier: variant.priceModifier || 0,
       stockQuantity: variant.inventory || 0,
-      sku:
-        variant.sku ||
-        `${doc.slug?.current || doc._id}-${variant._key || index}`,
-    })) || [];
-
-  // Extract colors and sizes from variants if they exist
-  const colors: { name: string; value: string; available: boolean }[] = [];
-  const sizes: { name: string; available: boolean }[] = [];
-
-  doc.variants?.forEach((variant) => {
-    variant.options?.forEach((opt) => {
-      if (!opt.name || !opt.value) return;
-      if (
-        opt.name.toLowerCase() === 'color' ||
-        opt.name.toLowerCase() === 'couleur'
-      ) {
-        const existingColor = colors.find((c) => c.name === opt.value);
-        if (!existingColor && opt.value) {
-          colors.push({
-            name: opt.value,
-            value: opt.value.toLowerCase().replace(/\s+/g, '-'),
-            available: (variant.inventory || 0) > 0,
-          });
-        }
-      }
-      if (
-        opt.name.toLowerCase() === 'size' ||
-        opt.name.toLowerCase() === 'taille'
-      ) {
-        const existingSize = sizes.find((s) => s.name === opt.value);
-        if (!existingSize && opt.value) {
-          sizes.push({
-            name: opt.value,
-            available: (variant.inventory || 0) > 0,
-          });
-        }
-      }
-    });
-  });
+      sku: variant.sku || '',
+    })
+  );
 
   const category: ProductCategory = doc.categories?.[0]
     ? {
@@ -73,37 +96,32 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
         name: 'Uncategorized',
       };
 
+  // Ensure we have at least one valid image URL
+  const primaryImage = images[0] || null;
+
   return {
     id: doc._id,
+    slug:
+      (typeof doc.slug === 'string' ? doc.slug : doc.slug?.current) || doc._id,
     name: doc.name || '',
-    price: doc.basePrice || 0,
-    originalPrice: doc.originalPrice,
-    currency: doc.currency || 'XOF',
-    image: images[0] || '',
+    prices,
+    // Backward compatibility fields (use first price)
+    price: defaultPrice.basePrice,
+    originalPrice: defaultPrice.originalPrice,
+    currency: defaultPrice.currency,
+    image: primaryImage || '',
     images: images.length > 0 ? images : undefined,
     soldOut: !doc.inStock || (doc.stockQuantity || 0) === 0,
     inStock: doc.inStock || false,
     stockQuantity: doc.stockQuantity || 0,
     colors: colors.length > 0 ? colors : undefined,
     sizes: sizes.length > 0 ? sizes : undefined,
-    description: doc.description
-      ? Array.isArray(doc.description)
-        ? doc.description.filter((d): d is string => typeof d === 'string')
-        : typeof doc.description === 'string'
-          ? [doc.description]
-          : undefined
-      : undefined,
+    description: doc.description as PortableTextBlock[] | undefined,
     category,
-    variants: variants.length > 0 ? variants : undefined,
     sku: doc.sku || doc._id,
     weight: doc.weight,
-    dimensions: doc.dimensions
-      ? {
-          length: doc.dimensions.length || 0,
-          width: doc.dimensions.width || 0,
-          height: doc.dimensions.height || 0,
-        }
-      : undefined,
+    dimensions: doc.dimensions,
+    variants: variants.length > 0 ? variants : undefined,
     tags: doc.tags || [],
     createdAt: doc._createdAt ? new Date(doc._createdAt) : new Date(),
     updatedAt: doc._updatedAt ? new Date(doc._updatedAt) : new Date(),
@@ -117,9 +135,12 @@ const ALL_PRODUCTS_QUERY = `*[_type == "products" && !(_id in path("drafts.**"))
   _updatedAt,
   name,
   "slug": slug.current,
-  basePrice,
-  originalPrice,
-  currency,
+  prices[] {
+    currency,
+    basePrice,
+    originalPrice,
+    lomiPriceId
+  },
   description,
   inStock,
   stockQuantity,
@@ -134,6 +155,16 @@ const ALL_PRODUCTS_QUERY = `*[_type == "products" && !(_id in path("drafts.**"))
     title,
     description,
     "image": image.asset->
+  },
+  colors[] {
+    name,
+    value,
+    available,
+    "image": image.asset->
+  },
+  sizes[] {
+    name,
+    available
   },
   "variants": variants[] {
     _key,
@@ -193,9 +224,12 @@ const PRODUCTS_BY_CATEGORY_QUERY = `*[_type == "products" && $categoryId in cate
   _updatedAt,
   name,
   "slug": slug.current,
-  basePrice,
-  originalPrice,
-  currency,
+  prices[] {
+    currency,
+    basePrice,
+    originalPrice,
+    lomiPriceId
+  },
   description,
   inStock,
   stockQuantity,
@@ -210,6 +244,16 @@ const PRODUCTS_BY_CATEGORY_QUERY = `*[_type == "products" && $categoryId in cate
     title,
     description,
     "image": image.asset->
+  },
+  colors[] {
+    name,
+    value,
+    available,
+    "image": image.asset->
+  },
+  sizes[] {
+    name,
+    available
   },
   "variants": variants[] {
     _key,
@@ -338,9 +382,12 @@ export async function getProductById(id: string): Promise<Product | null> {
       _updatedAt,
       name,
       "slug": slug.current,
-      basePrice,
-      originalPrice,
-      currency,
+      prices[] {
+        currency,
+        basePrice,
+        originalPrice,
+        lomiPriceId
+      },
       description,
       inStock,
       stockQuantity,
@@ -355,6 +402,16 @@ export async function getProductById(id: string): Promise<Product | null> {
         title,
         description,
         "image": image.asset->
+      },
+      colors[] {
+        name,
+        value,
+        available,
+        "image": image.asset->
+      },
+      sizes[] {
+        name,
+        available
       },
       "variants": variants[] {
         _key,
@@ -443,15 +500,6 @@ export interface AboutSectionImage {
 export interface AboutPageData {
   heroVideoUrl?: string;
   sectionImages?: AboutSectionImage[];
-}
-
-export interface PortableTextBlock {
-  _type: 'block';
-  children: Array<{
-    _type: 'span';
-    text: string;
-    marks?: string[];
-  }>;
 }
 
 export interface Announcement {

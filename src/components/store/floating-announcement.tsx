@@ -8,7 +8,7 @@ interface FloatingAnnouncementProps {
 }
 
 export function FloatingAnnouncement({
-  message = "Use code WELCOME20 for 20% off",
+  message = 'Use code WELCOME20 for 20% off',
   onClose,
 }: FloatingAnnouncementProps) {
   const [isVisible, setIsVisible] = useState(false);
@@ -39,20 +39,23 @@ export function FloatingAnnouncement({
     setStartPos({ x: e.clientX - dragOffset.x, y: e.clientY - dragOffset.y });
   };
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isDragging) return;
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!isDragging) return;
 
-    const newOffset = {
-      x: e.clientX - startPos.x,
-      y: e.clientY - startPos.y,
-    };
-    setDragOffset(newOffset);
+      const newOffset = {
+        x: e.clientX - startPos.x,
+        y: e.clientY - startPos.y,
+      };
+      setDragOffset(newOffset);
 
-    // Dismiss if dragged far enough (more than 100px in any direction)
-    if (Math.abs(newOffset.x) > 100 || Math.abs(newOffset.y) > 100) {
-      handleClose();
-    }
-  }, [isDragging, startPos.x, startPos.y, handleClose]);
+      // Dismiss if dragged far enough (more than 100px in any direction)
+      if (Math.abs(newOffset.x) > 100 || Math.abs(newOffset.y) > 100) {
+        handleClose();
+      }
+    },
+    [isDragging, startPos.x, startPos.y, handleClose]
+  );
 
   const handleMouseUp = useCallback(() => {
     if (!isDragging) return;
@@ -67,24 +70,30 @@ export function FloatingAnnouncement({
   const handleTouchStart = (e: React.TouchEvent) => {
     const touch = e.touches[0];
     setIsDragging(true);
-    setStartPos({ x: touch.clientX - dragOffset.x, y: touch.clientY - dragOffset.y });
+    setStartPos({
+      x: touch.clientX - dragOffset.x,
+      y: touch.clientY - dragOffset.y,
+    });
   };
 
-  const handleTouchMove = useCallback((e: TouchEvent) => {
-    if (!isDragging) return;
+  const handleTouchMove = useCallback(
+    (e: TouchEvent) => {
+      if (!isDragging) return;
 
-    const touch = e.touches[0];
-    const newOffset = {
-      x: touch.clientX - startPos.x,
-      y: touch.clientY - startPos.y,
-    };
-    setDragOffset(newOffset);
+      const touch = e.touches[0];
+      const newOffset = {
+        x: touch.clientX - startPos.x,
+        y: touch.clientY - startPos.y,
+      };
+      setDragOffset(newOffset);
 
-    // Dismiss if dragged far enough (more than 100px in any direction)
-    if (Math.abs(newOffset.x) > 100 || Math.abs(newOffset.y) > 100) {
-      handleClose();
-    }
-  }, [isDragging, startPos.x, startPos.y, handleClose]);
+      // Dismiss if dragged far enough (more than 100px in any direction)
+      if (Math.abs(newOffset.x) > 100 || Math.abs(newOffset.y) > 100) {
+        handleClose();
+      }
+    },
+    [isDragging, startPos.x, startPos.y, handleClose]
+  );
 
   const handleTouchEnd = useCallback(() => {
     if (!isDragging) return;
@@ -100,7 +109,9 @@ export function FloatingAnnouncement({
     if (isDragging) {
       document.addEventListener('mousemove', handleMouseMove);
       document.addEventListener('mouseup', handleMouseUp);
-      document.addEventListener('touchmove', handleTouchMove, { passive: false });
+      document.addEventListener('touchmove', handleTouchMove, {
+        passive: false,
+      });
       document.addEventListener('touchend', handleTouchEnd);
 
       return () => {
@@ -110,25 +121,33 @@ export function FloatingAnnouncement({
         document.removeEventListener('touchend', handleTouchEnd);
       };
     }
-  }, [isDragging, handleMouseMove, handleMouseUp, handleTouchMove, handleTouchEnd]);
+  }, [
+    isDragging,
+    handleMouseMove,
+    handleMouseUp,
+    handleTouchMove,
+    handleTouchEnd,
+  ]);
 
   if (isDismissed) return null;
 
   return (
     <div
       ref={containerRef}
-      className={`fixed top-4 right-4 z-50 transition-all duration-500 ease-out ${isDragging ? 'transition-none' : ''
-        } ${isVisible
+      className={`fixed top-4 right-4 z-50 transition-all duration-500 ease-out ${
+        isDragging ? 'transition-none' : ''
+      } ${
+        isVisible
           ? 'translate-y-0 opacity-100 scale-100'
           : '-translate-y-2 opacity-0 scale-95 pointer-events-none'
-        }`}
+      }`}
       style={{
         transform: isDragging
           ? `translate(${dragOffset.x}px, ${dragOffset.y}px)`
           : isVisible
             ? 'translateY(0px) scale(1)'
             : 'translateY(-8px) scale(0.95)',
-        cursor: isDragging ? 'grabbing' : 'grab'
+        cursor: isDragging ? 'grabbing' : 'grab',
       }}
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}

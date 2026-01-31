@@ -290,7 +290,7 @@ export default function AdminClient() {
 
       // Trigger email send
       const { error: emailError } = await supabase.functions.invoke(
-        'send-order-confirmation',
+        'order-confirmation',
         {
           body: { order_id: selectedOrder.order_id },
         }

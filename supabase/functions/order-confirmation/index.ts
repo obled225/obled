@@ -59,7 +59,7 @@ serve(async (req: Request) => {
     orderIdFromRequest = order_id;
 
     if (!orderIdFromRequest) {
-      console.error('send-order-confirmation: Missing order_id in request');
+      console.error('order-confirmation: Missing order_id in request');
       return new Response(JSON.stringify({ error: 'Missing order_id' }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 400,
@@ -68,7 +68,7 @@ serve(async (req: Request) => {
 
     // --- 1. Fetch Order Details using RPC ---
     console.log(
-      `send-order-confirmation: Fetching order data for ${orderIdFromRequest}`
+      `order-confirmation: Fetching order data for ${orderIdFromRequest}`
     );
     const { data: orderDataArray, error: orderError } = await supabase.rpc(
       'get_order_for_email_dispatch',
@@ -79,7 +79,7 @@ serve(async (req: Request) => {
 
     if (orderError || !orderDataArray || orderDataArray.length === 0) {
       console.error(
-        `send-order-confirmation: Error fetching order ${orderIdFromRequest}:`,
+        `order-confirmation: Error fetching order ${orderIdFromRequest}:`,
         orderError
       );
       if (orderIdFromRequest) {
@@ -110,7 +110,7 @@ serve(async (req: Request) => {
       orderData.email_dispatch_status === 'DISPATCH_IN_PROGRESS'
     ) {
       console.warn(
-        `send-order-confirmation: Order confirmation email for order ${orderIdFromRequest} already processed or in progress (${orderData.email_dispatch_status}). Skipping.`
+        `order-confirmation: Order confirmation email for order ${orderIdFromRequest} already processed or in progress (${orderData.email_dispatch_status}). Skipping.`
       );
       return new Response(
         JSON.stringify({
@@ -125,7 +125,7 @@ serve(async (req: Request) => {
 
     // Update status to in progress using RPC
     console.log(
-      `send-order-confirmation: Setting order ${orderIdFromRequest} to DISPATCH_IN_PROGRESS`
+      `order-confirmation: Setting order ${orderIdFromRequest} to DISPATCH_IN_PROGRESS`
     );
     const { error: updateError } = await supabase.rpc(
       'update_email_dispatch_status',
@@ -138,7 +138,7 @@ serve(async (req: Request) => {
 
     if (updateError) {
       console.error(
-        `send-order-confirmation: Failed to update dispatch status for ${orderIdFromRequest}:`,
+        `order-confirmation: Failed to update dispatch status for ${orderIdFromRequest}:`,
         updateError
       );
       return new Response(
@@ -153,7 +153,7 @@ serve(async (req: Request) => {
     // --- 2. Prepare Data for Email ---
     if (!orderData.customer_email || !orderData.customer_name) {
       console.error(
-        `send-order-confirmation: Customer data missing for order ${orderIdFromRequest}`
+        `order-confirmation: Customer data missing for order ${orderIdFromRequest}`
       );
       await supabase.rpc('update_email_dispatch_status', {
         p_order_id: orderIdFromRequest,
@@ -403,7 +403,7 @@ serve(async (req: Request) => {
 
     // --- 6. Update Order Record on Success ---
     console.log(
-      `send-order-confirmation: Email sent successfully for order ${orderIdFromRequest}. Email ID: ${emailData?.id}`
+      `order-confirmation: Email sent successfully for order ${orderIdFromRequest}. Email ID: ${emailData?.id}`
     );
     await supabase.rpc('update_email_dispatch_status', {
       p_order_id: orderIdFromRequest,

@@ -104,7 +104,7 @@ export function SearchBar({ className }: SearchBarProps) {
               <button
                 key={product.id}
                 onClick={() => {
-                  router.push(`/products/${product.id}`);
+                  router.push(`/products/${product.slug}`);
                   setIsOpen(false);
                   setQuery('');
                 }}

@@ -51,7 +51,7 @@ export default function CheckoutPage() {
       const cartItems = cart.items.map((item) => ({
         productId: item.product.id,
         productTitle: item.product.name,
-        productSlug: item.product.id, // You can add slug to Product type if needed
+        productSlug: item.product.slug,
         variantId: item.selectedVariant?.id,
         variantTitle: item.selectedVariant
           ? `${item.selectedVariant.name} - ${item.selectedVariant.value}`
@@ -64,34 +64,31 @@ export default function CheckoutPage() {
       // Calculate shipping fee (free over $50, else $9.99)
       const shippingFee = cartSummary.subtotal > 50 ? 0 : 9.99;
 
-      // Call the edge function to create Lomi checkout session
-      const { data, error } = await supabase.functions.invoke(
-        'create-lomi-cart-checkout',
-        {
-          body: {
-            cartItems,
-            currencyCode: cart.items[0]?.product.currency || 'XOF',
-            userName: formData.userName,
-            userEmail: formData.userEmail,
-            userPhone: formData.userPhone || undefined,
-            shippingAddress: formData.shippingName
-              ? {
-                  name: formData.shippingName,
-                  address: formData.shippingAddress,
-                  city: formData.shippingCity,
-                  country: formData.shippingCountry,
-                  postalCode: formData.shippingPostalCode,
-                  phone: formData.shippingPhone || formData.userPhone,
-                }
-              : undefined,
-            shippingFee,
-            taxAmount: cartSummary.tax,
-            discountAmount: cartSummary.discount,
-            successUrlPath: '/payment/success',
-            cancelUrlPath: '/payment/error',
-          },
-        }
-      );
+      // Call the edge function to create lomi. checkout session
+      const { data, error } = await supabase.functions.invoke('checkout', {
+        body: {
+          cartItems,
+          currencyCode: cart.items[0]?.product.currency || 'XOF',
+          userName: formData.userName,
+          userEmail: formData.userEmail,
+          userPhone: formData.userPhone || undefined,
+          shippingAddress: formData.shippingName
+            ? {
+                name: formData.shippingName,
+                address: formData.shippingAddress,
+                city: formData.shippingCity,
+                country: formData.shippingCountry,
+                postalCode: formData.shippingPostalCode,
+                phone: formData.shippingPhone || formData.userPhone,
+              }
+            : undefined,
+          shippingFee,
+          taxAmount: cartSummary.tax,
+          discountAmount: cartSummary.discount,
+          successUrlPath: '/payment/success',
+          cancelUrlPath: '/payment/error',
+        },
+      });
 
       if (error) {
         console.error('Error creating checkout session:', error);
@@ -105,7 +102,7 @@ export default function CheckoutPage() {
       }
 
       if (data?.checkout_url) {
-        // Redirect to Lomi checkout page
+        // Redirect to lomi. checkout page
         window.location.href = data.checkout_url;
       } else {
         throw new Error('No checkout URL received');

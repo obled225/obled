@@ -2,14 +2,14 @@ import { createClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
 import { Buffer } from 'node:buffer';
 
-// --- Helper: Verify Lomi Webhook Signature ---
-async function verifyLomiWebhook(
+// --- Helper: Verify lomi. Webhook Signature ---
+async function verifylomiWebhook(
   rawBody: string | Buffer,
   signatureHeader: string | null,
   webhookSecret: string
 ) {
   if (!signatureHeader) {
-    throw new Error('Missing Lomi signature header (X-Lomi-Signature).');
+    throw new Error('Missing lomi. signature header (X-lomi-Signature).');
   }
   if (!webhookSecret) {
     console.error('LOMI_WEBHOOK_SECRET is not set. Cannot verify webhook.');
@@ -25,7 +25,7 @@ async function verifyLomiWebhook(
     sigBuffer.length !== expectedSigBuffer.length ||
     !crypto.timingSafeEqual(sigBuffer, expectedSigBuffer)
   ) {
-    throw new Error('Lomi webhook signature mismatch.');
+    throw new Error('lomi. webhook signature mismatch.');
   }
   return JSON.parse(
     typeof rawBody === 'string' ? rawBody : rawBody.toString('utf8')
@@ -34,7 +34,10 @@ async function verifyLomiWebhook(
 
 // --- POST Handler for App Router ---
 export async function POST(request: Request) {
-  console.log('🚀 Lomi Webhook: Received request at', new Date().toISOString());
+  console.log(
+    '🚀 lomi. Webhook: Received request at',
+    new Date().toISOString()
+  );
   console.log(
     '📧 Request headers:',
     Object.fromEntries(request.headers.entries())
@@ -59,7 +62,7 @@ export async function POST(request: Request) {
   // Check for required environment variables
   if (!supabaseUrl || !supabaseServiceKey || !lomiWebhookSecret) {
     console.error(
-      'Lomi Webhook: Missing critical environment variables. Check NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, LOMI_WEBHOOK_SECRET.'
+      'lomi. Webhook: Missing critical environment variables. Check NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, LOMI_WEBHOOK_SECRET.'
     );
     return new Response(
       JSON.stringify({ error: 'Missing required environment variables' }),
@@ -80,7 +83,7 @@ export async function POST(request: Request) {
   try {
     rawBody = await request.text();
   } catch (bodyError) {
-    console.error('Lomi Webhook: Error reading request body:', bodyError);
+    console.error('lomi. Webhook: Error reading request body:', bodyError);
     return new Response(
       JSON.stringify({ error: 'Failed to read request body' }),
       {
@@ -111,19 +114,19 @@ export async function POST(request: Request) {
   };
 
   try {
-    eventPayload = (await verifyLomiWebhook(
+    eventPayload = (await verifylomiWebhook(
       rawBody,
       signature,
       lomiWebhookSecret
     )) as typeof eventPayload;
     console.log(
-      'Lomi Webhook: Lomi event verified:',
+      'lomi. Webhook: lomi. event verified:',
       eventPayload?.event || 'Event type missing'
     );
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : 'Unknown error';
     console.error(
-      'Lomi Webhook: Lomi signature verification failed:',
+      'lomi. Webhook: lomi. signature verification failed:',
       errorMessage
     );
     return new Response(
@@ -142,7 +145,7 @@ export async function POST(request: Request) {
 
     if (!lomiEventType || !eventData) {
       console.warn(
-        'Lomi Webhook: Event type or data missing in Lomi payload.',
+        'lomi. Webhook: Event type or data missing in lomi. payload.',
         eventPayload
       );
       return new Response(
@@ -154,9 +157,9 @@ export async function POST(request: Request) {
       );
     }
 
-    console.log('Lomi Webhook: Received Lomi event type:', lomiEventType);
+    console.log('lomi. Webhook: Received lomi. event type:', lomiEventType);
     console.log(
-      'Lomi Webhook: Full event payload:',
+      'lomi. Webhook: Full event payload:',
       JSON.stringify(eventPayload, null, 2)
     );
 
@@ -165,12 +168,12 @@ export async function POST(request: Request) {
 
     if (!orderId) {
       console.error(
-        'Lomi Webhook Error: Missing internal_order_id in Lomi webhook metadata.',
+        'lomi. Webhook Error: Missing internal_order_id in lomi. webhook metadata.',
         { lomiEventData: eventData }
       );
       return new Response(
         JSON.stringify({
-          error: 'Missing internal_order_id in Lomi webhook metadata.',
+          error: 'Missing internal_order_id in lomi. webhook metadata.',
         }),
         {
           status: 400,
@@ -209,7 +212,7 @@ export async function POST(request: Request) {
       paymentStatusForDb = 'payment_failed';
     } else {
       console.log(
-        'Lomi Webhook: Lomi event type not handled for direct payment status update:',
+        'lomi. Webhook: lomi. event type not handled for direct payment status update:',
         lomiEventType
       );
       return new Response(
@@ -235,7 +238,7 @@ export async function POST(request: Request) {
 
     if (rpcError) {
       console.error(
-        `Lomi Webhook Error: Failed to call record_order_payment RPC for order ${orderId}:`,
+        `lomi. Webhook Error: Failed to call record_order_payment RPC for order ${orderId}:`,
         rpcError
       );
       return new Response(
@@ -251,16 +254,16 @@ export async function POST(request: Request) {
     }
 
     console.log(
-      `Lomi Webhook: Payment for order ${orderId} (status: ${paymentStatusForDb}) processed.`
+      `lomi. Webhook: Payment for order ${orderId} (status: ${paymentStatusForDb}) processed.`
     );
 
     // Only proceed to email dispatch if payment was successful
     if (paymentStatusForDb === 'paid') {
       console.log(
-        `📧 Lomi Webhook: Triggering send-order-confirmation for order ${orderId}`
+        `📧 lomi. Webhook: Triggering order-confirmation for order ${orderId}`
       );
       try {
-        const functionUrl = `${supabaseUrl}/functions/v1/send-order-confirmation`;
+        const functionUrl = `${supabaseUrl}/functions/v1/order-confirmation`;
 
         const emailResponse = await fetch(functionUrl, {
           method: 'POST',
@@ -275,7 +278,7 @@ export async function POST(request: Request) {
 
         if (!emailResponse.ok) {
           console.error(
-            `❌ Lomi Webhook: Error triggering send-order-confirmation for ${orderId}:`,
+            `❌ lomi. Webhook: Error triggering order-confirmation for ${orderId}:`,
             {
               status: emailResponse.status,
               statusText: emailResponse.statusText,
@@ -298,7 +301,7 @@ export async function POST(request: Request) {
           }
         } else {
           console.log(
-            `✅ Lomi Webhook: Successfully triggered send-order-confirmation for ${orderId}:`,
+            `✅ lomi. Webhook: Successfully triggered order-confirmation for ${orderId}:`,
             emailResult
           );
         }
@@ -312,7 +315,7 @@ export async function POST(request: Request) {
         const errorStack =
           functionError instanceof Error ? functionError.stack : undefined;
         console.error(
-          `❌ Lomi Webhook: Exception calling send-order-confirmation for ${orderId}:`,
+          `❌ lomi. Webhook: Exception calling order-confirmation for ${orderId}:`,
           functionError
         );
         console.error(`❌ Function Error Details:`, {
@@ -348,7 +351,7 @@ export async function POST(request: Request) {
     const errorMessage =
       error instanceof Error ? error.message : 'Unknown error';
     console.error(
-      'Lomi Webhook - Uncaught error during event processing:',
+      'lomi. Webhook - Uncaught error during event processing:',
       error
     );
     return new Response(

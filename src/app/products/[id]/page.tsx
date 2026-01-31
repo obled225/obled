@@ -14,11 +14,12 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const locale = await getLocale();
   const isFrench = locale === 'fr';
-  const product = await getProductBySlug(params.id);
+  const { id } = await params;
+  const product = await getProductBySlug(id);
 
   if (!product) {
     return {
@@ -71,9 +72,10 @@ function ProductNotFound() {
 export default async function ProductPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const product = await getProductBySlug(params.id);
+  const { id } = await params;
+  const product = await getProductBySlug(id);
 
   if (!product) {
     return <ProductNotFound />;

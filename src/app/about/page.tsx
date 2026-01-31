@@ -30,16 +30,16 @@ export default async function AboutPage() {
   const heroVideoUrl = aboutPageData?.heroVideoUrl;
 
   // Transform section images
-  const sectionImages = aboutPageData?.sectionImages?.map(sectionImage => ({
-    url: sectionImage.image?.asset ? getSanityImageUrl(sectionImage.image.asset, 800, 600) || undefined : undefined,
-    caption: sectionImage.caption,
-    position: sectionImage.position,
-  })) || [];
+  const sectionImages =
+    aboutPageData?.sectionImages?.map((sectionImage) => ({
+      url: sectionImage.image?.asset
+        ? getSanityImageUrl(sectionImage.image.asset, 800, 600) || undefined
+        : undefined,
+      caption: sectionImage.caption,
+      position: sectionImage.position,
+    })) || [];
 
   return (
-    <AboutClient
-      heroVideoUrl={heroVideoUrl}
-      sectionImages={sectionImages}
-    />
+    <AboutClient heroVideoUrl={heroVideoUrl} sectionImages={sectionImages} />
   );
 }

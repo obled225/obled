@@ -14,6 +14,48 @@ export type Database = {
   };
   public: {
     Tables: {
+      contact_inquiries: {
+        Row: {
+          company: string | null;
+          created_at: string;
+          email: string;
+          email_dispatch_attempts: number | null;
+          email_dispatch_error: string | null;
+          email_dispatch_status: string | null;
+          id: string;
+          message: string;
+          name: string;
+          updated_at: string;
+          url: string | null;
+        };
+        Insert: {
+          company?: string | null;
+          created_at?: string;
+          email: string;
+          email_dispatch_attempts?: number | null;
+          email_dispatch_error?: string | null;
+          email_dispatch_status?: string | null;
+          id?: string;
+          message: string;
+          name: string;
+          updated_at?: string;
+          url?: string | null;
+        };
+        Update: {
+          company?: string | null;
+          created_at?: string;
+          email?: string;
+          email_dispatch_attempts?: number | null;
+          email_dispatch_error?: string | null;
+          email_dispatch_status?: string | null;
+          id?: string;
+          message?: string;
+          name?: string;
+          updated_at?: string;
+          url?: string | null;
+        };
+        Relationships: [];
+      };
       customers: {
         Row: {
           created_at: string;
@@ -323,6 +365,15 @@ export type Database = {
           total_items: number;
           updated_at: string;
         }[];
+      };
+      update_contact_inquiry_email_dispatch_status: {
+        Args: {
+          p_contact_inquiry_id: string;
+          p_email_dispatch_attempts?: number;
+          p_email_dispatch_error?: string;
+          p_email_dispatch_status?: string;
+        };
+        Returns: undefined;
       };
       update_customer_for_resend: {
         Args: {

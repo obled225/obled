@@ -53,7 +53,9 @@ function renderPortableText(blocks: PortableTextBlock[] | string): ReactNode {
   });
 }
 
-export function AnnouncementClient({ announcements = [] }: AnnouncementClientProps) {
+export function AnnouncementClient({
+  announcements = [],
+}: AnnouncementClientProps) {
   // Transform announcements to the format expected by AnnouncementBar
   const messages = announcements.map((announcement) => ({
     text: renderPortableText(announcement.text),

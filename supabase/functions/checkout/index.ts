@@ -80,7 +80,7 @@ serve(async (req: Request) => {
     console.error('LOMI_API_KEY is not set for the function.');
     return new Response(
       JSON.stringify({
-        error: 'LOMI API key not configured for the function.',
+        error: 'lomi. API key not configured for the function.',
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

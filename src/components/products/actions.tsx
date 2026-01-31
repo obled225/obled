@@ -64,7 +64,7 @@ const ProductActions = ({ product }: ProductActionsProps) => {
         <div>
           <h3 className="text-sm font-medium text-gray-900 mb-3">Options</h3>
           <div className="space-y-3">
-            {product.variants.map((variant) => (
+            {product.variants.map((variant: ProductVariant) => (
               <label
                 key={variant.id}
                 className={`block p-3 border rounded-lg cursor-pointer transition-colors ${

@@ -308,6 +308,26 @@
         "title": "Email",
         "value": "contact@kysfactory.com"
       }
+    },
+    "form": {
+      "title": "Envoyez-nous un message",
+      "fields": {
+        "name": "Nom",
+        "company": "Organisation",
+        "url": "Site web URL",
+        "email": "Mail",
+        "message": "Message"
+      },
+      "submit": "Soumettre",
+      "submitting": "Envoi en cours...",
+      "success": {
+        "title": "Message envoyé !",
+        "description": "Nous avons bien reçu votre demande et vous répondrons dans les plus brefs délais."
+      },
+      "error": {
+        "title": "Erreur",
+        "description": "Une erreur est survenue lors de l'envoi de votre message. Veuillez réessayer."
+      }
     }
   },
   "faq": {

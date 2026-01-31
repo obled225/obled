@@ -22,36 +22,91 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: 'basePrice',
-      title: 'Base Price',
-      type: 'number',
-      validation: (Rule) => Rule.required().min(0),
-    }),
-    defineField({
-      name: 'originalPrice',
-      title: 'Original Price',
-      type: 'number',
-      description: 'Original price before discount (optional)',
-    }),
-    defineField({
-      name: 'currency',
-      title: 'Currency',
-      type: 'string',
-      initialValue: 'XOF',
-      options: {
-        list: [
-          {title: 'West African CFA Franc (XOF)', value: 'XOF'},
-          {title: 'US Dollar (USD)', value: 'USD'},
-          {title: 'Euro (EUR)', value: 'EUR'},
-        ],
-      },
+      name: 'prices',
+      title: 'Prices',
+      type: 'array',
+      description: 'Product prices in different currencies with lomi. price IDs',
+      validation: (Rule) => Rule.required().min(1).error('At least one price is required'),
+      of: [
+        {
+          type: 'object',
+          fields: [
+            {
+              name: 'currency',
+              title: 'Currency',
+              type: 'string',
+              options: {
+                list: [
+                  {title: 'West African CFA Franc (XOF)', value: 'XOF'},
+                  {title: 'US Dollar (USD)', value: 'USD'},
+                  {title: 'Euro (EUR)', value: 'EUR'},
+                ],
+              },
+              validation: (Rule) => Rule.required(),
+            },
+            {
+              name: 'basePrice',
+              title: 'Base Price',
+              type: 'number',
+              validation: (Rule) => Rule.required().min(0),
+            },
+            {
+              name: 'originalPrice',
+              title: 'Original Price',
+              type: 'number',
+              description: 'Original price before discount (optional)',
+              validation: (Rule) => Rule.min(0),
+            },
+            {
+              name: 'lomiPriceId',
+              title: 'lomi. Price ID',
+              type: 'string',
+              description: 'The price ID from lomi. payment processor for this currency',
+              validation: (Rule) => Rule.required(),
+            },
+          ],
+          preview: {
+            select: {
+              currency: 'currency',
+              basePrice: 'basePrice',
+              originalPrice: 'originalPrice',
+            },
+            prepare({currency, basePrice, originalPrice}) {
+              const priceDisplay = originalPrice
+                ? `${basePrice} (was ${originalPrice})`
+                : `${basePrice}`;
+              return {
+                title: `${currency}: ${priceDisplay}`,
+              };
+            },
+          },
+        },
+      ],
     }),
     defineField({
       name: 'description',
       title: 'Description',
       type: 'array',
-      of: [{type: 'text'}],
-      description: 'Product description (can add multiple paragraphs)',
+      of: [
+        {
+          type: 'block',
+          marks: {
+            decorators: [
+              {title: 'Strong', value: 'strong'},
+              {title: 'Emphasis', value: 'em'},
+            ],
+            annotations: [],
+          },
+          styles: [
+            {title: 'Normal', value: 'normal'},
+            {title: 'H2', value: 'h2'},
+            {title: 'H3', value: 'h3'},
+            {title: 'Bullet', value: 'bullet'},
+            {title: 'Number', value: 'number'},
+          ],
+        },
+      ],
+      description: 'Rich text product description with support for bullet points, headings, and formatting',
     }),
     defineField({
       name: 'images',
@@ -80,78 +135,95 @@ export default defineType({
       description: 'Stock Keeping Unit',
     }),
     defineField({
-      name: 'variants',
-      title: 'Product Variants',
+      name: 'colors',
+      title: 'Colors',
       type: 'array',
+      description: 'Available colors for this product',
       of: [
         {
           type: 'object',
           fields: [
             {
-              name: 'title',
-              title: 'Variant Title',
+              name: 'name',
+              title: 'Color Name',
               type: 'string',
+              description: 'e.g., Red, Blue, Noir, Blanc',
               validation: (Rule) => Rule.required(),
             },
             {
-              name: 'priceModifier',
-              title: 'Price Modifier',
-              type: 'number',
-              description: 'Additional cost for this variant (can be negative)',
-              initialValue: 0,
-            },
-            {
-              name: 'inventory',
-              title: 'Inventory',
-              type: 'number',
-              initialValue: 0,
-              validation: (Rule) => Rule.min(0),
-            },
-            {
-              name: 'sku',
-              title: 'SKU',
+              name: 'value',
+              title: 'Color Value',
               type: 'string',
+              description: 'Hex color code (e.g., #FF0000) or color identifier',
+              validation: (Rule) => Rule.required(),
             },
             {
-              name: 'options',
-              title: 'Options',
-              type: 'array',
-              of: [
-                {
-                  type: 'object',
-                  fields: [
-                    {
-                      name: 'name',
-                      title: 'Option Name',
-                      type: 'string',
-                      description: 'e.g., Size, Color, Taille, Couleur',
-                      validation: (Rule) => Rule.required(),
-                    },
-                    {
-                      name: 'value',
-                      title: 'Option Value',
-                      type: 'string',
-                      description: 'e.g., Large, Red, L, Rouge',
-                      validation: (Rule) => Rule.required(),
-                    },
-                  ],
-                },
-              ],
+              name: 'image',
+              title: 'Color Image',
+              type: 'image',
+              description: 'Optional image showing this color variant',
+              options: {
+                hotspot: true,
+              },
+            },
+            {
+              name: 'available',
+              title: 'Available',
+              type: 'boolean',
+              description: 'Whether this color is currently available',
+              initialValue: true,
             },
           ],
           preview: {
             select: {
-              title: 'title',
-              options: 'options',
+              name: 'name',
+              value: 'value',
+              available: 'available',
             },
-            prepare({title, options}) {
-              const optionStr = options
-                ?.map((opt: {name: string; value: string}) => `${opt.name}: ${opt.value}`)
-                .join(', ')
+            prepare({name, value, available}) {
               return {
-                title: title || 'Untitled Variant',
-                subtitle: optionStr || 'No options',
-              }
+                title: name || 'Unnamed Color',
+                subtitle: `${value}${available ? '' : ' (Unavailable)'}`,
+              };
+            },
+          },
+        },
+      ],
+    }),
+    defineField({
+      name: 'sizes',
+      title: 'Sizes',
+      type: 'array',
+      description: 'Available sizes for this product',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            {
+              name: 'name',
+              title: 'Size Name',
+              type: 'string',
+              description: 'e.g., XS, S, M, L, XL, XXL',
+              validation: (Rule) => Rule.required(),
+            },
+            {
+              name: 'available',
+              title: 'Available',
+              type: 'boolean',
+              description: 'Whether this size is currently available',
+              initialValue: true,
+            },
+          ],
+          preview: {
+            select: {
+              name: 'name',
+              available: 'available',
+            },
+            prepare({name, available}) {
+              return {
+                title: name || 'Unnamed Size',
+                subtitle: available ? 'Available' : 'Unavailable',
+              };
             },
           },
         },
@@ -189,21 +261,106 @@ export default defineType({
       name: 'dimensions',
       title: 'Dimensions',
       type: 'object',
+      description: 'Product dimensions in centimeters',
       fields: [
         {
           name: 'length',
           title: 'Length (cm)',
           type: 'number',
+          description: 'Length in centimeters',
         },
         {
           name: 'width',
           title: 'Width (cm)',
           type: 'number',
+          description: 'Width in centimeters',
         },
         {
           name: 'height',
           title: 'Height (cm)',
           type: 'number',
+          description: 'Height in centimeters',
+        },
+      ],
+    }),
+    defineField({
+      name: 'variants',
+      title: 'Variants',
+      type: 'array',
+      description: 'Product variants (combinations of options)',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            {
+              name: 'title',
+              title: 'Variant Title',
+              type: 'string',
+              description: 'Display name for this variant',
+              validation: (Rule) => Rule.required(),
+            },
+            {
+              name: 'priceModifier',
+              title: 'Price Modifier',
+              type: 'number',
+              description: 'Additional price for this variant (can be negative)',
+              initialValue: 0,
+            },
+            {
+              name: 'inventory',
+              title: 'Stock Quantity',
+              type: 'number',
+              description: 'Stock quantity for this specific variant',
+              initialValue: 0,
+              validation: (Rule) => Rule.min(0),
+            },
+            {
+              name: 'sku',
+              title: 'Variant SKU',
+              type: 'string',
+              description: 'Stock Keeping Unit for this specific variant',
+            },
+            {
+              name: 'options',
+              title: 'Options',
+              type: 'array',
+              description: 'Specific options that define this variant',
+              of: [
+                {
+                  type: 'object',
+                  fields: [
+                    {
+                      name: 'name',
+                      title: 'Option Name',
+                      type: 'string',
+                      description: 'e.g., Color, Size',
+                      validation: (Rule) => Rule.required(),
+                    },
+                    {
+                      name: 'value',
+                      title: 'Option Value',
+                      type: 'string',
+                      description: 'e.g., Red, Large',
+                      validation: (Rule) => Rule.required(),
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+          preview: {
+            select: {
+              title: 'title',
+              priceModifier: 'priceModifier',
+              inventory: 'inventory',
+            },
+            prepare({title, priceModifier, inventory}) {
+              return {
+                title: title || 'Unnamed Variant',
+                subtitle: `${inventory || 0} in stock${priceModifier ? ` (+$${priceModifier})` : ''}`,
+              };
+            },
+          },
         },
       ],
     }),
@@ -212,16 +369,19 @@ export default defineType({
     select: {
       title: 'name',
       media: 'images.0',
-      price: 'basePrice',
-      currency: 'currency',
+      prices: 'prices',
       inStock: 'inStock',
     },
-    prepare({title, media, price, currency, inStock}) {
+    prepare({title, media, prices, inStock}) {
+      const firstPrice = prices?.[0];
+      const priceDisplay = firstPrice
+        ? `${firstPrice.currency || 'XOF'} ${firstPrice.basePrice || 0}`
+        : 'No price';
       return {
         title: title || 'Untitled Product',
-        subtitle: `${currency || 'XOF'} ${price || 0}${inStock ? '' : ' (Out of Stock)'}`,
+        subtitle: `${priceDisplay}${inStock ? '' : ' (Out of Stock)'}`,
         media,
-      }
+      };
     },
   },
 })

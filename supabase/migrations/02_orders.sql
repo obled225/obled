@@ -267,7 +267,7 @@ END;
 $$;
 
 COMMENT ON FUNCTION public.record_order_payment(TEXT, TEXT, NUMERIC, TEXT, JSONB)
-IS 'Records the outcome of a Lomi payment for an order, updating status and storing Lomi transaction details. Returns order_id.';
+IS 'Records the outcome of a lomi. payment for an order, updating status and storing lomi. transaction details. Returns order_id.';
 
 -- Grant execute permissions to service_role
 GRANT EXECUTE ON FUNCTION public.upsert_customer(TEXT, TEXT, TEXT, TEXT) TO service_role;

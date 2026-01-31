@@ -3,6 +3,7 @@
 import { Truck, RotateCcw, Shield } from 'lucide-react';
 import Accordion from '@/components/ui/accordion';
 import { Product } from '@/lib/types';
+import { PortableText } from '@/components/ui/portable-text';
 
 type ProductTabsProps = {
   product: Product;
@@ -84,9 +85,11 @@ const ProductInfoTab = ({ product }: ProductTabsProps) => {
       <div className="mt-6">
         <span className="font-semibold">Description</span>
         <div className="mt-2 text-gray-700 prose prose-sm max-w-none">
-          {product.description
-            ? product.description.join(' ')
-            : 'No description available'}
+          {product.description ? (
+            <PortableText content={product.description} />
+          ) : (
+            'No description available'
+          )}
         </div>
       </div>
     </div>

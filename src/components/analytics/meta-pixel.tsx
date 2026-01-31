@@ -18,9 +18,7 @@ export function MetaPixel() {
 
   useEffect(() => {
     if (!pixelId) {
-      console.warn(
-        'Meta Pixel ID not found. Please add NEXT_PUBLIC_META_PIXEL_ID to your environment variables.'
-      );
+      // Silently return if Meta Pixel ID is not configured
       return;
     }
 

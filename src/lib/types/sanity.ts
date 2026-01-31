@@ -17,7 +17,7 @@ import type {
  */
 export interface SanityProductExpanded extends Omit<
   SanityProductRaw,
-  'categories'
+  'categories' | 'prices' | 'colors' | 'sizes' | 'description'
 > {
   categories?: Array<{
     _id: string;
@@ -34,6 +34,28 @@ export interface SanityProductExpanded extends Omit<
       };
     };
   }>;
+  prices?: Array<{
+    currency: 'XOF' | 'USD' | 'EUR';
+    basePrice: number;
+    originalPrice?: number;
+    lomiPriceId: string;
+  }>;
+  colors?: Array<{
+    name: string;
+    value: string;
+    available?: boolean;
+    image?: {
+      asset?: {
+        _ref: string;
+        _type: 'reference';
+      };
+    };
+  }>;
+  sizes?: Array<{
+    name: string;
+    available?: boolean;
+  }>;
+  description?: PortableTextBlock[];
 }
 
 /**
@@ -58,33 +80,82 @@ export function isSanityCategory(
 }
 
 /**
+ * Product price in a specific currency
+ */
+export interface ProductPrice {
+  currency: 'XOF' | 'USD' | 'EUR';
+  basePrice: number;
+  originalPrice?: number;
+  lomiPriceId: string;
+}
+
+/**
+ * Portable text block content (for rich text descriptions)
+ */
+export type PortableTextBlock = {
+  _type: 'block';
+  _key: string;
+  style?: string;
+  children: Array<{
+    _type: 'span';
+    _key: string;
+    text: string;
+    marks?: string[];
+  }>;
+  markDefs?: Array<{
+    _key: string;
+    _type: string;
+    [key: string]: unknown;
+  }>;
+  listItem?: 'bullet' | 'number';
+  level?: number;
+};
+
+/**
  * Transformed Product type for frontend use
  * This is the transformed version of SanityProductExpanded used throughout the app
  */
 export interface Product {
   id: string;
+  slug: string;
   name: string;
+  prices: ProductPrice[];
+  // Convenience fields for backward compatibility (uses first price or selected currency)
   price: number;
   originalPrice?: number;
   currency: string;
   image: string;
   images?: string[];
   soldOut: boolean;
-  colors?: { name: string; value: string; available: boolean }[];
-  sizes?: { name: string; available: boolean }[];
-  description?: string[];
+  colors?: Array<{
+    name: string;
+    value: string;
+    available: boolean;
+    image?: string;
+  }>;
+  sizes?: Array<{
+    name: string;
+    available: boolean;
+  }>;
+  description?: PortableTextBlock[];
   category: ProductCategory;
-  // Legacy fields for backward compatibility
   inStock: boolean;
   stockQuantity: number;
   sku: string;
   weight?: number;
   dimensions?: {
-    length: number;
-    width: number;
-    height: number;
+    length?: number;
+    width?: number;
+    height?: number;
   };
-  variants?: ProductVariant[];
+  variants?: Array<{
+    id: string;
+    name: string;
+    value: string;
+    priceModifier: number;
+    stockQuantity: number;
+    sku: string;
+  }>;
   createdAt: Date;
   updatedAt: Date;
   tags: string[];
@@ -154,4 +225,29 @@ export function getProductById(
 
 export function formatPrice(price: number, currency: string = 'USD'): string {
   return `$${price.toFixed(2)} ${currency}`;
+}
+
+/**
+ * Get product price for a specific currency
+ */
+export function getProductPrice(
+  product: Product,
+  currency: 'XOF' | 'USD' | 'EUR' = 'XOF'
+): ProductPrice | null {
+  return (
+    product.prices.find((p) => p.currency === currency) ||
+    product.prices[0] ||
+    null
+  );
+}
+
+/**
+ * Get product price value for a specific currency (for backward compatibility)
+ */
+export function getProductPriceValue(
+  product: Product,
+  currency: 'XOF' | 'USD' | 'EUR' = 'XOF'
+): number {
+  const price = getProductPrice(product, currency);
+  return price?.basePrice || product.price || 0;
 }

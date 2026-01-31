@@ -54,16 +54,12 @@ function renderPortableText(blocks: PortableTextBlock[] | string): ReactNode {
 }
 
 export function FloatingAnnouncementClient({
-  announcement
+  announcement,
 }: FloatingAnnouncementClientProps) {
   // Use provided announcement data or fallback to placeholder
   const message = announcement?.text
     ? renderPortableText(announcement.text)
-    : "Use code WELCOME20 for 20% off";
+    : 'Use code WELCOME20 for 20% off';
 
-  return (
-    <FloatingAnnouncement
-      message={message as string}
-    />
-  );
+  return <FloatingAnnouncement message={message as string} />;
 }

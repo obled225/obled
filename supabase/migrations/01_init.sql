@@ -72,7 +72,7 @@ CREATE TABLE public.orders (
 
 COMMENT ON COLUMN public.orders.customer_id IS 'Links to the customer who made the order.';
 COMMENT ON COLUMN public.orders.order_number IS 'Human-readable order number (e.g., KYS-2024-001).';
-COMMENT ON COLUMN public.orders.lomi_session_id IS 'Unique ID from Lomi for the checkout session. Used to reconcile webhook events.';
+COMMENT ON COLUMN public.orders.lomi_session_id IS 'Unique ID from lomi. for the checkout session. Used to reconcile webhook events.';
 COMMENT ON COLUMN public.orders.status IS 'Tracks the state of the order and payment process.';
 COMMENT ON COLUMN public.orders.shipping_address IS 'JSONB object containing shipping address details: name, address, city, country, postal_code, phone.';
 

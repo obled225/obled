@@ -16,7 +16,8 @@ export async function AnnouncementWrapper() {
   const announcementData = await getAnnouncements();
 
   // Use announcements from Sanity if available, otherwise use fallback
-  const announcements = announcementData?.announcements || fallbackAnnouncements;
+  const announcements =
+    announcementData?.announcements || fallbackAnnouncements;
 
   return <AnnouncementClient announcements={announcements} />;
 }

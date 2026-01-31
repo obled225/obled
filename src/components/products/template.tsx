@@ -5,6 +5,7 @@ import ProductActions from './actions';
 import ProductTabs from './tabs';
 import RelatedProducts from './related';
 import { SkeletonRelatedProducts } from '@/components/products/skeleton-related';
+import { PortableText } from '@/components/ui/portable-text';
 
 type ProductTemplateProps = {
   product: Product;
@@ -55,9 +56,13 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({ product }) => {
                   </span>
                 )}
               </div>
-              <p className="text-gray-700 leading-relaxed">
-                {product.description}
-              </p>
+              <div className="text-gray-700 leading-relaxed">
+                {product.description ? (
+                  <PortableText content={product.description} />
+                ) : (
+                  'No description available'
+                )}
+              </div>
             </div>
 
             {/* Product Actions */}

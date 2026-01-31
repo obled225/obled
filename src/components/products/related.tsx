@@ -32,7 +32,7 @@ export default function RelatedProducts({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {products.map((product) => (
           <div key={product.id} className="group">
-            <Link href={`/products/${product.id}`} className="block">
+            <Link href={`/products/${product.slug}`} className="block">
               <div className="relative aspect-square overflow-hidden bg-gray-100 rounded-lg mb-4 group-hover:shadow-lg transition-shadow">
                 {product.images && product.images[0] ? (
                   <Image

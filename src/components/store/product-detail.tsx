@@ -4,12 +4,14 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { Minus, Plus, Share2, ZoomIn, Ruler } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Product, formatPrice } from '@/lib/types';
+import { Product, formatPrice, getProductPrice } from '@/lib/types';
 import { useCartStore } from '@/lib/store/cart-store';
+import { useCurrencyStore } from '@/lib/store/currency-store';
 import { useToast } from '@/lib/hooks/use-toast';
 import { cn } from '@/lib/actions/utils';
 import Modal from '@/components/ui/modal';
 import { SizeGuideContent } from './size-guide-modal';
+import { PortableText } from '@/components/ui/portable-text';
 import { useTranslations } from 'next-intl';
 
 interface ProductDetailProps {
@@ -19,6 +21,7 @@ interface ProductDetailProps {
 export function ProductDetail({ product }: ProductDetailProps) {
   const t = useTranslations('products');
   const { addItem } = useCartStore();
+  const { currency } = useCurrencyStore();
   const { success, error } = useToast();
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState(
@@ -31,7 +34,20 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const [isAdding, setIsAdding] = useState(false);
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
 
-  const images = product.images || [product.image];
+  // Get price for selected currency
+  const currentPrice =
+    getProductPrice(product, currency) ||
+    getProductPrice(product, 'XOF') ||
+    product.prices[0];
+  const displayPrice = currentPrice?.basePrice || product.price;
+  const displayCurrency = currentPrice?.currency || product.currency;
+  const displayOriginalPrice = currentPrice?.originalPrice;
+
+  // Filter out empty or invalid image URLs
+  const validImages = (product.images || [product.image]).filter(
+    (img): img is string => Boolean(img && img.trim() && img !== '')
+  );
+  const images = validImages.length > 0 ? validImages : [];
 
   const handleAddToCart = async () => {
     setIsAdding(true);
@@ -53,14 +69,20 @@ export function ProductDetail({ product }: ProductDetailProps) {
         <div className="space-y-4">
           {/* Main Image */}
           <div className="relative aspect-3/4 overflow-hidden bg-gray-100">
-            <Image
-              src={images[selectedImage] || '/placeholder-product.jpg'}
-              alt={product.name}
-              fill
-              className="object-cover"
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              priority
-            />
+            {images.length > 0 && images[selectedImage] ? (
+              <Image
+                src={images[selectedImage]}
+                alt={product.name}
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                priority
+              />
+            ) : (
+              <div className="flex items-center justify-center h-full text-gray-400">
+                <span>No image available</span>
+              </div>
+            )}
             <button
               className="absolute left-4 top-4 rounded-full bg-white/80 p-2 backdrop-blur-sm hover:bg-white transition-colors"
               aria-label="Zoom"
@@ -72,24 +94,27 @@ export function ProductDetail({ product }: ProductDetailProps) {
           {/* Thumbnail Gallery */}
           {images.length > 1 && (
             <div className="grid grid-cols-4 gap-2 sm:gap-4">
-              {images.map((image, index) => (
-                <button
-                  key={index}
-                  onClick={() => setSelectedImage(index)}
-                  className={cn(
-                    'relative aspect-square overflow-hidden bg-gray-100 rounded-md',
-                    selectedImage === index && 'ring-2 ring-blue-600'
-                  )}
-                >
-                  <Image
-                    src={image || '/placeholder-product.jpg'}
-                    alt={`${product.name} - Image ${index + 1}`}
-                    fill
-                    className="object-cover"
-                    sizes="25vw"
-                  />
-                </button>
-              ))}
+              {images.map(
+                (image, index) =>
+                  image && (
+                    <button
+                      key={index}
+                      onClick={() => setSelectedImage(index)}
+                      className={cn(
+                        'relative aspect-square overflow-hidden bg-gray-100 rounded-md',
+                        selectedImage === index && 'ring-2 ring-blue-600'
+                      )}
+                    >
+                      <Image
+                        src={image}
+                        alt={`${product.name} - Image ${index + 1}`}
+                        fill
+                        className="object-cover"
+                        sizes="25vw"
+                      />
+                    </button>
+                  )
+              )}
             </div>
           )}
         </div>
@@ -102,9 +127,16 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
           {/* Price */}
           <div className="flex items-center gap-3 mb-6">
-            <span className="text-lg font-medium text-gray-900">
-              {formatPrice(product.price, product.currency)}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-lg font-medium text-gray-900">
+                {formatPrice(displayPrice, displayCurrency)}
+              </span>
+              {displayOriginalPrice && displayOriginalPrice > displayPrice && (
+                <span className="text-sm text-gray-500 line-through">
+                  {formatPrice(displayOriginalPrice, displayCurrency)}
+                </span>
+              )}
+            </div>
             {product.soldOut && (
               <span className="rounded-sm bg-gray-900 px-3 py-1 text-xs font-medium text-white">
                 Out of Stock
@@ -228,14 +260,10 @@ export function ProductDetail({ product }: ProductDetailProps) {
           {/* Product Description */}
           {product.description && (
             <div className="mb-8">
-              <ul className="space-y-2 text-sm text-gray-900">
-                {product.description.map((item, index) => (
-                  <li key={index} className="flex items-start gap-2">
-                    <span className="text-gray-900">•</span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
+              <PortableText
+                content={product.description}
+                className="text-sm text-gray-900"
+              />
             </div>
           )}
 

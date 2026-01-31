@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, Phone, Mail, Play } from 'lucide-react';
 import { WhatsAppIcon, InstagramIcon } from '@/components/ui/icons';
+import { ContactForm } from './contact-form';
 
 interface SectionImage {
   url?: string;
@@ -49,7 +50,9 @@ export function AboutClient({
     sectionKey: string,
     content: React.ReactNode
   ) => {
-    const sectionImagesForKey = sectionImages.filter(img => img.position === sectionKey);
+    const sectionImagesForKey = sectionImages.filter(
+      (img) => img.position === sectionKey
+    );
 
     return (
       <div className="mb-12">
@@ -57,7 +60,10 @@ export function AboutClient({
         {sectionImagesForKey.length > 0 && (
           <div className="mt-6 space-y-4">
             {sectionImagesForKey.map((image, index) => (
-              <div key={`${sectionKey}-${index}`} className="rounded-lg overflow-hidden">
+              <div
+                key={`${sectionKey}-${index}`}
+                className="rounded-lg overflow-hidden"
+              >
                 {image.url && (
                   <Image
                     src={image.url}
@@ -114,7 +120,10 @@ export function AboutClient({
                     className="bg-white/90 hover:bg-white rounded-full p-4 shadow-lg transition-all duration-200 transform hover:scale-105"
                     aria-label="Play video"
                   >
-                    <Play className="w-8 h-8 text-black ml-1" fill="currentColor" />
+                    <Play
+                      className="w-8 h-8 text-black ml-1"
+                      fill="currentColor"
+                    />
                   </button>
                 </div>
               )}
@@ -133,7 +142,8 @@ export function AboutClient({
 
         <div className="prose prose-lg max-w-none text-foreground">
           {/* Who We Are Section */}
-          {renderSectionWithImages('whoWeAre', (
+          {renderSectionWithImages(
+            'whoWeAre',
             <>
               <h2 className="text-xl sm:text-2xl font-medium mb-4">
                 {t('whoWeAre.title')}
@@ -145,10 +155,11 @@ export function AboutClient({
                 {t('whoWeAre.content')}
               </p>
             </>
-          ))}
+          )}
 
           {/* B2B Solutions Section */}
-          {renderSectionWithImages('b2b', (
+          {renderSectionWithImages(
+            'b2b',
             <div className="bg-background border border-border rounded-lg overflow-hidden">
               <div className="p-6">
                 <h2 className="text-xl sm:text-2xl font-medium mb-4">
@@ -181,10 +192,11 @@ export function AboutClient({
                 </div>
               </div>
             </div>
-          ))}
+          )}
 
           {/* Production Section */}
-          {renderSectionWithImages('production', (
+          {renderSectionWithImages(
+            'production',
             <>
               <h2 className="text-xl sm:text-2xl font-medium mb-4">
                 {t('production.title')}
@@ -214,10 +226,11 @@ export function AboutClient({
                   ))}
               </ul>
             </>
-          ))}
+          )}
 
           {/* Responsiveness Section */}
-          {renderSectionWithImages('responsiveness', (
+          {renderSectionWithImages(
+            'responsiveness',
             <>
               <h2 className="text-xl sm:text-2xl font-medium mb-6">
                 {t('responsiveness.title')}
@@ -241,10 +254,11 @@ export function AboutClient({
                 {t('responsiveness.urgency')}
               </p>
             </>
-          ))}
+          )}
 
           {/* Support Section */}
-          {renderSectionWithImages('support', (
+          {renderSectionWithImages(
+            'support',
             <>
               <h2 className="text-xl sm:text-2xl font-medium mb-6">
                 {t('support.title')}
@@ -268,10 +282,11 @@ export function AboutClient({
                   ))}
               </ul>
             </>
-          ))}
+          )}
 
           {/* Commitment Section */}
-          {renderSectionWithImages('commitment', (
+          {renderSectionWithImages(
+            'commitment',
             <div className="bg-background border border-border rounded-lg overflow-hidden">
               <div className="p-6">
                 <h2 className="text-xl sm:text-2xl font-medium mb-6">
@@ -282,7 +297,7 @@ export function AboutClient({
                 </p>
               </div>
             </div>
-          ))}
+          )}
 
           {/* Contact Section */}
           <div className="mb-12">
@@ -336,13 +351,13 @@ export function AboutClient({
                         href={method.href}
                         target={
                           method.key === 'whatsapp' ||
-                            method.key === 'instagram'
+                          method.key === 'instagram'
                             ? '_blank'
                             : undefined
                         }
                         rel={
                           method.key === 'whatsapp' ||
-                            method.key === 'instagram'
+                          method.key === 'instagram'
                             ? 'noopener noreferrer'
                             : undefined
                         }
@@ -368,6 +383,9 @@ export function AboutClient({
                 </div>
               </div>
             </div>
+
+            {/* Contact Form */}
+            <ContactForm />
           </div>
         </div>
       </section>
