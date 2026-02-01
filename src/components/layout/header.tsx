@@ -12,6 +12,7 @@ import { CartDrawer } from '@/components/cart/cart-drawer';
 import { Badge } from '@/components/ui/badge';
 import { useCartStore } from '@/lib/store/cart-store';
 import { useIsMobile } from '@/lib/hooks/use-is-mobile';
+import { getBorderColor } from '@/lib/utils/color';
 
 // Define props extended with categories
 import { ProductCategory } from '@/lib/types';
@@ -25,30 +26,6 @@ interface NavLink {
   label: string;
   badgeText?: string;
   badgeColor?: string;
-}
-
-// Helper function to lighten a hex color for border effect
-function lightenColor(hex: string, percent: number = 20): string {
-  // Remove # if present
-  hex = hex.replace('#', '');
-
-  // Parse RGB values
-  const r = parseInt(hex.substring(0, 2), 16);
-  const g = parseInt(hex.substring(2, 4), 16);
-  const b = parseInt(hex.substring(4, 6), 16);
-
-  // Lighten each component
-  const newR = Math.min(255, Math.round(r + (255 - r) * (percent / 100)));
-  const newG = Math.min(255, Math.round(g + (255 - g) * (percent / 100)));
-  const newB = Math.min(255, Math.round(b + (255 - b) * (percent / 100)));
-
-  // Convert back to hex
-  return `#${[newR, newG, newB]
-    .map((x) => {
-      const hex = x.toString(16);
-      return hex.length === 1 ? '0' + hex : hex;
-    })
-    .join('')}`;
 }
 
 // Type guard to check if a nav link has badge properties
@@ -178,7 +155,7 @@ export function Header({ categories = [] }: HeaderProps) {
                       className="text-white text-[10px] px-1.5 py-0.5 h-auto font-bold shadow-sm border"
                       style={{
                         backgroundColor: link.badgeColor,
-                        borderColor: lightenColor(link.badgeColor, 15),
+                        borderColor: getBorderColor(link.badgeColor),
                       }}
                     >
                       {link.badgeText}
@@ -245,7 +222,7 @@ export function Header({ categories = [] }: HeaderProps) {
                       className="text-white text-[10px] px-1.5 py-0.5 h-auto font-bold shadow-sm border"
                       style={{
                         backgroundColor: link.badgeColor,
-                        borderColor: lightenColor(link.badgeColor, 15),
+                        borderColor: getBorderColor(link.badgeColor),
                       }}
                     >
                       {link.badgeText}

@@ -20,7 +20,9 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
         if (!asset) return null;
 
         try {
-          const url = getSanityImageUrl(asset, 800, 600);
+          // Use higher quality and preserve aspect ratio (don't force 4:3 ratio)
+          // Pass undefined for height to preserve original aspect ratio
+          const url = getSanityImageUrl(asset, 1200);
           return url;
         } catch (error) {
           console.error('Error generating image URL:', error, { img, asset });
@@ -45,14 +47,20 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
   };
 
   // Transform colors array
-  const colors = (doc.colors || []).map((color) => ({
-    name: color.name || '',
-    value: color.value || '',
-    available: color.available !== false,
-    image: color.image?.asset
-      ? getSanityImageUrl(color.image.asset) || undefined
-      : undefined,
-  }));
+  const colors = (doc.colors || []).map((color) => {
+    // Handle different asset structures from GROQ queries
+    // When using image.asset->, the asset is already resolved
+    // color.image might be the asset itself, or color.image.asset might be the asset
+    const imageAsset = color.image?.asset || color.image;
+    
+    return {
+      name: color.name || '',
+      available: color.available !== false,
+      image: imageAsset
+        ? getSanityImageUrl(imageAsset, 1200) || undefined
+        : undefined,
+    };
+  });
 
   // Transform sizes from array format
   // Handle both old format (object with booleans) and new format (array of objects)
@@ -122,7 +130,8 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
                 const asset = img?.asset || img;
                 if (!asset) return null;
                 try {
-                  return getSanityImageUrl(asset, 800, 600);
+                  // Use higher quality and preserve aspect ratio
+                  return getSanityImageUrl(asset, 1200);
                 } catch {
                   return null;
                 }
@@ -171,10 +180,8 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
             currency: defaultRelatedPrice.currency,
             image: relatedImages[0] || '',
             images: relatedImages.length > 0 ? relatedImages : undefined,
-            soldOut:
-              !relatedDoc.inStock || (relatedDoc.stockQuantity || 0) === 0,
+            soldOut: !relatedDoc.inStock,
             inStock: relatedDoc.inStock || false,
-            stockQuantity: relatedDoc.stockQuantity || 0,
             category: relatedCategory,
             isBusinessProduct: false,
             featured: false,
@@ -227,21 +234,12 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
     currency: defaultPrice.currency,
     image: primaryImage || '',
     images: images.length > 0 ? images : undefined,
-    soldOut: !doc.inStock || (doc.stockQuantity || 0) === 0,
+    soldOut: !doc.inStock,
     inStock: doc.inStock || false,
-    stockQuantity: doc.stockQuantity || 0,
     colors: colors.length > 0 ? colors : undefined,
     sizes: sizes && sizes.length > 0 ? sizes : undefined,
     description: doc.description as PortableTextBlock[] | undefined,
     category,
-    dimensions: doc.dimensions
-      ? {
-          length: doc.dimensions.length,
-          width: doc.dimensions.width,
-          height: doc.dimensions.height,
-          weight: doc.dimensions.weight,
-        }
-      : undefined,
     variant,
     relatedProducts,
     businessPackProduct,
@@ -270,7 +268,8 @@ const ALL_PRODUCTS_QUERY = `*[_type == "products" && !(_id in path("drafts.**"))
     label,
     prices[] {
       currency,
-      price,
+      basePrice,
+      originalPrice,
       lomiPriceId
     }
   },
@@ -284,8 +283,6 @@ const ALL_PRODUCTS_QUERY = `*[_type == "products" && !(_id in path("drafts.**"))
   },
   description,
   inStock,
-  stockQuantity,
-  dimensions,
   "images": images[].asset->,
   "categories": categories[]->{
     _id,
@@ -318,7 +315,6 @@ const ALL_PRODUCTS_QUERY = `*[_type == "products" && !(_id in path("drafts.**"))
       lomiPriceId
     },
     inStock,
-    stockQuantity,
     "images": images[].asset->,
     "categories": categories[]->{
       _id,
@@ -348,7 +344,8 @@ const PRODUCT_BY_SLUG_QUERY = `*[_type == "products" && slug.current == $slug &&
     label,
     prices[] {
       currency,
-      price,
+      basePrice,
+      originalPrice,
       lomiPriceId
     }
   },
@@ -362,8 +359,6 @@ const PRODUCT_BY_SLUG_QUERY = `*[_type == "products" && slug.current == $slug &&
   },
   description,
   inStock,
-  stockQuantity,
-  dimensions,
   "images": images[].asset->,
   "categories": categories[]->{
     _id,
@@ -396,7 +391,6 @@ const PRODUCT_BY_SLUG_QUERY = `*[_type == "products" && slug.current == $slug &&
       lomiPriceId
     },
     inStock,
-    stockQuantity,
     "images": images[].asset->,
     "categories": categories[]->{
       _id,
@@ -431,8 +425,6 @@ const PRODUCTS_BY_CATEGORY_QUERY = `*[_type == "products" && $categoryId in cate
   },
   description,
   inStock,
-  stockQuantity,
-  dimensions,
   "images": images[].asset->,
   "categories": categories[]->{
     _id,
@@ -465,7 +457,6 @@ const PRODUCTS_BY_CATEGORY_QUERY = `*[_type == "products" && $categoryId in cate
       lomiPriceId
     },
     inStock,
-    stockQuantity,
     "images": images[].asset->,
     "categories": categories[]->{
       _id,
@@ -500,8 +491,6 @@ const FEATURED_PRODUCTS_QUERY = `*[_type == "products" && featured == true && !(
   },
   description,
   inStock,
-  stockQuantity,
-  dimensions,
   "images": images[].asset->,
   "categories": categories[]->{
     _id,
@@ -534,7 +523,6 @@ const FEATURED_PRODUCTS_QUERY = `*[_type == "products" && featured == true && !(
       lomiPriceId
     },
     inStock,
-    stockQuantity,
     "images": images[].asset->,
     "categories": categories[]->{
       _id,
@@ -587,8 +575,6 @@ export async function getShopProducts(): Promise<Product[]> {
       },
       description,
       inStock,
-      stockQuantity,
-      dimensions,
       "images": images[].asset->,
       "categories": categories[]->{
         _id,
@@ -617,7 +603,6 @@ export async function getShopProducts(): Promise<Product[]> {
           lomiPriceId
         },
         inStock,
-        stockQuantity,
         "images": images[].asset->,
         "categories": categories[]->{
           _id,
@@ -656,6 +641,16 @@ export async function getBusinessProducts(): Promise<Product[]> {
       featured,
       bestSeller,
   bestSeller,
+      businessPacks[] {
+        quantity,
+        label,
+        prices[] {
+          currency,
+          basePrice,
+          originalPrice,
+          lomiPriceId
+        }
+      },
       prices[] {
         currency,
         basePrice,
@@ -664,8 +659,6 @@ export async function getBusinessProducts(): Promise<Product[]> {
       },
       description,
       inStock,
-      stockQuantity,
-      dimensions,
       "images": images[].asset->,
       "categories": categories[]->{
         _id,
@@ -694,7 +687,6 @@ export async function getBusinessProducts(): Promise<Product[]> {
           lomiPriceId
         },
         inStock,
-        stockQuantity,
         "images": images[].asset->,
         "categories": categories[]->{
           _id,
@@ -784,9 +776,13 @@ export async function getProductById(id: string): Promise<Product | null> {
       lomiProductId,
       businessPacks[] {
         quantity,
-        price,
-        lomiPriceId,
-        label
+        label,
+        prices[] {
+          currency,
+          basePrice,
+          originalPrice,
+          lomiPriceId
+        }
       },
       prices[] {
         currency,
@@ -796,8 +792,6 @@ export async function getProductById(id: string): Promise<Product | null> {
       },
       description,
       inStock,
-      stockQuantity,
-      dimensions,
       "images": images[].asset->,
       "categories": categories[]->{
         _id,
@@ -826,7 +820,6 @@ export async function getProductById(id: string): Promise<Product | null> {
           lomiPriceId
         },
         inStock,
-        stockQuantity,
         "images": images[].asset->,
         "categories": categories[]->{
           _id,
@@ -1132,8 +1125,6 @@ export async function getProductsByCategorySlug(
       },
       description,
       inStock,
-      stockQuantity,
-      dimensions,
       "images": images[].asset->,
       "categories": categories[]->{
         _id,
@@ -1167,7 +1158,6 @@ export async function getProductsByCategorySlug(
           lomiPriceId
         },
         inStock,
-        stockQuantity,
         "images": images[].asset->,
         "categories": categories[]->{
           _id,

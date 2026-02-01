@@ -14,7 +14,17 @@
       "viewAllResults": "Voir tous les résultats pour"
     },
     "cart": {
-      "ariaLabel": "Panier"
+      "ariaLabel": "Panier",
+      "title": "Votre panier",
+      "empty": "Votre panier est vide",
+      "continueShopping": "Continuer les achats",
+      "subtotal": "Sous-total",
+      "discount": "Réduction",
+      "total": "Total",
+      "checkout": "Commander",
+      "taxesIncluded": "Toutes taxes comprises",
+      "summary": "Résumé du panier et commande",
+      "pack": "/pack"
     },
     "menu": {
       "ariaLabel": "Menu",
@@ -39,6 +49,7 @@
     },
     "outOfStock": "Rupture de stock",
     "from": "À partir de",
+    "pack": "Pack",
     "productNotFound": {
       "title": "Produit introuvable",
       "description": "Le produit que vous recherchez n'existe pas ou a été supprimé.",
@@ -58,7 +69,8 @@
       "businessPackAvailable": "Commandes en gros disponibles",
       "viewVariant": "Voir",
       "relatedProducts": "Produits associés",
-      "relatedProductsDescription": "Vous pourriez également aimer ces produits"
+      "relatedProductsDescription": "Vous pourriez également aimer ces produits",
+      "taxesIncluded": "Toutes taxes comprises"
     },
     "share": {
       "title": "Partager",

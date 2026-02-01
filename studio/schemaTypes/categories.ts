@@ -43,16 +43,7 @@ export default defineType({
       name: 'badgeColor',
       title: 'Badge Color',
       type: 'string',
-      description: 'Optional: Hex color code for the badge (e.g., "#EF4444")',
-      validation: (Rule) =>
-        Rule.custom((value) => {
-          if (!value) return true; // Optional field
-          // Validate hex color format
-          const hexColorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
-          return hexColorRegex.test(value)
-            ? true
-            : 'Please enter a valid hex color code (e.g., #EF4444)';
-        }),
+      description: 'Optional: CSS color name for the badge (e.g., "red", "blue", "green", "orange"). The color name automatically determines the badge color display.',
     }),
   ],
   preview: {

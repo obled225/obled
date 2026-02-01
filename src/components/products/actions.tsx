@@ -34,9 +34,8 @@ const ProductActions = ({ product }: ProductActionsProps) => {
   // Check if the product is available for purchase
   const isAvailable = useMemo(() => {
     if (!product.inStock) return false;
-    if (product.stockQuantity < quantity) return false;
     return true;
-  }, [product.inStock, product.stockQuantity, quantity]);
+  }, [product.inStock]);
 
   const handleAddToCart = async () => {
     if (!isAvailable || isAdding) return;
@@ -56,8 +55,6 @@ const ProductActions = ({ product }: ProductActionsProps) => {
 
   const updateQuantity = (newQuantity: number) => {
     if (newQuantity < 1) return;
-    const maxQuantity = product.stockQuantity || 99;
-    if (newQuantity > maxQuantity) return;
     setQuantity(newQuantity);
   };
 
@@ -77,7 +74,6 @@ const ProductActions = ({ product }: ProductActionsProps) => {
           <span className="w-12 text-center font-medium">{quantity}</span>
           <button
             onClick={() => updateQuantity(quantity + 1)}
-            disabled={quantity >= (product.stockQuantity || 99)}
             className="p-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             +
@@ -116,10 +112,6 @@ const ProductActions = ({ product }: ProductActionsProps) => {
         )}
       </Button>
 
-      {/* Stock Status */}
-      <div className="text-sm text-gray-600">
-        {product.stockQuantity} available
-      </div>
     </div>
   );
 };

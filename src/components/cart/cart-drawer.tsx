@@ -10,8 +10,12 @@ import {
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, Plus, Minus, Trash2 } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cart-store';
+import { useCurrencyStore } from '@/lib/store/currency-store';
 import { formatPrice } from '@/lib/actions/utils';
+import { getProductPrice } from '@/lib/types';
 import { useRouter } from 'next/navigation';
+import { useIsMobile } from '@/lib/hooks/use-is-mobile';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 
 interface CartDrawerProps {
@@ -21,8 +25,11 @@ interface CartDrawerProps {
 
 export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const router = useRouter();
+  const t = useTranslations('header.cart');
   const { cart, updateQuantity, removeItem, getCartSummary } = useCartStore();
-  const summary = getCartSummary();
+  const { currency } = useCurrencyStore();
+  const summary = getCartSummary(currency);
+  const isMobile = useIsMobile();
 
   const handleCheckout = () => {
     onClose();
@@ -31,23 +38,29 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent className="flex flex-col w-full sm:max-w-md">
-        <SheetHeader>
-          <SheetTitle>Your Cart ({cart.itemCount})</SheetTitle>
+      <SheetContent
+        side={isMobile ? "bottom" : "right"}
+        floating={!isMobile}
+        className="flex flex-col w-full sm:max-w-md max-h-[70vh] sm:max-h-[calc(100vh-2rem)] overflow-hidden p-4"
+      >
+        <SheetHeader className="pb-1 space-y-0">
+          <SheetTitle className="mb-0 text-base">
+            {t('title')}{cart.itemCount > 1 ? ` (${cart.itemCount})` : ''}
+          </SheetTitle>
           <SheetDescription className="sr-only">
-            Cart summary and checkout
+            {t('summary')}
           </SheetDescription>
         </SheetHeader>
 
-        <div className="flex-1 overflow-y-auto py-4">
+        <div className="flex-1 overflow-y-auto pt-0 pb-4">
           {cart.items.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-1/2 space-y-4 text-center">
+            <div className="flex flex-col items-center justify-center min-h-full space-y-4 text-center">
               <div className="p-4 bg-muted/30 rounded-full">
                 <ShoppingCart className="h-8 w-8 text-muted-foreground" />
               </div>
-              <p className="text-muted-foreground">Your cart is empty</p>
+              <p className="text-muted-foreground">{t('empty')}</p>
               <Button variant="outline" onClick={onClose}>
-                Continue Shopping
+                {t('continueShopping')}
               </Button>
             </div>
           ) : (
@@ -75,24 +88,62 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     <div className="grid gap-1">
                       <h3 className="font-medium line-clamp-2 text-sm">
                         {item.product.name}
+                        {item.selectedVariant?.packSize && (
+                          <span className="text-muted-foreground font-normal">
+                            {' · '}
+                            {item.selectedVariant.name}
+                          </span>
+                        )}
                       </h3>
-                      {item.selectedVariant && (
+                      {item.selectedVariant && !item.selectedVariant.packSize && (
                         <p className="text-xs text-muted-foreground">
-                          {item.selectedVariant.name}
-                          {item.selectedVariant.value
-                            ? `: ${item.selectedVariant.value}`
-                            : ''}
+                          {`${item.selectedVariant.name}${item.selectedVariant.value ? `: ${item.selectedVariant.value}` : ''}`}
                         </p>
                       )}
                     </div>
                     <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium">
-                        {formatPrice(
-                          item.product.price +
-                            (item.selectedVariant?.priceModifier || 0),
-                          item.product.currency || 'XOF'
-                        )}
-                      </p>
+                      <div className="flex flex-col gap-1">
+                        {/* Get pack original price if it's a pack variant */}
+                        {(() => {
+                          const currentPrice = getProductPrice(item.product, currency) || getProductPrice(item.product, 'XOF') || item.product.prices[0];
+                          const basePrice = currentPrice?.basePrice || item.product.price;
+                          const packPrice = basePrice + (item.selectedVariant?.priceModifier || 0);
+
+                          // Find original price for pack if it exists
+                          let originalPrice: number | undefined;
+                          if (item.selectedVariant?.packSize && item.product.businessPacks) {
+                            const pack = item.product.businessPacks.find(
+                              (p) => p.quantity === item.selectedVariant?.packSize
+                            );
+                            const packPriceObj = pack?.prices?.find((p) => p.currency === currency);
+                            originalPrice = packPriceObj?.originalPrice;
+                          } else {
+                            originalPrice = currentPrice?.originalPrice;
+                          }
+
+                          const displayCurrency = currentPrice?.currency || item.product.currency || 'XOF';
+
+                          return (
+                            <div className="flex flex-col gap-0.5">
+                              <div className="flex items-center gap-2">
+                                {originalPrice && originalPrice > packPrice && (
+                                  <span className="text-xs text-muted-foreground line-through">
+                                    {formatPrice(originalPrice, displayCurrency)}
+                                  </span>
+                                )}
+                                <span className="text-sm font-medium">
+                                  {formatPrice(packPrice, displayCurrency)}
+                                  {item.selectedVariant?.packSize && (
+                                    <span className="text-xs text-muted-foreground ml-1">
+                                      {t('pack')}
+                                    </span>
+                                  )}
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })()}
+                      </div>
                       <div className="flex items-center gap-1">
                         <Button
                           variant="outline"
@@ -135,18 +186,36 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
         </div>
 
         {cart.items.length > 0 && (
-          <div className="border-t pt-4 space-y-4">
-            <div className="flex items-center justify-between font-medium">
-              <span>Subtotal</span>
-              <span>
-                {formatPrice(
-                  summary.subtotal,
-                  cart.items[0]?.product.currency || 'XOF'
-                )}
-              </span>
+          <div className="border-t pt-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600">{t('subtotal')}</span>
+              {summary.originalSubtotal && summary.originalSubtotal > summary.subtotal ? (
+                <span className="text-sm text-gray-500">
+                  {formatPrice(summary.originalSubtotal, currency)}
+                </span>
+              ) : (
+                <span className="text-sm font-medium">
+                  {formatPrice(summary.subtotal, currency)}
+                </span>
+              )}
+            </div>
+            {summary.discount > 0 && (
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">{t('discount')}</span>
+                <span className="text-green-600">
+                  {formatPrice(summary.discount, currency)}
+                </span>
+              </div>
+            )}
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-gray-600">{t('taxesIncluded')}</span>
+            </div>
+            <div className="flex items-center justify-between font-semibold pt-2 border-t">
+              <span>{t('total')}</span>
+              <span>{formatPrice(summary.subtotal, currency)}</span>
             </div>
             <Button className="w-full" size="lg" onClick={handleCheckout}>
-              Checkout
+              {t('checkout')}
             </Button>
           </div>
         )}

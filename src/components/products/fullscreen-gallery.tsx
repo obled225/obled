@@ -213,16 +213,16 @@ export function FullscreenGallery({
               style={{ minHeight: '100vh' }}
             >
               {/* Container with 3:4 aspect ratio to match product detail page */}
-              <div className="w-full max-w-[70vh] aspect-3/4 rounded-md overflow-hidden">
+              <div className="w-full max-w-[70vh] aspect-3/4 rounded-md overflow-hidden bg-transparent">
                 <Image
                   src={image}
                   alt={`Product image ${index + 1}`}
-                  className="w-full h-full object-cover select-none"
+                  className="w-full h-full object-contain select-none"
                   draggable={false}
                   loading={index <= currentIndex + 1 ? 'eager' : 'lazy'}
-                  width={1000}
-                  height={1000}
-                  unoptimized
+                  width={1200}
+                  height={1600}
+                  quality={90}
                 />
               </div>
             </div>

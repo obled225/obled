@@ -69,12 +69,8 @@ export default function CheckoutPage() {
         const effectiveLomiId = variantLomiId || baseLomiId;
 
         // If we are using a Pack Price ID, the quantity sent to lomi should be number of packs
-        // item.quantity is total items. So packs = total / packSize
-        const packSize = item.selectedVariant?.packSize || 1;
-        const quantityToSend =
-          variantLomiId && packSize > 1
-            ? item.quantity / packSize
-            : item.quantity;
+        // item.quantity is now the number of packs (not units), so use it directly
+        const quantityToSend = item.quantity;
 
         return {
           productId: item.product.id,
@@ -106,13 +102,13 @@ export default function CheckoutPage() {
           userWhatsApp: formData.userWhatsApp || undefined,
           shippingAddress: formData.shippingName
             ? {
-                name: formData.shippingName,
-                address: formData.shippingAddress,
-                city: formData.shippingCity,
-                country: formData.shippingCountry,
-                postalCode: formData.shippingPostalCode,
-                phone: formData.shippingPhone || formData.userPhone,
-              }
+              name: formData.shippingName,
+              address: formData.shippingAddress,
+              city: formData.shippingCity,
+              country: formData.shippingCountry,
+              postalCode: formData.shippingPostalCode,
+              phone: formData.shippingPhone || formData.userPhone,
+            }
             : undefined,
           shippingFee,
           taxAmount: cartSummary.tax,
@@ -127,7 +123,7 @@ export default function CheckoutPage() {
         showError(
           'Error',
           error.message ||
-            'Failed to create checkout session. Please try again.'
+          'Failed to create checkout session. Please try again.'
         );
         setIsSubmitting(false);
         return;

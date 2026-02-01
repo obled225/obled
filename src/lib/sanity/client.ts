@@ -17,11 +17,17 @@ export function urlFor(source: Record<string, unknown>) {
 // Helper function to get Sanity images
 export function getSanityImageUrl(
   image: Record<string, unknown>,
-  width = 800,
-  height = 600
+  width = 1200,
+  height?: number
 ) {
   if (!image) return null;
-  return builder.image(image).width(width).height(height).url();
+  const imageBuilder = builder.image(image).width(width).quality(90);
+  // Only set height if provided, to preserve aspect ratio for square/portrait images
+  if (height) {
+    return imageBuilder.height(height).fit('max').url();
+  }
+  // Use fit 'max' to preserve aspect ratio and prevent cropping
+  return imageBuilder.fit('max').url();
 }
 
 // Helper function to get Sanity file URL

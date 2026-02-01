@@ -129,12 +129,12 @@ export function ProductCard({ product }: ProductCardProps) {
                 src={imageUrl}
                 alt={`${product.name} - Image ${index + 1}`}
                 fill
-                className={`object-cover transition-opacity duration-500 ${
-                  index === currentImageIndex
+                className={`object-cover transition-opacity duration-500 ${index === currentImageIndex
                     ? 'opacity-100'
                     : 'opacity-0 absolute'
-                }`}
+                  }`}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                unoptimized
               />
             ))}
           </>
@@ -162,8 +162,8 @@ export function ProductCard({ product }: ProductCardProps) {
           <span className="text-sm font-medium text-gray-900">
             {/* Only show "From" for business products with packs (multiple items) */}
             {product.isBusinessProduct &&
-            product.businessPacks &&
-            product.businessPacks.length > 0
+              product.businessPacks &&
+              product.businessPacks.length > 0
               ? `${t('from')} ${formatPrice(displayPrice, displayCurrency)}`
               : formatPrice(displayPrice, displayCurrency)}
           </span>

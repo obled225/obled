@@ -55,21 +55,55 @@ export function CartItem({ item, showControls = true }: CartItemProps) {
               className="text-sm font-medium text-gray-900 hover:text-blue-600 transition-colors line-clamp-2"
             >
               {item.product.name}
+              {item.selectedVariant?.packSize && (
+                <span className="text-gray-500 font-normal">
+                  {' · '}
+                  {item.selectedVariant.name}
+                </span>
+              )}
             </Link>
 
-            {item.selectedVariant && (
+            {item.selectedVariant && !item.selectedVariant.packSize && (
               <p className="text-xs text-gray-500 mt-1">
-                {item.selectedVariant.name}: {item.selectedVariant.value}
+                {`${item.selectedVariant.name}${item.selectedVariant.value ? `: ${item.selectedVariant.value}` : ''}`}
               </p>
             )}
 
-            <p className="text-sm text-gray-600 mt-1">
-              {formatPrice(
-                basePrice + (item.selectedVariant?.priceModifier || 0),
-                displayCurrency
-              )}{' '}
-              each
-            </p>
+            <div className="flex items-center gap-2 mt-1">
+              {(() => {
+                const packPrice = basePrice + (item.selectedVariant?.priceModifier || 0);
+                
+                // Find original price for pack if it exists
+                let originalPrice: number | undefined;
+                if (item.selectedVariant?.packSize && item.product.businessPacks) {
+                  const pack = item.product.businessPacks.find(
+                    (p) => p.quantity === item.selectedVariant?.packSize
+                  );
+                  const packPriceObj = pack?.prices?.find((p) => p.currency === currency);
+                  originalPrice = packPriceObj?.originalPrice;
+                } else {
+                  originalPrice = currentPrice?.originalPrice;
+                }
+                
+                return (
+                  <>
+                    {originalPrice && originalPrice > packPrice && (
+                      <span className="text-xs text-gray-500 line-through">
+                        {formatPrice(originalPrice, displayCurrency)}
+                      </span>
+                    )}
+                    <span className="text-sm text-gray-600">
+                      {formatPrice(packPrice, displayCurrency)}
+                      {item.selectedVariant?.packSize ? (
+                        <span className="text-xs"> /pack</span>
+                      ) : (
+                        <span> each</span>
+                      )}
+                    </span>
+                  </>
+                );
+              })()}
+            </div>
           </div>
         </div>
 

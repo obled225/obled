@@ -117,6 +117,7 @@ export interface Cart {
 
 export interface CartSummary {
   subtotal: number;
+  originalSubtotal?: number;
   tax: number;
   shipping: number;
   discount: number;

@@ -22,17 +22,34 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: 'isBusinessProduct',
+      title: 'Is this a business offer product?',
+      type: 'boolean',
+      description: 'Business products appear on /business page, regular products appear on /shop',
+      initialValue: false,
+    }),
+    defineField({
       name: 'prices',
       title: 'Prices',
       type: 'array',
       description: 'Product prices in different currencies with lomi. price IDs',
+      hidden: ({document}) => Boolean(document?.isBusinessProduct),
       initialValue: () => [
         {
           currency: 'XOF',
           basePrice: 0,
         },
       ],
-      validation: (Rule) => Rule.required().min(1).error('At least one price is required'),
+      validation: (Rule) => Rule.custom((value, context) => {
+        const isBusiness = (context.document as any)?.isBusinessProduct;
+        if (isBusiness) {
+          return true; // Not required for business products
+        }
+        if (!value || value.length === 0) {
+          return 'At least one price is required';
+        }
+        return true;
+      }),
       of: [
         {
           type: 'object',
@@ -51,23 +68,24 @@ export default defineType({
               validation: (Rule) => Rule.required(),
             },
             {
-              name: 'basePrice',
-              title: 'Base price',
-              type: 'number',
-              options: {
-                controls: false,
-              },
-              validation: (Rule) => Rule.required().min(0),
-            },
-            {
               name: 'originalPrice',
               title: 'Original price',
               type: 'number',
               options: {
                 controls: false,
               },
-              description: 'Original price before discount (optional)',
+              description: 'The original price before discount. This number should be BIGGER than the base price.',
               validation: (Rule) => Rule.min(0),
+            },
+            {
+              name: 'basePrice',
+              title: 'Base price (optional)',
+              type: 'number',
+              options: {
+                controls: false,
+              },
+              description: 'The current/discounted selling price. This is the price customers pay now.',
+              validation: (Rule) => Rule.required().min(0),
             },
             {
               name: 'lomiPriceId',
@@ -96,8 +114,8 @@ export default defineType({
               originalPrice: 'originalPrice',
             },
             prepare({currency, basePrice, originalPrice}) {
-              const priceDisplay = originalPrice
-                ? `${basePrice} (was ${originalPrice})`
+              const priceDisplay = originalPrice && originalPrice > basePrice
+                ? `${originalPrice} → ${basePrice}`
                 : `${basePrice}`;
               return {
                 title: `${currency}: ${priceDisplay}`,
@@ -137,14 +155,10 @@ export default defineType({
       title: 'Images',
       type: 'array',
       of: [{type: 'image', options: {hotspot: true}}],
+      options: {
+        layout: 'grid',
+      },
       validation: (Rule) => Rule.min(1).error('At least one image is required'),
-    }),
-    defineField({
-      name: 'isBusinessProduct',
-      title: 'Is this a business offer product?',
-      type: 'boolean',
-      description: 'Business products appear on /business page, regular products appear on /shop',
-      initialValue: false,
     }),
     defineField({
       name: 'inStock',
@@ -153,20 +167,13 @@ export default defineType({
       initialValue: true,
     }),
     defineField({
-      name: 'stockQuantity',
-      title: 'Stock quantity',
-      type: 'number',
-      initialValue: 0,
-      validation: (Rule) => Rule.min(0),
-    }),
-    defineField({
       name: 'colors',
       title: 'Colors',
       type: 'array',
       description: 'Available colors for this product',
       initialValue: () => [
-        {name: 'Noir', value: '#000000', available: true},
-        {name: 'Blanc', value: '#FFFFFF', available: true},
+        {name: 'Noir', available: true},
+        {name: 'Blanc', available: true},
       ],
       of: [
         {
@@ -176,14 +183,7 @@ export default defineType({
               name: 'name',
               title: 'Color name',
               type: 'string',
-              description: 'e.g., Red, Blue, Noir, Blanc',
-              validation: (Rule) => Rule.required(),
-            },
-            {
-              name: 'value',
-              title: 'Color value',
-              type: 'string',
-              description: 'Hex color code (e.g., #FF0000) or color identifier',
+              description: 'The color name automatically determines the color display. Use CSS color names (e.g., black, white, red, blue, noir, blanc) or "mix" for a half-white, half-black display. French and English color names are supported. Examples: noir, blanc, black, white, red, blue, mix, etc.',
               validation: (Rule) => Rule.required(),
             },
             {
@@ -206,13 +206,12 @@ export default defineType({
           preview: {
             select: {
               name: 'name',
-              value: 'value',
               available: 'available',
             },
-            prepare({name, value, available}) {
+            prepare({name, available}) {
               return {
                 title: name || 'Unnamed Color',
-                subtitle: `${value}${available ? '' : ' (Unavailable)'}`,
+                subtitle: available ? 'Available' : 'Unavailable',
               };
             },
           },
@@ -280,7 +279,7 @@ export default defineType({
       title: 'Business packs',
       type: 'array',
       description: 'Pack sizes and pricing for business offers. Each pack can have prices in different currencies.',
-      hidden: ({document}) => !document?.isBusinessProduct,
+      hidden: ({document}) => !Boolean(document?.isBusinessProduct),
       of: [
         {
           type: 'object',
@@ -320,13 +319,23 @@ export default defineType({
                       validation: (Rule) => Rule.required(),
                     },
                     {
-                      name: 'price',
-                      title: 'Pack price',
+                      name: 'originalPrice',
+                      title: 'Original price',
                       type: 'number',
                       options: {
                         controls: false,
                       },
-                      description: 'Total price for the pack in this currency',
+                      description: 'The original price before discount. This number should be BIGGER than the base price.',
+                      validation: (Rule) => Rule.min(0),
+                    },
+                    {
+                      name: 'basePrice',
+                      title: 'Base price (optional)',
+                      type: 'number',
+                      options: {
+                        controls: false,
+                      },
+                      description: 'The current/discounted selling price for the pack.',
                       validation: (Rule) => Rule.required().min(0),
                     },
                     {
@@ -352,11 +361,15 @@ export default defineType({
                   preview: {
                     select: {
                       currency: 'currency',
-                      price: 'price',
+                      basePrice: 'basePrice',
+                      originalPrice: 'originalPrice',
                     },
-                    prepare({currency, price}) {
+                    prepare({currency, basePrice, originalPrice}) {
+                      const priceDisplay = originalPrice && originalPrice > basePrice
+                        ? `${originalPrice} → ${basePrice}`
+                        : `${basePrice}`;
                       return {
-                        title: `${currency}: ${price}`,
+                        title: `${currency}: ${priceDisplay}`,
                       };
                     },
                   },
@@ -372,7 +385,7 @@ export default defineType({
             },
             prepare({quantity, label, prices}) {
               const priceDisplay = prices && prices.length > 0
-                ? `${prices[0].currency} ${prices[0].price}${prices.length > 1 ? ` (+${prices.length - 1} more)` : ''}`
+                ? `${prices[0].currency} ${prices[0].basePrice}${prices.length > 1 ? ` (+${prices.length - 1} more)` : ''}`
                 : 'No prices set';
               return {
                 title: label || `Pack of ${quantity}`,
@@ -405,38 +418,6 @@ export default defineType({
       description: 'Sorting feature: Best seller products appear first when "Best sellers" sort option is selected',
     }),
     defineField({
-      name: 'dimensions',
-      title: 'Dimensions',
-      type: 'object',
-      description: 'Product dimensions and weight',
-      fields: [
-        {
-          name: 'length',
-          title: 'Length (cm)',
-          type: 'number',
-          description: 'Length in centimeters',
-        },
-        {
-          name: 'width',
-          title: 'Width (cm)',
-          type: 'number',
-          description: 'Width in centimeters',
-        },
-        {
-          name: 'height',
-          title: 'Height (cm)',
-          type: 'number',
-          description: 'Height in centimeters',
-        },
-        {
-          name: 'weight',
-          title: 'Weight (kg)',
-          type: 'number',
-          description: 'Product weight in kilograms',
-        },
-      ],
-    }),
-    defineField({
       name: 'variant',
       title: 'Variant Product',
       type: 'reference',
@@ -461,6 +442,7 @@ export default defineType({
       type: 'reference',
       to: [{type: 'products'}],
       description: 'Link to the business pack version of this product (e.g., if this is a single blank t-shirt, link to the pack of blank t-shirts). Only link to products marked as business offers.',
+      hidden: ({document}) => Boolean(document?.isBusinessProduct),
       options: {
         filter: 'isBusinessProduct == true',
       },
@@ -471,13 +453,26 @@ export default defineType({
       title: 'name',
       media: 'images.0',
       prices: 'prices',
+      businessPacks: 'businessPacks',
+      isBusinessProduct: 'isBusinessProduct',
       inStock: 'inStock',
     },
-    prepare({title, media, prices, inStock}) {
-      const firstPrice = prices?.[0];
-      const priceDisplay = firstPrice
-        ? `${firstPrice.currency || 'XOF'} ${firstPrice.basePrice || 0}`
-        : 'No price';
+    prepare({title, media, prices, businessPacks, isBusinessProduct, inStock}) {
+      let priceDisplay = 'No price';
+      
+      if (isBusinessProduct && businessPacks && businessPacks.length > 0) {
+        // For business products, get price from first pack's first price
+        const firstPack = businessPacks[0];
+        const firstPackPrice = firstPack?.prices?.[0];
+        if (firstPackPrice) {
+          priceDisplay = `${firstPackPrice.currency || 'XOF'} ${firstPackPrice.basePrice || 0}`;
+        }
+      } else if (prices && prices.length > 0) {
+        // For regular products, get price from prices array
+        const firstPrice = prices[0];
+        priceDisplay = `${firstPrice.currency || 'XOF'} ${firstPrice.basePrice || 0}`;
+      }
+      
       return {
         title: title || 'Untitled Product',
         subtitle: `${priceDisplay}${inStock ? '' : ' (Out of Stock)'}`,

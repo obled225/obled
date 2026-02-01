@@ -14,7 +14,17 @@
       "viewAllResults": "View all results for"
     },
     "cart": {
-      "ariaLabel": "Cart"
+      "ariaLabel": "Cart",
+      "title": "Your Cart",
+      "empty": "Your cart is empty",
+      "continueShopping": "Continue Shopping",
+      "subtotal": "Subtotal",
+      "discount": "Discount",
+      "total": "Total",
+      "checkout": "Checkout",
+      "taxesIncluded": "All taxes included",
+      "summary": "Cart summary and checkout",
+      "pack": "/pack"
     },
     "menu": {
       "ariaLabel": "Menu",
@@ -39,6 +49,7 @@
     },
     "outOfStock": "Out of stock",
     "from": "From",
+    "pack": "Pack",
     "productNotFound": {
       "title": "Product not found",
       "description": "The product you're looking for doesn't exist or has been removed.",
@@ -58,7 +69,8 @@
       "businessPackAvailable": "Bulk orders available",
       "viewVariant": "View",
       "relatedProducts": "Related Products",
-      "relatedProductsDescription": "You might also like these products"
+      "relatedProductsDescription": "You might also like these products",
+      "taxesIncluded": "All taxes included"
     },
     "share": {
       "title": "Share",

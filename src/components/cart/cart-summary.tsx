@@ -58,10 +58,25 @@ export function CartSummary({
             <span className="text-gray-600">
               Subtotal ({cart.itemCount} items)
             </span>
-            <span className="font-medium">
-              {formatPrice(cartSummary.subtotal, currency)}
-            </span>
+            {cartSummary.originalSubtotal && cartSummary.originalSubtotal > cartSummary.subtotal ? (
+              <span className="text-sm text-gray-500">
+                {formatPrice(cartSummary.originalSubtotal, currency)}
+              </span>
+            ) : (
+              <span className="text-sm font-medium">
+                {formatPrice(cartSummary.subtotal, currency)}
+              </span>
+            )}
           </div>
+
+          {cartSummary.discount > 0 && (
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-600">Discount</span>
+              <span className="text-green-600">
+                {formatPrice(cartSummary.discount, currency)}
+              </span>
+            </div>
+          )}
 
           <div className="flex justify-between text-sm">
             <span className="text-gray-600">Shipping</span>
@@ -80,13 +95,6 @@ export function CartSummary({
               {formatPrice(cartSummary.tax, currency)}
             </span>
           </div>
-
-          {cartSummary.discount > 0 && (
-            <div className="flex justify-between text-sm text-green-600">
-              <span>Discount</span>
-              <span>-{formatPrice(cartSummary.discount, currency)}</span>
-            </div>
-          )}
         </div>
 
         <div className="border-t pt-4 mb-6">

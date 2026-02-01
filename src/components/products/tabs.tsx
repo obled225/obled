@@ -51,22 +51,6 @@ const ProductInfoTab = ({ product }: ProductTabsProps) => {
         </div>
         <div className="flex flex-col gap-y-4">
           <div>
-            <span className="font-semibold">Weight</span>
-            <p className="text-gray-700">
-              {product.dimensions?.weight
-                ? `${product.dimensions.weight} kg`
-                : '-'}
-            </p>
-          </div>
-          <div>
-            <span className="font-semibold">Dimensions</span>
-            <p className="text-gray-700">
-              {product.dimensions
-                ? `${product.dimensions.length}L x ${product.dimensions.width}W x ${product.dimensions.height}H`
-                : '-'}
-            </p>
-          </div>
-          <div>
             <span className="font-semibold">Stock Status</span>
             <p
               className={`font-medium ${product.inStock ? 'text-green-600' : 'text-red-600'}`}

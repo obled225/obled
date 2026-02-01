@@ -75,7 +75,6 @@ export interface SanityProductExpanded extends Omit<
       lomiPriceId?: string;
     }>;
     inStock?: boolean;
-    stockQuantity?: number;
     images?: Array<{
       asset?: {
         _ref: string;
@@ -105,18 +104,13 @@ export interface SanityProductExpanded extends Omit<
     label?: string;
     prices?: Array<{
       currency: 'XOF' | 'USD' | 'EUR';
-      price: number;
+      basePrice: number;
+      originalPrice?: number;
       lomiPriceId?: string;
     }>;
   }>;
   featured?: boolean;
   bestSeller?: boolean;
-  dimensions?: {
-    length?: number;
-    width?: number;
-    height?: number;
-    weight?: number;
-  };
   description?: PortableTextBlock[];
 }
 
@@ -191,7 +185,6 @@ export interface Product {
   soldOut: boolean;
   colors?: Array<{
     name: string;
-    value: string;
     available: boolean;
     image?: string;
   }>;
@@ -202,13 +195,6 @@ export interface Product {
   description?: PortableTextBlock[];
   category: ProductCategory;
   inStock: boolean;
-  stockQuantity: number;
-  dimensions?: {
-    length?: number;
-    width?: number;
-    height?: number;
-    weight?: number;
-  };
   variant?: {
     id: string;
     name: string;
@@ -227,7 +213,8 @@ export interface Product {
     label?: string;
     prices?: Array<{
       currency: 'XOF' | 'USD' | 'EUR';
-      price: number;
+      basePrice: number;
+      originalPrice?: number;
       lomiPriceId?: string;
     }>;
   }>;
@@ -242,7 +229,6 @@ export interface ProductVariant {
   name: string;
   value: string;
   priceModifier: number;
-  stockQuantity: number;
   lomiPriceId?: string;
   packSize?: number;
 }

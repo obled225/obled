@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Minus, Plus, Share2, ZoomIn, Ruler, Package } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Minus, Plus, Share2, ZoomIn, Ruler, Package, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Product, formatPrice, getProductPrice } from '@/lib/types';
 import { useCartStore } from '@/lib/store/cart-store';
@@ -19,6 +19,13 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import RelatedProducts from '@/components/products/related';
+import { normalizeColorName } from '@/lib/utils/color';
+
+// Helper function to capitalize first letter of color name for display
+const capitalizeColorName = (name: string): string => {
+  if (!name) return '';
+  return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+};
 
 interface ProductDetailProps {
   product: Product;
@@ -37,25 +44,30 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const [selectedSize, setSelectedSize] = useState(
     product.sizes?.find((s) => s.available)?.name || ''
   );
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
-  // Business Pack Selection
+  // Business Pack Selection - default to first pack if available
   const [selectedPack, setSelectedPack] = useState<
     NonNullable<Product['businessPacks']>[number] | null
-  >(null);
+  >(product.isBusinessProduct && product.businessPacks?.[0] || null);
 
   // Get color image if available, otherwise use main images
-  const getDisplayImages = () => {
+  // Make it reactive so it updates when selectedColor changes
+  const displayImages = useMemo(() => {
     const selectedColorObj = product.colors?.find(
       (c) => c.name === selectedColor
     );
     if (selectedColorObj?.image) {
       // If color has an image, use it as the main image
-      return [selectedColorObj.image, ...(product.images || [])];
+      // Filter out duplicates - remove the color image from product images if it exists there
+      const mainImages = (product.images || []).filter(
+        (img) => img !== selectedColorObj.image
+      );
+      return [selectedColorObj.image, ...mainImages];
     }
     return product.images || [product.image].filter(Boolean);
-  };
-
-  const displayImages = getDisplayImages();
+  }, [selectedColor, product.colors, product.images, product.image]);
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
@@ -76,21 +88,73 @@ export function ProductDetail({ product }: ProductDetailProps) {
     pack: NonNullable<Product['businessPacks']>[number]
   ) => {
     const packPriceObj = pack.prices?.find((p) => p.currency === currency);
-    return packPriceObj?.price || baseDisplayPrice * pack.quantity;
+    return packPriceObj?.basePrice || baseDisplayPrice * pack.quantity;
+  };
+
+  // Get pack original price for selected currency (if available)
+  const getPackOriginalPrice = (
+    pack: NonNullable<Product['businessPacks']>[number]
+  ) => {
+    const packPriceObj = pack.prices?.find((p) => p.currency === currency);
+    return packPriceObj?.originalPrice;
   };
 
   const packDisplayPrice = selectedPack
     ? getPackPrice(selectedPack)
     : baseDisplayPrice;
 
-  const displayPrice = packDisplayPrice;
+  const packOriginalPrice = selectedPack
+    ? getPackOriginalPrice(selectedPack)
+    : undefined;
+
+  // Base price (before quantity multiplication)
+  const basePrice = packDisplayPrice;
   const displayCurrency = currentPrice?.currency || product.currency;
-  const displayOriginalPrice = currentPrice?.originalPrice;
+  const baseOriginalPrice = packOriginalPrice || currentPrice?.originalPrice;
+
+  // Display price multiplied by quantity (for both packs and non-packs)
+  const displayPrice = basePrice * quantity;
+  const displayOriginalPrice = baseOriginalPrice ? baseOriginalPrice * quantity : undefined;
 
   // Reset selected image when color changes
   const handleColorChange = (colorName: string) => {
     setSelectedColor(colorName);
     setSelectedImage(0); // Reset to first image when color changes
+  };
+
+  // Touch handlers for swipe navigation
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      setSelectedImage((selectedImage + 1) % displayImages.length);
+    }
+    if (isRightSwipe) {
+      setSelectedImage((selectedImage - 1 + displayImages.length) % displayImages.length);
+    }
+  };
+
+  // Fast navigation functions
+  const goToNextImage = () => {
+    setSelectedImage((selectedImage + 1) % displayImages.length);
+  };
+
+  const goToPrevImage = () => {
+    setSelectedImage((selectedImage - 1 + displayImages.length) % displayImages.length);
   };
 
   const router = useRouter();
@@ -104,18 +168,20 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const handleAddToCart = async () => {
     setIsAdding(true);
     try {
-      if (selectedPack) {
-        const base = currentPrice?.basePrice || product.price;
-
+      // For business products with packs, always use a pack
+      if (product.isBusinessProduct && product.businessPacks && product.businessPacks.length > 0 && selectedPack) {
         // Get pack price for selected currency
         const packPriceObj = selectedPack.prices?.find(
           (p) => p.currency === currency
         );
-        const packPrice = packPriceObj?.price || base * selectedPack.quantity;
+        const base = currentPrice?.basePrice || product.price;
+        const packPrice = packPriceObj?.basePrice || base * selectedPack.quantity;
 
-        // Calculate effective unit price in the pack
-        const unitPriceInPack = packPrice / selectedPack.quantity;
-        const priceModifier = unitPriceInPack - base;
+        // Calculate price modifier: pack price minus base unit price
+        // The cart calculates: (basePrice + modifier) * quantity
+        // For packs: (basePrice + (packPrice - basePrice)) * quantity = packPrice * quantity
+        // This ensures 1 pack shows as packPrice, not basePrice * packSize
+        const priceModifier = packPrice - base;
 
         // Get lomi price ID for selected currency
         const packLomiId = packPriceObj?.lomiPriceId;
@@ -125,12 +191,12 @@ export function ProductDetail({ product }: ProductDetailProps) {
           name: selectedPack.label || `Pack ${selectedPack.quantity}`,
           value: String(selectedPack.quantity),
           priceModifier: priceModifier,
-          stockQuantity: product.stockQuantity,
           lomiPriceId: packLomiId,
           packSize: selectedPack.quantity,
         };
 
-        addItem(product, quantity * selectedPack.quantity, variant);
+        // Add packs, not units (quantity = number of packs, should be 1)
+        addItem(product, quantity, variant);
       } else {
         addItem(product, quantity);
       }
@@ -145,17 +211,21 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
   const handleBuyNow = async () => {
     try {
-      if (selectedPack) {
+      // For business products with packs, always use a pack
+      if (product.isBusinessProduct && product.businessPacks && product.businessPacks.length > 0 && selectedPack) {
         const base = currentPrice?.basePrice || product.price;
 
         // Get pack price for selected currency
         const packPriceObj = selectedPack.prices?.find(
           (p) => p.currency === currency
         );
-        const packPrice = packPriceObj?.price || base * selectedPack.quantity;
+        const packPrice = packPriceObj?.basePrice || base * selectedPack.quantity;
 
-        const unitPriceInPack = packPrice / selectedPack.quantity;
-        const priceModifier = unitPriceInPack - base;
+        // Calculate price modifier: pack price minus base unit price
+        // The cart calculates: (basePrice + modifier) * quantity
+        // For packs: (basePrice + (packPrice - basePrice)) * quantity = packPrice * quantity
+        // This ensures 1 pack shows as packPrice, not basePrice * packSize
+        const priceModifier = packPrice - base;
 
         // Get lomi price ID for selected currency
         const packLomiId = packPriceObj?.lomiPriceId;
@@ -165,11 +235,11 @@ export function ProductDetail({ product }: ProductDetailProps) {
           name: selectedPack.label || `Pack ${selectedPack.quantity}`,
           value: String(selectedPack.quantity),
           priceModifier: priceModifier,
-          stockQuantity: product.stockQuantity,
           lomiPriceId: packLomiId,
           packSize: selectedPack.quantity,
         };
-        addItem(product, quantity * selectedPack.quantity, variant);
+        // Add packs, not units (quantity = number of packs)
+        addItem(product, quantity, variant);
       } else {
         addItem(product, quantity);
       }
@@ -185,19 +255,27 @@ export function ProductDetail({ product }: ProductDetailProps) {
       <div className="grid gap-6 sm:gap-8 lg:grid-cols-2 lg:gap-12">
         {/* Image Gallery */}
         <div className="space-y-4">
-          {/* Main Image */}
-          <div className="relative aspect-3/4 overflow-hidden bg-gray-100 rounded-md cursor-pointer group">
+          {/* Main Image - adapts to image aspect ratio */}
+          <div 
+            className="relative w-full bg-transparent rounded-md cursor-pointer group"
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+          >
             {displayImages.length > 0 && displayImages[selectedImage] ? (
               <>
-                {/* Use regular img tag for unoptimized best quality */}
+                {/* Image adapts to its natural aspect ratio */}
                 <Image
                   src={displayImages[selectedImage]}
                   alt={product.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-auto rounded-md"
                   onClick={() => setIsFullscreenGalleryOpen(true)}
-                  width={1000}
-                  height={1000}
+                  style={{ maxHeight: '80vh', objectFit: 'contain' }}
+                  loading="eager"
+                  width={1200}
+                  height={1600}
                   unoptimized
+                  priority={selectedImage === 0}
                 />
                 <button
                   onClick={() => setIsFullscreenGalleryOpen(true)}
@@ -208,39 +286,64 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 </button>
               </>
             ) : (
-              <div className="flex items-center justify-center h-full text-gray-400">
+              <div className="flex items-center justify-center h-96 text-gray-400">
                 <span>No image available</span>
               </div>
             )}
           </div>
 
-          {/* Thumbnail Gallery */}
+          {/* Image Navigation */}
           {displayImages.length > 1 && (
-            <div className="grid grid-cols-4 gap-2 sm:gap-4">
-              {displayImages.map(
-                (image, index) =>
-                  image && (
-                    <button
-                      key={index}
-                      onClick={() => setSelectedImage(index)}
-                      className={cn(
-                        'relative aspect-square overflow-hidden bg-gray-100 rounded-md',
-                        selectedImage === index && 'ring-2 ring-blue-600'
-                      )}
-                    >
-                      {/* Use regular img tag for unoptimized best quality */}
-                      <Image
-                        src={image}
-                        alt={`${product.name} - Image ${index + 1}`}
-                        className="w-full h-full object-cover"
-                        width={1000}
-                        height={1000}
-                        unoptimized
-                      />
-                    </button>
-                  )
-              )}
-            </div>
+            <>
+              {/* Mobile: Arrow Navigation */}
+              <div className="flex items-center justify-center gap-3 sm:hidden">
+                <button
+                  onClick={goToPrevImage}
+                  className="flex items-center justify-center w-8 h-8 rounded-md bg-white/80 border border-gray-200 hover:bg-white active:bg-gray-100 transition-colors touch-target"
+                  aria-label="Previous image"
+                >
+                  <ChevronLeft className="h-4 w-4 text-gray-600" />
+                </button>
+                <span className="text-sm font-medium text-gray-700">
+                  {selectedImage + 1} / {displayImages.length}
+                </span>
+                <button
+                  onClick={goToNextImage}
+                  className="flex items-center justify-center w-8 h-8 rounded-md bg-white/80 border border-gray-200 hover:bg-white active:bg-gray-100 transition-colors touch-target"
+                  aria-label="Next image"
+                >
+                  <ChevronRight className="h-4 w-4 text-gray-600" />
+                </button>
+              </div>
+
+              {/* Desktop: Thumbnail Gallery */}
+              <div className="hidden sm:grid grid-cols-3 gap-3 sm:gap-4">
+                {displayImages.map(
+                  (image, index) =>
+                    image && (
+                      <button
+                        key={index}
+                        onClick={() => setSelectedImage(index)}
+                        className={cn(
+                          'relative aspect-square overflow-hidden bg-transparent rounded-md transition-all',
+                          selectedImage === index && 'ring-2 ring-blue-600 scale-105'
+                        )}
+                      >
+                        {/* Use object-contain for thumbnails to show full image */}
+                        <Image
+                          src={image}
+                          alt={`${product.name} - Image ${index + 1}`}
+                          className="w-full h-full object-contain"
+                          width={300}
+                          height={300}
+                          quality={90}
+                          unoptimized
+                        />
+                      </button>
+                    )
+                )}
+              </div>
+            </>
           )}
         </div>
 
@@ -267,57 +370,75 @@ export function ProductDetail({ product }: ProductDetailProps) {
           )}
 
           {/* Price */}
-          <div className="flex items-center gap-3 mb-6">
-            <div className="flex items-center gap-2">
-              <span className="text-lg font-medium text-gray-900">
-                {formatPrice(displayPrice, displayCurrency)}
-              </span>
-              {displayOriginalPrice && displayOriginalPrice > displayPrice && (
-                <span className="text-sm text-gray-500 line-through">
-                  {formatPrice(displayOriginalPrice, displayCurrency)}
+          <div className="mb-6">
+            <div className="flex items-center gap-3 mb-1">
+              <div className="flex items-center gap-2">
+                {displayOriginalPrice && displayOriginalPrice > displayPrice && (
+                  <span className="text-sm text-gray-500 line-through">
+                    {formatPrice(displayOriginalPrice, displayCurrency)}
+                  </span>
+                )}
+                <span className="text-lg font-medium text-gray-900">
+                  {formatPrice(displayPrice, displayCurrency)}
+                </span>
+              </div>
+              {product.soldOut && (
+                <span className="rounded-sm bg-gray-900 px-3 py-1 text-xs font-medium text-white">
+                  Out of Stock
                 </span>
               )}
             </div>
-            {product.soldOut && (
-              <span className="rounded-sm bg-gray-900 px-3 py-1 text-xs font-medium text-white">
-                Out of Stock
-              </span>
-            )}
+            <p className="text-xs text-gray-500">{t('productDetail.taxesIncluded')}</p>
           </div>
 
           {/* Color Selector */}
           {product.colors && product.colors.length > 0 && (
             <div className="mb-6">
-              <p className="text-sm font-medium text-gray-900 mb-3">
-                {t('productDetail.color')}: {selectedColor}
-              </p>
-              <div className="flex gap-2">
-                {product.colors.map((color, index) => (
-                  <button
-                    key={`${color.name}-${index}`}
-                    onClick={() => handleColorChange(color.name)}
-                    disabled={!color.available}
-                    className={cn(
-                      'relative h-8 w-8 rounded-full border-2 transition-all',
-                      selectedColor === color.name
-                        ? 'border-gray-900'
-                        : 'border-gray-200',
-                      !color.available && 'opacity-40'
-                    )}
-                    style={{ backgroundColor: color.value }}
-                    aria-label={color.name}
-                  >
-                    {color.value === '#FFFFFF' && (
-                      <span className="absolute inset-1 rounded-full border border-gray-300" />
-                    )}
-                    {!color.available && (
-                      <span className="absolute inset-0 flex items-center justify-center">
-                        <span className="h-px w-8 rotate-45 bg-gray-500" />
-                      </span>
-                    )}
-                  </button>
-                ))}
+              <div className="flex gap-2 mb-3">
+                {product.colors.map((color, index) => {
+                  const normalizedColor = normalizeColorName(color.name);
+                  const isMix = normalizedColor === 'mix';
+                  const isWhite = normalizedColor === 'white' || color.name.toLowerCase() === 'blanc';
+
+                  return (
+                    <button
+                      key={`${color.name}-${index}`}
+                      onClick={() => handleColorChange(color.name)}
+                      disabled={!color.available}
+                      className={cn(
+                        'relative h-8 w-8 rounded-full border-2 transition-all overflow-hidden',
+                        selectedColor === color.name
+                          ? isWhite
+                            ? 'border-gray-900'
+                            : 'border-gray-900'
+                          : isWhite
+                            ? 'border-gray-300'
+                            : 'border-gray-200',
+                        !color.available && 'opacity-40',
+                        isMix && 'bg-white'
+                      )}
+                      style={!isMix ? { backgroundColor: normalizedColor } : undefined}
+                      aria-label={color.name}
+                    >
+                      {isMix && (
+                        <>
+                          {/* Half white, half black circle */}
+                          <div className="absolute inset-0 bg-white" />
+                          <div className="absolute inset-0 bg-black" style={{ clipPath: 'polygon(0 0, 50% 0, 50% 100%, 0 100%)' }} />
+                        </>
+                      )}
+                      {!color.available && (
+                        <span className="absolute inset-0 flex items-center justify-center z-10">
+                          <span className="h-px w-8 rotate-45 bg-gray-500" />
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
+              <p className="text-sm font-medium text-gray-900">
+                {t('productDetail.color')}: {capitalizeColorName(selectedColor || product.colors[0]?.name || '')}
+              </p>
             </div>
           )}
 
@@ -339,7 +460,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                         ? 'border-gray-900 bg-gray-900 text-white'
                         : 'border-gray-200 bg-white text-gray-900 hover:border-gray-900',
                       !size.available &&
-                        'cursor-not-allowed border-gray-200 text-gray-400 opacity-50'
+                      'cursor-not-allowed border-gray-200 text-gray-400 opacity-50'
                     )}
                   >
                     {size.name}
@@ -363,17 +484,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
                   {t('pack') || 'Pack'}
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={() => setSelectedPack(null)}
-                    className={cn(
-                      'flex h-10 px-4 items-center justify-center rounded-md border text-sm font-medium transition-colors',
-                      !selectedPack
-                        ? 'border-gray-900 bg-gray-900 text-white'
-                        : 'border-gray-200 bg-white text-gray-900 hover:border-gray-900'
-                    )}
-                  >
-                    Unit (1)
-                  </button>
                   {product.businessPacks.map((pack) => (
                     <button
                       key={pack.quantity}
