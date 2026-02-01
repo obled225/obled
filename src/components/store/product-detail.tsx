@@ -27,10 +27,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import RelatedProducts from '@/components/products/related';
 import { normalizeColorName } from '@/lib/utils/color';
-import {
-  getTaxSettings,
-  type TaxSettings,
-} from '@/lib/sanity/queries';
+import { getTaxSettings, type TaxSettings } from '@/lib/sanity/queries';
 
 // Helper function to capitalize first letter of color name for display
 const capitalizeColorName = (name: string): string => {
@@ -98,17 +95,23 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const basePriceXOF = product.price || 0;
 
   // Get pack price for selected currency
-  const getPackPrice = (
-    pack: { quantity: number; label?: string; price?: number; originalPrice?: number }
-  ) => {
+  const getPackPrice = (pack: {
+    quantity: number;
+    label?: string;
+    price?: number;
+    originalPrice?: number;
+  }) => {
     const packPriceXOF = pack.price || basePriceXOF * pack.quantity;
     return convertPrice(packPriceXOF, currency);
   };
 
   // Get pack original price for selected currency (if available)
-  const getPackOriginalPrice = (
-    pack: { quantity: number; label?: string; price?: number; originalPrice?: number }
-  ) => {
+  const getPackOriginalPrice = (pack: {
+    quantity: number;
+    label?: string;
+    price?: number;
+    originalPrice?: number;
+  }) => {
     const originalPriceXOF = pack.originalPrice;
     return originalPriceXOF
       ? convertPrice(originalPriceXOF, currency)
@@ -127,8 +130,22 @@ export function ProductDetail({ product }: ProductDetailProps) {
   // Base price (before quantity multiplication)
   const basePrice = packDisplayPrice;
   const baseOriginalPriceXOF = packOriginalPrice
-    ? (selectedPack as { quantity: number; label?: string; price?: number; originalPrice?: number } | null)?.originalPrice
-      ? (selectedPack as { quantity: number; label?: string; price?: number; originalPrice?: number }).originalPrice
+    ? (
+        selectedPack as {
+          quantity: number;
+          label?: string;
+          price?: number;
+          originalPrice?: number;
+        } | null
+      )?.originalPrice
+      ? (
+          selectedPack as {
+            quantity: number;
+            label?: string;
+            price?: number;
+            originalPrice?: number;
+          }
+        ).originalPrice
       : product.originalPrice
     : product.originalPrice;
   const baseOriginalPrice = baseOriginalPriceXOF
@@ -206,7 +223,14 @@ export function ProductDetail({ product }: ProductDetailProps) {
       ) {
         // All prices are in XOF
         const packPriceXOF =
-          (selectedPack as { quantity: number; label?: string; price?: number; originalPrice?: number }).price || basePriceXOF * selectedPack.quantity;
+          (
+            selectedPack as {
+              quantity: number;
+              label?: string;
+              price?: number;
+              originalPrice?: number;
+            }
+          ).price || basePriceXOF * selectedPack.quantity;
 
         // Calculate price modifier: pack price minus base unit price (in XOF)
         // The cart calculates: (basePrice + modifier) * quantity
@@ -247,7 +271,14 @@ export function ProductDetail({ product }: ProductDetailProps) {
       ) {
         // All prices are in XOF
         const packPriceXOF =
-          (selectedPack as { quantity: number; label?: string; price?: number; originalPrice?: number }).price || basePriceXOF * selectedPack.quantity;
+          (
+            selectedPack as {
+              quantity: number;
+              label?: string;
+              price?: number;
+              originalPrice?: number;
+            }
+          ).price || basePriceXOF * selectedPack.quantity;
 
         // Calculate price modifier: pack price minus base unit price (in XOF)
         // The cart calculates: (basePrice + modifier) * quantity
@@ -415,7 +446,9 @@ export function ProductDetail({ product }: ProductDetailProps) {
               )}
             </div>
             {/* Only show "All taxes included" when tax is NOT enabled */}
-            {(!taxSettings || !taxSettings.isActive || taxSettings.taxRates.length === 0) && (
+            {(!taxSettings ||
+              !taxSettings.isActive ||
+              taxSettings.taxRates.length === 0) && (
               <p className="text-xs text-gray-500">
                 {t('productDetail.taxesIncluded')}
               </p>

@@ -159,7 +159,14 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                             const pack = item.product.businessPacks.find(
                               (p) =>
                                 p.quantity === item.selectedVariant?.packSize
-                            ) as { quantity: number; label?: string; price?: number; originalPrice?: number } | undefined;
+                            ) as
+                              | {
+                                  quantity: number;
+                                  label?: string;
+                                  price?: number;
+                                  originalPrice?: number;
+                                }
+                              | undefined;
                             originalPriceXOF = pack?.originalPrice;
                           } else {
                             originalPriceXOF = item.product.originalPrice;
@@ -233,7 +240,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">{t('subtotal')}</span>
               {summary.originalSubtotal &&
-                summary.originalSubtotal > summary.subtotal ? (
+              summary.originalSubtotal > summary.subtotal ? (
                 <span className="text-sm text-gray-500">
                   {formatPrice(summary.originalSubtotal, currency)}
                 </span>

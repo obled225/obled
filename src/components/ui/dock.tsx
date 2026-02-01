@@ -48,11 +48,13 @@ export function Dock({ isHeaderVisible }: DockProps) {
     <>
       <div
         ref={dockRef}
-        className={`fixed z-50 flex items-center gap-2 bg-background border border-border rounded-md shadow-lg transition-all duration-300 ease-in-out ${isMobile ? 'top-4 px-1 py-1 gap-1' : 'top-[50px] px-2 py-2 gap-2'
-          } ${shouldShow
+        className={`fixed z-50 flex items-center gap-2 bg-background border border-border rounded-md shadow-lg transition-all duration-300 ease-in-out ${
+          isMobile ? 'top-4 px-1 py-1 gap-1' : 'top-[50px] px-2 py-2 gap-2'
+        } ${
+          shouldShow
             ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto'
             : 'opacity-0 -translate-y-2 scale-95 pointer-events-none'
-          }`}
+        }`}
         style={{
           right: isMobile
             ? 'max(1rem, calc((100% - 1245px) / 2 + 1rem))'
@@ -67,13 +69,16 @@ export function Dock({ isHeaderVisible }: DockProps) {
           aria-label={t('cart.ariaLabel')}
           onClick={() => setIsCartOpen(true)}
         >
-          <ShoppingCart className={isMobile ? 'h-4 w-4' : 'h-5 w-5 sm:h-5 sm:w-5'} />
+          <ShoppingCart
+            className={isMobile ? 'h-4 w-4' : 'h-5 w-5 sm:h-5 sm:w-5'}
+          />
           {cartItemCount > 0 && (
             <Badge
-              className={`absolute -top-1 -right-1 ${isMobile
-                ? 'h-4 w-4 text-[9px] font-semibold'
-                : 'h-4 w-4 text-[10px]'
-                } p-0 flex items-center justify-center bg-[#22c55e] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.1)] border-0`}
+              className={`absolute -top-1 -right-1 ${
+                isMobile
+                  ? 'h-4 w-4 text-[9px] font-semibold'
+                  : 'h-4 w-4 text-[10px]'
+              } p-0 flex items-center justify-center bg-[#22c55e] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.1)] border-0`}
             >
               {cartItemCount}
             </Badge>

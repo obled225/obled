@@ -79,7 +79,14 @@ export function CartItem({ item, showControls = true }: CartItemProps) {
                 ) {
                   const pack = item.product.businessPacks.find(
                     (p) => p.quantity === item.selectedVariant?.packSize
-                  ) as { quantity: number; label?: string; price?: number; originalPrice?: number } | undefined;
+                  ) as
+                    | {
+                        quantity: number;
+                        label?: string;
+                        price?: number;
+                        originalPrice?: number;
+                      }
+                    | undefined;
                   originalPriceXOF = pack?.originalPrice;
                 } else {
                   originalPriceXOF = item.product.originalPrice;

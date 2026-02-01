@@ -34,7 +34,9 @@ export function CartSummary({
   const { currency, convertPrice } = useCurrencyStore();
   const t = useTranslations('header.cart');
   const tShipping = useTranslations('shipping');
-  const [selectedShipping, setSelectedShipping] = useState<string | undefined>(undefined);
+  const [selectedShipping, setSelectedShipping] = useState<string | undefined>(
+    undefined
+  );
   const [shippingCost, setShippingCost] = useState(0);
   const [taxSettings, setTaxSettings] = useState<TaxSettings | null>(null);
   const [globalFreeShippingThreshold, setGlobalFreeShippingThreshold] =
@@ -100,10 +102,7 @@ export function CartSummary({
 
   // Subtotal already reflects discounted prices, so don't subtract discount again
   // Discount is only for display purposes to show savings
-  const finalTotal =
-    cartSummary.subtotal +
-    cartSummary.tax +
-    shippingCost;
+  const finalTotal = cartSummary.subtotal + cartSummary.tax + shippingCost;
 
   return (
     <div className={`space-y-4 sm:space-y-6 ${className}`}>
@@ -126,7 +125,7 @@ export function CartSummary({
               {t('subtotalWithItems', { count: cart.itemCount })}
             </span>
             {cartSummary.originalSubtotal &&
-              cartSummary.originalSubtotal > cartSummary.subtotal ? (
+            cartSummary.originalSubtotal > cartSummary.subtotal ? (
               <span className="text-sm text-gray-500">
                 {formatPrice(cartSummary.originalSubtotal, currency)}
               </span>
@@ -149,7 +148,8 @@ export function CartSummary({
           <div className="flex justify-between text-sm">
             <span className="text-gray-600">{t('shipping')}</span>
             <span className="font-medium">
-              {selectedShipping && (globalFreeShippingActive || shippingCost === 0) ? (
+              {selectedShipping &&
+              (globalFreeShippingActive || shippingCost === 0) ? (
                 <span className="text-green-600 font-semibold">
                   {tShipping('free')}
                 </span>

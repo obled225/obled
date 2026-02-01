@@ -46,7 +46,9 @@ export function ShippingCalculator({
         setGlobalFreeShippingThreshold(globalThreshold);
         // Always auto-select first option if none selected or selected option doesn't exist
         if (options.length > 0 && onShippingChange) {
-          const isValidSelection = selectedShipping && options.some(opt => opt.id === selectedShipping);
+          const isValidSelection =
+            selectedShipping &&
+            options.some((opt) => opt.id === selectedShipping);
           if (!isValidSelection) {
             const firstOption = options[0];
             const price = convertPrice(firstOption.price, currency);
@@ -180,7 +182,10 @@ export function ShippingCalculator({
           <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
             <p className="text-sm text-blue-900">
               {(() => {
-                const formattedAmount = formatPrice(amountForFreeShipping, currency);
+                const formattedAmount = formatPrice(
+                  amountForFreeShipping,
+                  currency
+                );
                 const message = t('addAmountToEnableFreeShipping', {
                   amount: formattedAmount,
                 });
@@ -228,10 +233,11 @@ export function ShippingCalculator({
           {availableOptions.map((option) => (
             <label
               key={option.id}
-              className={`block p-4 border rounded-md cursor-pointer transition-colors ${selectedShipping === option.id
+              className={`block p-4 border rounded-md cursor-pointer transition-colors ${
+                selectedShipping === option.id
                   ? 'border-blue-500 bg-blue-50'
                   : 'border-gray-200 hover:border-gray-300'
-                }`}
+              }`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center">

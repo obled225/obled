@@ -35,10 +35,14 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
   // For business products, use the minimum pack price instead of currentPrice (which is hidden)
   let price = doc.currentPrice || 0;
   let originalPrice = doc.basePrice;
-  
+
   // For business products with packs, calculate price from the minimum pack price
   // Note: At this point, doc.businessPacks has the raw Sanity structure with currentPrice/basePrice
-  if (doc.isBusinessProduct && doc.businessPacks && doc.businessPacks.length > 0) {
+  if (
+    doc.isBusinessProduct &&
+    doc.businessPacks &&
+    doc.businessPacks.length > 0
+  ) {
     // Type assertion: GROQ query returns currentPrice/basePrice, not price/originalPrice
     const rawPacks = doc.businessPacks as Array<{
       quantity: number;
@@ -46,18 +50,18 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
       currentPrice?: number;
       basePrice?: number;
     }>;
-    
+
     const packPrices = rawPacks
       .map((pack) => pack.currentPrice)
       .filter((p): p is number => p !== undefined && p !== null && p > 0);
-    
+
     if (packPrices.length > 0) {
       price = Math.min(...packPrices);
       // For original price, use the minimum basePrice from packs
       const packOriginalPrices = rawPacks
         .map((pack) => pack.basePrice)
         .filter((p): p is number => p !== undefined && p !== null && p > 0);
-      
+
       if (packOriginalPrices.length > 0) {
         originalPrice = Math.min(...packOriginalPrices);
       }
@@ -247,17 +251,19 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
     isBusinessProduct: doc.isBusinessProduct || false,
     featured: doc.featured || false,
     bestSeller: doc.bestSeller || false,
-    businessPacks: doc.businessPacks?.map((pack: {
-      quantity: number;
-      label?: string;
-      currentPrice?: number;
-      basePrice?: number;
-    }) => ({
-      quantity: pack.quantity,
-      label: pack.label,
-      price: pack.currentPrice,
-      originalPrice: pack.basePrice,
-    })),
+    businessPacks: doc.businessPacks?.map(
+      (pack: {
+        quantity: number;
+        label?: string;
+        currentPrice?: number;
+        basePrice?: number;
+      }) => ({
+        quantity: pack.quantity,
+        label: pack.label,
+        price: pack.currentPrice,
+        originalPrice: pack.basePrice,
+      })
+    ),
     createdAt: doc._createdAt ? new Date(doc._createdAt) : new Date(),
     updatedAt: doc._updatedAt ? new Date(doc._updatedAt) : new Date(),
   };
@@ -1210,9 +1216,10 @@ function transformSanityShippingOption(
 ): ShippingOption {
   const minDays = item.estimatedDays?.minDays || 0;
   const maxDays = item.estimatedDays?.maxDays || 0;
-  const estimatedDaysDisplay = minDays === maxDays
-    ? `${minDays} business day${minDays !== 1 ? 's' : ''}`
-    : `${minDays}-${maxDays} business days`;
+  const estimatedDaysDisplay =
+    minDays === maxDays
+      ? `${minDays} business day${minDays !== 1 ? 's' : ''}`
+      : `${minDays}-${maxDays} business days`;
 
   return {
     id: `${documentId}-${item.name || 'shipping'}`,
@@ -1266,9 +1273,10 @@ function createDefaultShippingOption(
 ): ShippingOption {
   const minDays = defaultShipping.estimatedDays?.minDays || 5;
   const maxDays = defaultShipping.estimatedDays?.maxDays || 7;
-  const estimatedDaysDisplay = minDays === maxDays
-    ? `${minDays} business day${minDays !== 1 ? 's' : ''}`
-    : `${minDays}-${maxDays} business days`;
+  const estimatedDaysDisplay =
+    minDays === maxDays
+      ? `${minDays} business day${minDays !== 1 ? 's' : ''}`
+      : `${minDays}-${maxDays} business days`;
 
   return {
     id: `${documentId}-default`,
@@ -1294,19 +1302,21 @@ export async function getActiveShippingOptions(): Promise<ShippingOption[]> {
     const doc = await sanityClient.fetch<SanityShippingAndTaxesDocument>(
       SHIPPING_AND_TAXES_QUERY
     );
-    
+
     // Get active shipping options
-    const activeOptions = doc?.shippingOptions
-      ?.filter((item) => item.isActive !== false)
-      .map((item) =>
-        transformSanityShippingOption(
-          item,
-          doc._id || '',
-          doc._createdAt || '',
-          doc._updatedAt || ''
+    const activeOptions =
+      doc?.shippingOptions
+        ?.filter((item) => item.isActive !== false)
+        .map((item) =>
+          transformSanityShippingOption(
+            item,
+            doc._id || '',
+            doc._createdAt || '',
+            doc._updatedAt || ''
+          )
         )
-      )
-      .sort((a, b) => a.estimatedDays.minDays - b.estimatedDays.minDays) || [];
+        .sort((a, b) => a.estimatedDays.minDays - b.estimatedDays.minDays) ||
+      [];
 
     // If no active options, return default shipping option
     if (activeOptions.length === 0 && doc?.defaultShipping) {
