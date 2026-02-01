@@ -12,7 +12,6 @@ import { ShoppingCart, Plus, Minus, Trash2 } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cart-store';
 import { useCurrencyStore } from '@/lib/store/currency-store';
 import { formatPrice, cn } from '@/lib/actions/utils';
-import { getProductPrice } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 import { useIsMobile } from '@/lib/hooks/use-is-mobile';
 import { useTranslations } from 'next-intl';
@@ -33,7 +32,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const router = useRouter();
   const t = useTranslations('header.cart');
   const { cart, updateQuantity, removeItem, getCartSummary } = useCartStore();
-  const { currency } = useCurrencyStore();
+  const { currency, convertPrice } = useCurrencyStore();
   const [taxSettings, setTaxSettings] = useState<TaxSettings | null>(null);
 
   // Fetch tax settings
@@ -48,16 +47,18 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   // Calculate tax when subtotal or currency changes (using useMemo instead of useEffect)
   const taxAmount = useMemo(() => {
     if (!taxSettings) return 0;
-    
+
     const subtotal = cart.items.reduce((total, item) => {
-      const priceObj = item.product.prices?.find((p) => p.currency === currency) || item.product.prices?.[0];
-      const basePrice = priceObj?.basePrice || item.product.price;
-      const variantPrice = item.selectedVariant?.priceModifier || 0;
-      return total + (basePrice + variantPrice) * item.quantity;
+      // All prices are in XOF, convert to selected currency
+      const basePriceXOF = item.product.price || 0;
+      const variantPriceXOF = item.selectedVariant?.priceModifier || 0;
+      const totalPriceXOF = basePriceXOF + variantPriceXOF;
+      const convertedPrice = convertPrice(totalPriceXOF, currency);
+      return total + convertedPrice * item.quantity;
     }, 0);
-    
+
     return calculateTax(subtotal, currency, taxSettings);
-  }, [taxSettings, currency, cart.items]);
+  }, [taxSettings, currency, cart.items, convertPrice]);
 
   const summary = getCartSummary(currency, taxAmount, 0);
   const isMobile = useIsMobile();
@@ -70,14 +71,15 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent
-        side={isMobile ? "bottom" : "right"}
+        side={isMobile ? 'bottom' : 'right'}
         floating={!isMobile}
         hideCloseButton={isMobile}
         className="flex flex-col w-full sm:max-w-md max-h-[70vh] sm:max-h-[calc(100vh-2rem)] overflow-hidden p-4"
       >
         <SheetHeader className="pb-1 space-y-0 hidden sm:block">
           <SheetTitle className="mb-0 text-base">
-            {t('title')}{cart.itemCount > 1 ? ` (${cart.itemCount})` : ''}
+            {t('title')}
+            {cart.itemCount > 1 ? ` (${cart.itemCount})` : ''}
           </SheetTitle>
           <SheetDescription className="sr-only">
             {t('summary')}
@@ -101,8 +103,8 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 <div
                   key={item.id}
                   className={cn(
-                    "flex gap-3 sm:gap-4 py-3 sm:py-2",
-                    index < cart.items.length - 1 && "border-b border-gray-200"
+                    'flex gap-3 sm:gap-4 py-3 sm:py-2',
+                    index < cart.items.length - 1 && 'border-b border-gray-200'
                   )}
                 >
                   <div className="relative h-24 w-24 sm:h-20 sm:w-20 shrink-0 overflow-hidden rounded-md border bg-muted">
@@ -130,44 +132,55 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                           </span>
                         )}
                       </h3>
-                      {item.selectedVariant && !item.selectedVariant.packSize && (
-                        <p className="text-sm sm:text-xs text-muted-foreground">
-                          {`${item.selectedVariant.name}${item.selectedVariant.value ? `: ${item.selectedVariant.value}` : ''}`}
-                        </p>
-                      )}
+                      {item.selectedVariant &&
+                        !item.selectedVariant.packSize && (
+                          <p className="text-sm sm:text-xs text-muted-foreground">
+                            {`${item.selectedVariant.name}${item.selectedVariant.value ? `: ${item.selectedVariant.value}` : ''}`}
+                          </p>
+                        )}
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
                       <div className="flex flex-col gap-1">
                         {/* Get pack original price if it's a pack variant */}
                         {(() => {
-                          const currentPrice = getProductPrice(item.product, currency) || getProductPrice(item.product, 'XOF') || item.product.prices[0];
-                          const basePrice = currentPrice?.basePrice || item.product.price;
-                          const packPrice = basePrice + (item.selectedVariant?.priceModifier || 0);
+                          // All prices are in XOF, convert to selected currency
+                          const basePriceXOF = item.product.price || 0;
+                          const variantPriceXOF =
+                            item.selectedVariant?.priceModifier || 0;
+                          const packPriceXOF = basePriceXOF + variantPriceXOF;
+                          const packPrice = convertPrice(
+                            packPriceXOF,
+                            currency
+                          );
 
                           // Find original price for pack if it exists
-                          let originalPrice: number | undefined;
-                          if (item.selectedVariant?.packSize && item.product.businessPacks) {
+                          let originalPriceXOF: number | undefined;
+                          if (
+                            item.selectedVariant?.packSize &&
+                            item.product.businessPacks
+                          ) {
                             const pack = item.product.businessPacks.find(
-                              (p) => p.quantity === item.selectedVariant?.packSize
+                              (p) =>
+                                p.quantity === item.selectedVariant?.packSize
                             );
-                            const packPriceObj = pack?.prices?.find((p) => p.currency === currency);
-                            originalPrice = packPriceObj?.originalPrice;
+                            originalPriceXOF = pack?.originalPrice;
                           } else {
-                            originalPrice = currentPrice?.originalPrice;
+                            originalPriceXOF = item.product.originalPrice;
                           }
-
-                          const displayCurrency = currentPrice?.currency || item.product.currency || 'XOF';
+                          const originalPrice = originalPriceXOF
+                            ? convertPrice(originalPriceXOF, currency)
+                            : undefined;
 
                           return (
                             <div className="flex flex-col gap-0.5">
                               <div className="flex items-center gap-2 flex-wrap">
                                 {originalPrice && originalPrice > packPrice && (
                                   <span className="text-sm sm:text-xs text-muted-foreground line-through">
-                                    {formatPrice(originalPrice, displayCurrency)}
+                                    {formatPrice(originalPrice, currency)}
                                   </span>
                                 )}
                                 <span className="text-base sm:text-sm font-semibold">
-                                  {formatPrice(packPrice, displayCurrency)}
+                                  {formatPrice(packPrice, currency)}
                                   {item.selectedVariant?.packSize && (
                                     <span className="text-xs text-muted-foreground ml-1 font-normal">
                                       {t('pack')}
@@ -222,7 +235,8 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
           <div className="border-t pt-4 space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">{t('subtotal')}</span>
-              {summary.originalSubtotal && summary.originalSubtotal > summary.subtotal ? (
+              {summary.originalSubtotal &&
+              summary.originalSubtotal > summary.subtotal ? (
                 <span className="text-sm text-gray-500">
                   {formatPrice(summary.originalSubtotal, currency)}
                 </span>
@@ -242,7 +256,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             )}
             {summary.tax > 0 ? (
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-600">Tax</span>
+                <span className="text-gray-600">{t('tax')}</span>
                 <span className="font-medium">
                   {formatPrice(summary.tax, currency)}
                 </span>

@@ -29,101 +29,32 @@ export default defineType({
       initialValue: false,
     }),
     defineField({
-      name: 'prices',
-      title: 'Prices',
-      type: 'array',
-      description: 'Product prices in different currencies with lomi. price IDs',
+      name: 'price',
+      title: 'Price',
+      type: 'number',
+      description: 'Product price in F CFA (West African CFA Franc). Currency conversion is handled automatically.',
       hidden: ({document}) => Boolean(document?.isBusinessProduct),
-      initialValue: () => [
-        {
-          currency: 'XOF',
-          basePrice: 0,
-        },
-      ],
       validation: (Rule) => Rule.custom((value, context) => {
-        const isBusiness = (context.document as any)?.isBusinessProduct;
+        const isBusiness = (context.document as { isBusinessProduct?: boolean })?.isBusinessProduct;
         if (isBusiness) {
           return true; // Not required for business products
         }
-        if (!value || value.length === 0) {
-          return 'At least one price is required';
+        if (value === undefined || value === null) {
+          return 'Price is required';
+        }
+        if (value < 0) {
+          return 'Price must be greater than or equal to 0';
         }
         return true;
       }),
-      of: [
-        {
-          type: 'object',
-          fields: [
-            {
-              name: 'currency',
-              title: 'Currency',
-              type: 'string',
-              options: {
-                list: [
-                  {title: 'West African CFA Franc (XOF)', value: 'XOF'},
-                  {title: 'US Dollar (USD)', value: 'USD'},
-                  {title: 'Euro (EUR)', value: 'EUR'},
-                ],
-              },
-              validation: (Rule) => Rule.required(),
-            },
-            {
-              name: 'originalPrice',
-              title: 'Original price',
-              type: 'number',
-              options: {
-                controls: false,
-              },
-              description: 'The original price before discount. This number should be BIGGER than the base price.',
-              validation: (Rule) => Rule.min(0),
-            },
-            {
-              name: 'basePrice',
-              title: 'Base price (optional)',
-              type: 'number',
-              options: {
-                controls: false,
-              },
-              description: 'The current/discounted selling price. This is the price customers pay now.',
-              validation: (Rule) => Rule.required().min(0),
-            },
-            {
-              name: 'lomiPriceId',
-              title: 'lomi. price ID',
-              type: 'string',
-              description: 'The price ID from lomi. payment processor for this currency (optional)',
-              validation: (Rule) => 
-                Rule.custom((value: string | undefined) => {
-                  // If no value provided, it's valid (optional field)
-                  if (!value || value.trim() === '') return true;
-                  
-                  // If value provided, validate UUID format
-                  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-                  if (!uuidRegex.test(value)) {
-                    return 'lomi. price ID must be a valid UUID format';
-                  }
-                  
-                  return true;
-                }),
-            },
-          ],
-          preview: {
-            select: {
-              currency: 'currency',
-              basePrice: 'basePrice',
-              originalPrice: 'originalPrice',
-            },
-            prepare({currency, basePrice, originalPrice}) {
-              const priceDisplay = originalPrice && originalPrice > basePrice
-                ? `${originalPrice} → ${basePrice}`
-                : `${basePrice}`;
-              return {
-                title: `${currency}: ${priceDisplay}`,
-              };
-            },
-          },
-        },
-      ],
+    }),
+    defineField({
+      name: 'originalPrice',
+      title: 'Original price',
+      type: 'number',
+      description: 'The original price before discount in F CFA. This number should be BIGGER than the base price.',
+      hidden: ({document}) => Boolean(document?.isBusinessProduct),
+      validation: (Rule) => Rule.min(0),
     }),
     defineField({
       name: 'description',
@@ -297,96 +228,39 @@ export default defineType({
               description: 'e.g., Pack 5',
             },
             {
-              name: 'prices',
-              title: 'Pack prices by currency',
-              type: 'array',
-              description: 'Prices for this pack in different currencies',
-              of: [
-                {
-                  type: 'object',
-                  fields: [
-                    {
-                      name: 'currency',
-                      title: 'Currency',
-                      type: 'string',
-                      options: {
-                        list: [
-                          {title: 'West African CFA Franc (XOF)', value: 'XOF'},
-                          {title: 'US Dollar (USD)', value: 'USD'},
-                          {title: 'Euro (EUR)', value: 'EUR'},
-                        ],
-                      },
-                      validation: (Rule) => Rule.required(),
-                    },
-                    {
-                      name: 'originalPrice',
-                      title: 'Original price',
-                      type: 'number',
-                      options: {
-                        controls: false,
-                      },
-                      description: 'The original price before discount. This number should be BIGGER than the base price.',
-                      validation: (Rule) => Rule.min(0),
-                    },
-                    {
-                      name: 'basePrice',
-                      title: 'Base price (optional)',
-                      type: 'number',
-                      options: {
-                        controls: false,
-                      },
-                      description: 'The current/discounted selling price for the pack.',
-                      validation: (Rule) => Rule.required().min(0),
-                    },
-                    {
-                      name: 'lomiPriceId',
-                      title: 'lomi. price ID',
-                      type: 'string',
-                      description: 'The price ID from lomi. for this pack in this currency (optional)',
-                      validation: (Rule) => 
-                        Rule.custom((value: string | undefined) => {
-                          // If no value provided, it's valid (optional field)
-                          if (!value || value.trim() === '') return true;
-                          
-                          // If value provided, validate UUID format
-                          const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-                          if (!uuidRegex.test(value)) {
-                            return 'lomi. price ID must be a valid UUID format';
-                          }
-                          
-                          return true;
-                        }),
-                    },
-                  ],
-                  preview: {
-                    select: {
-                      currency: 'currency',
-                      basePrice: 'basePrice',
-                      originalPrice: 'originalPrice',
-                    },
-                    prepare({currency, basePrice, originalPrice}) {
-                      const priceDisplay = originalPrice && originalPrice > basePrice
-                        ? `${originalPrice} → ${basePrice}`
-                        : `${basePrice}`;
-                      return {
-                        title: `${currency}: ${priceDisplay}`,
-                      };
-                    },
-                  },
-                },
-              ],
+              name: 'price',
+              title: 'Pack price',
+              type: 'number',
+              description: 'Price for this pack in F CFA. Currency conversion is handled automatically.',
+              validation: (Rule) => Rule.required().min(0),
+              options: {
+                controls: false,
+              },
+            },
+            {
+              name: 'originalPrice',
+              title: 'Original pack price',
+              type: 'number',
+              description: 'The original price before discount in F CFA. This number should be BIGGER than the base price.',
+              validation: (Rule) => Rule.min(0),
+              options: {
+                controls: false,
+              },
             },
           ],
           preview: {
             select: {
               quantity: 'quantity',
               label: 'label',
-              prices: 'prices',
+              price: 'price',
+              originalPrice: 'originalPrice',
             },
-            prepare({quantity, label, prices}) {
-              const priceDisplay = prices && prices.length > 0
-                ? `${prices[0].currency} ${prices[0].basePrice}${prices.length > 1 ? ` (+${prices.length - 1} more)` : ''}`
-                : 'No prices set';
+            prepare({quantity, label, price, originalPrice}) {
+              const priceDisplay = originalPrice && originalPrice > price
+                ? `${originalPrice} → ${price} F CFA`
+                : price !== undefined
+                ? `${price} F CFA`
+                : 'No price set';
               return {
                 title: label || `Pack of ${quantity}`,
                 subtitle: priceDisplay,
@@ -452,25 +326,29 @@ export default defineType({
     select: {
       title: 'name',
       media: 'images.0',
-      prices: 'prices',
+      price: 'price',
+      originalPrice: 'originalPrice',
       businessPacks: 'businessPacks',
       isBusinessProduct: 'isBusinessProduct',
       inStock: 'inStock',
     },
-    prepare({title, media, prices, businessPacks, isBusinessProduct, inStock}) {
+    prepare({title, media, price, originalPrice, businessPacks, isBusinessProduct, inStock}) {
       let priceDisplay = 'No price';
       
       if (isBusinessProduct && businessPacks && businessPacks.length > 0) {
-        // For business products, get price from first pack's first price
+        // For business products, get price from first pack
         const firstPack = businessPacks[0];
-        const firstPackPrice = firstPack?.prices?.[0];
-        if (firstPackPrice) {
-          priceDisplay = `${firstPackPrice.currency || 'XOF'} ${firstPackPrice.basePrice || 0}`;
+        const packPrice = firstPack?.price;
+        if (packPrice !== undefined) {
+          priceDisplay = `${packPrice} F CFA`;
         }
-      } else if (prices && prices.length > 0) {
-        // For regular products, get price from prices array
-        const firstPrice = prices[0];
-        priceDisplay = `${firstPrice.currency || 'XOF'} ${firstPrice.basePrice || 0}`;
+      } else if (price !== undefined) {
+        // For regular products, get price
+        if (originalPrice && originalPrice > price) {
+          priceDisplay = `${originalPrice} → ${price} F CFA`;
+        } else {
+          priceDisplay = `${price} F CFA`;
+        }
       }
       
       return {

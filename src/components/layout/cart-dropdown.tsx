@@ -12,13 +12,12 @@ import { ShoppingCart, X } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cart-store';
 import { useCurrencyStore } from '@/lib/store/currency-store';
 import { formatPrice } from '@/lib/utils/format';
-import { getProductPrice } from '@/lib/types';
 import Image from 'next/image';
 
 const CartDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { cart, removeItem, getCartSummary } = useCartStore();
-  const { currency } = useCurrencyStore();
+  const { currency, convertPrice } = useCurrencyStore();
   const cartSummary = getCartSummary(currency);
 
   const open = () => setIsOpen(true);
@@ -65,15 +64,9 @@ const CartDropdown = () => {
                 <>
                   <div className="max-h-64 sm:max-h-80 overflow-y-auto space-y-3 sm:space-y-4">
                     {cart.items.map((item) => {
-                      // Get price for selected currency
-                      const currentPrice =
-                        getProductPrice(item.product, currency) ||
-                        getProductPrice(item.product, 'XOF') ||
-                        item.product.prices[0];
-                      const basePrice =
-                        currentPrice?.basePrice || item.product.price;
-                      const displayCurrency =
-                        currentPrice?.currency || item.product.currency;
+                      // All prices are in XOF, convert to selected currency
+                      const priceXOF = item.product.price || 0;
+                      const basePrice = convertPrice(priceXOF, currency);
 
                       return (
                         <div
@@ -114,8 +107,8 @@ const CartDropdown = () => {
                               {formatPrice(
                                 (basePrice +
                                   (item.selectedVariant?.priceModifier || 0)) *
-                                item.quantity,
-                                displayCurrency
+                                  item.quantity,
+                                currency
                               )}
                             </p>
                           </div>

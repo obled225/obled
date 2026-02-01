@@ -4,19 +4,21 @@ import { Truck, RotateCcw, Shield } from 'lucide-react';
 import Accordion from '@/components/ui/accordion';
 import { Product } from '@/lib/types';
 import { PortableText } from '@/components/ui/portable-text';
+import { useTranslations } from 'next-intl';
 
 type ProductTabsProps = {
   product: Product;
 };
 
 const ProductTabs = ({ product }: ProductTabsProps) => {
+  const t = useTranslations('products.productTabs');
   const tabs = [
     {
-      label: 'Product Information',
+      label: t('productInformation'),
       component: <ProductInfoTab product={product} />,
     },
     {
-      label: 'Shipping & Returns',
+      label: t('shippingReturns'),
       component: <ShippingInfoTab />,
     },
   ];
@@ -40,33 +42,35 @@ const ProductTabs = ({ product }: ProductTabsProps) => {
 };
 
 const ProductInfoTab = ({ product }: ProductTabsProps) => {
+  const t = useTranslations('products.productTabs');
+  const tProducts = useTranslations('products');
   return (
     <div className="py-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
         <div className="flex flex-col gap-y-4">
           <div>
-            <span className="font-semibold">Category</span>
+            <span className="font-semibold">{t('category')}</span>
             <p className="text-gray-700">{product.category.name || '-'}</p>
           </div>
         </div>
         <div className="flex flex-col gap-y-4">
           <div>
-            <span className="font-semibold">Stock Status</span>
+            <span className="font-semibold">{t('stockStatus')}</span>
             <p
               className={`font-medium ${product.inStock ? 'text-green-600' : 'text-red-600'}`}
             >
-              {product.inStock ? 'In Stock' : 'Out of Stock'}
+              {product.inStock ? t('inStock') : tProducts('outOfStock')}
             </p>
           </div>
         </div>
       </div>
       <div className="mt-6">
-        <span className="font-semibold">Description</span>
+        <span className="font-semibold">{t('description')}</span>
         <div className="mt-2 text-gray-700 prose prose-sm max-w-none">
           {product.description ? (
             <PortableText content={product.description} />
           ) : (
-            'No description available'
+            t('noDescriptionAvailable')
           )}
         </div>
       </div>
@@ -75,27 +79,29 @@ const ProductInfoTab = ({ product }: ProductTabsProps) => {
 };
 
 const ShippingInfoTab = () => {
+  const t = useTranslations('products.productTabs');
   return (
     <div className="py-4">
       <div className="grid grid-cols-1 gap-y-6">
         <div className="flex items-start gap-x-3">
           <Truck className="w-6 h-6 text-blue-600 mt-1" />
           <div>
-            <span className="font-semibold text-gray-900">Fast Delivery</span>
+            <span className="font-semibold text-gray-900">
+              {t('fastDelivery.title')}
+            </span>
             <p className="max-w-sm text-gray-700 mt-1">
-              Your package will arrive in 3-5 business days at your pick up
-              location or in the comfort of your home.
+              {t('fastDelivery.description')}
             </p>
           </div>
         </div>
         <div className="flex items-start gap-x-3">
           <RotateCcw className="w-6 h-6 text-blue-600 mt-1" />
           <div>
-            <span className="font-semibold text-gray-900">Easy Returns</span>
+            <span className="font-semibold text-gray-900">
+              {t('easyReturns.title')}
+            </span>
             <p className="max-w-sm text-gray-700 mt-1">
-              Just return your product and we&apos;ll refund your money. No
-              questions asked – we&apos;ll do our best to make sure your return
-              is hassle-free.
+              {t('easyReturns.description')}
             </p>
           </div>
         </div>
@@ -103,11 +109,10 @@ const ShippingInfoTab = () => {
           <Shield className="w-6 h-6 text-blue-600 mt-1" />
           <div>
             <span className="font-semibold text-gray-900">
-              Quality Guarantee
+              {t('qualityGuarantee.title')}
             </span>
             <p className="max-w-sm text-gray-700 mt-1">
-              We stand behind our products. If you&apos;re not completely
-              satisfied, we&apos;ll make it right.
+              {t('qualityGuarantee.description')}
             </p>
           </div>
         </div>

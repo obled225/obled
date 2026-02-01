@@ -9,6 +9,7 @@ import { formatPrice } from '@/lib/utils/format';
 import { ShippingCalculator } from './shipping-calculator';
 import {
   getTaxSettings,
+  getGlobalFreeShippingThreshold,
   calculateTax,
   type TaxSettings,
 } from '@/lib/sanity/queries';
@@ -30,37 +31,68 @@ export function CartSummary({
   onShippingCostChange,
 }: CartSummaryProps) {
   const { cart, getCartSummary } = useCartStore();
-  const { currency } = useCurrencyStore();
+  const { currency, convertPrice } = useCurrencyStore();
   const t = useTranslations('header.cart');
+  const tShipping = useTranslations('shipping');
   const [selectedShipping, setSelectedShipping] = useState('standard');
   const [shippingCost, setShippingCost] = useState(0);
   const [taxSettings, setTaxSettings] = useState<TaxSettings | null>(null);
+  const [globalFreeShippingThreshold, setGlobalFreeShippingThreshold] =
+    useState<{
+      enabled: boolean;
+      amount?: number;
+    } | null>(null);
 
-  // Fetch tax settings
+  // Fetch tax settings and global free shipping threshold
   useEffect(() => {
-    async function fetchTaxSettings() {
-      const settings = await getTaxSettings();
-      setTaxSettings(settings);
+    async function fetchSettings() {
+      const [tax, globalThreshold] = await Promise.all([
+        getTaxSettings(),
+        getGlobalFreeShippingThreshold(),
+      ]);
+      setTaxSettings(tax);
+      setGlobalFreeShippingThreshold(globalThreshold);
     }
-    fetchTaxSettings();
+    fetchSettings();
   }, []);
 
   // Calculate tax when subtotal or currency changes (using useMemo instead of useEffect)
   const taxAmount = useMemo(() => {
     if (!taxSettings) return 0;
-    
+
     // Calculate subtotal manually
     const subtotal = cart.items.reduce((total, item) => {
-      const priceObj = item.product.prices?.find((p) => p.currency === currency) || item.product.prices?.[0];
-      const basePrice = priceObj?.basePrice || item.product.price;
+      // All prices are in XOF, convert to selected currency
+      const basePriceXOF = item.product.price || 0;
+      const basePrice = convertPrice(basePriceXOF, currency);
       const variantPrice = item.selectedVariant?.priceModifier || 0;
       return total + (basePrice + variantPrice) * item.quantity;
     }, 0);
-    
+
     return calculateTax(subtotal, currency, taxSettings);
-  }, [taxSettings, currency, cart.items]);
+  }, [taxSettings, currency, cart.items, convertPrice]);
 
   const cartSummary = getCartSummary(currency, taxAmount, shippingCost);
+
+  // Check if global free shipping threshold is met
+  const globalFreeShippingActive = useMemo(() => {
+    if (
+      !globalFreeShippingThreshold?.enabled ||
+      globalFreeShippingThreshold?.amount === undefined
+    ) {
+      return false;
+    }
+    const thresholdInCurrency = convertPrice(
+      globalFreeShippingThreshold.amount,
+      currency
+    );
+    return cartSummary.subtotal >= thresholdInCurrency;
+  }, [
+    globalFreeShippingThreshold,
+    cartSummary.subtotal,
+    currency,
+    convertPrice,
+  ]);
 
   const handleShippingChange = (shippingId: string, cost: number) => {
     setSelectedShipping(shippingId);
@@ -87,15 +119,16 @@ export function CartSummary({
 
       <div className="bg-white border border-gray-200 rounded-md p-4 sm:p-6">
         <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">
-          Summary
+          {t('summaryTitle')}
         </h2>
 
         <div className="space-y-2 sm:space-y-3 mb-3 sm:mb-4">
           <div className="flex justify-between text-sm">
             <span className="text-gray-600">
-              Subtotal ({cart.itemCount} items)
+              {t('subtotalWithItems', { count: cart.itemCount })}
             </span>
-            {cartSummary.originalSubtotal && cartSummary.originalSubtotal > cartSummary.subtotal ? (
+            {cartSummary.originalSubtotal &&
+            cartSummary.originalSubtotal > cartSummary.subtotal ? (
               <span className="text-sm text-gray-500">
                 {formatPrice(cartSummary.originalSubtotal, currency)}
               </span>
@@ -108,7 +141,7 @@ export function CartSummary({
 
           {cartSummary.discount > 0 && (
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Discount</span>
+              <span className="text-gray-600">{t('discount')}</span>
               <span className="text-green-600">
                 {formatPrice(cartSummary.discount, currency)}
               </span>
@@ -116,10 +149,12 @@ export function CartSummary({
           )}
 
           <div className="flex justify-between text-sm">
-            <span className="text-gray-600">Shipping</span>
+            <span className="text-gray-600">{t('shipping')}</span>
             <span className="font-medium">
-              {shippingCost === 0 ? (
-                <span className="text-green-600">Free</span>
+              {globalFreeShippingActive || shippingCost === 0 ? (
+                <span className="text-green-600 font-semibold">
+                  {tShipping('free')}
+                </span>
               ) : (
                 formatPrice(shippingCost, currency)
               )}
@@ -128,7 +163,7 @@ export function CartSummary({
 
           <div className="flex justify-between text-sm">
             <span className="text-gray-600">
-              {cartSummary.tax === 0 ? t('taxesIncluded') : 'Tax'}
+              {cartSummary.tax === 0 ? t('taxesIncluded') : t('tax')}
             </span>
             <span className="font-medium">
               {cartSummary.tax === 0 ? (
@@ -142,7 +177,7 @@ export function CartSummary({
 
         <div className="border-t pt-4 mb-6">
           <div className="flex justify-between text-base sm:text-lg font-semibold">
-            <span>Total</span>
+            <span>{t('total')}</span>
             <span>{formatPrice(finalTotal, currency)}</span>
           </div>
         </div>
@@ -150,8 +185,9 @@ export function CartSummary({
         {cartSummary.subtotal < 50 && (
           <div className="bg-blue-50 border border-blue-200 rounded-md p-3 mb-4">
             <p className="text-sm text-blue-800">
-              Add {formatPrice(50 - cartSummary.subtotal, currency)} more for
-              free shipping!
+              {t('addMoreForFreeShipping', {
+                amount: formatPrice(50 - cartSummary.subtotal, currency),
+              })}
             </p>
           </div>
         )}
@@ -159,7 +195,7 @@ export function CartSummary({
         {showCheckoutButton && (
           <Link href="/checkout" className="block mb-2 sm:mb-3">
             <Button className="w-full h-11 sm:h-12" size="lg">
-              Proceed to Checkout
+              {t('proceedToCheckout')}
             </Button>
           </Link>
         )}
@@ -167,7 +203,7 @@ export function CartSummary({
         {showContinueShopping && (
           <Link href="/">
             <Button variant="outline" className="w-full h-11 sm:h-12">
-              Continue Shopping
+              {t('continueShopping')}
             </Button>
           </Link>
         )}

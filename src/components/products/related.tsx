@@ -2,9 +2,10 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Product, getProductPrice } from '@/lib/types';
+import { Product } from '@/lib/types';
 import { formatPrice } from '@/lib/utils/format';
 import { useCurrencyStore } from '@/lib/store/currency-store';
+import { useTranslations } from 'next-intl';
 
 type RelatedProductsProps = {
   products: Product[];
@@ -14,10 +15,15 @@ type RelatedProductsProps = {
 
 export default function RelatedProducts({
   products,
-  title = 'Related Products',
-  description = 'You might also want to check out these products.',
+  title,
+  description,
 }: RelatedProductsProps) {
-  const { currency } = useCurrencyStore();
+  const { currency, convertPrice } = useCurrencyStore();
+  const t = useTranslations('products');
+  const tRelated = useTranslations('products.relatedProducts');
+
+  const displayTitle = title || tRelated('defaultTitle');
+  const displayDescription = description || tRelated('defaultDescription');
 
   if (!products.length) {
     return null;
@@ -27,23 +33,21 @@ export default function RelatedProducts({
     <div className="py-12">
       <div className="flex flex-col items-center text-center mb-8">
         <span className="text-sm font-medium text-gray-600 mb-2 uppercase tracking-wide">
-          {title}
+          {displayTitle}
         </span>
         <p className="text-xl sm:text-2xl font-bold text-gray-900 max-w-lg">
-          {description}
+          {displayDescription}
         </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {products.map((product) => {
-          // Get price for selected currency
-          const currentPrice =
-            getProductPrice(product, currency) ||
-            getProductPrice(product, 'XOF') ||
-            product.prices[0];
-          const displayPrice = currentPrice?.basePrice || product.price;
-          const displayCurrency = currentPrice?.currency || product.currency;
-          const displayOriginalPrice = currentPrice?.originalPrice;
+          // All prices are in XOF, convert to selected currency
+          const priceXOF = product.price || 0;
+          const displayPrice = convertPrice(priceXOF, currency);
+          const displayOriginalPrice = product.originalPrice
+            ? convertPrice(product.originalPrice, currency)
+            : undefined;
 
           return (
             <div key={product.id} className="group">
@@ -58,14 +62,16 @@ export default function RelatedProducts({
                     />
                   ) : (
                     <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                      <span className="text-gray-400 text-sm">No image</span>
+                      <span className="text-gray-400 text-sm">
+                        {t('noImage')}
+                      </span>
                     </div>
                   )}
 
                   {!product.inStock && (
                     <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                       <span className="text-white font-medium">
-                        Out of Stock
+                        {t('outOfStock')}
                       </span>
                     </div>
                   )}
@@ -78,12 +84,12 @@ export default function RelatedProducts({
 
                   <div className="flex items-center space-x-2">
                     <span className="font-semibold text-gray-900">
-                      {formatPrice(displayPrice, displayCurrency)}
+                      {formatPrice(displayPrice, currency)}
                     </span>
                     {displayOriginalPrice &&
                       displayOriginalPrice > displayPrice && (
                         <span className="text-sm text-gray-500 line-through">
-                          {formatPrice(displayOriginalPrice, displayCurrency)}
+                          {formatPrice(displayOriginalPrice, currency)}
                         </span>
                       )}
                   </div>

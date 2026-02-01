@@ -20,14 +20,16 @@ export function PageLayout({ children, categories }: PageLayoutProps) {
   const pathname = usePathname();
   const isCheckoutPage = pathname === '/checkout';
   const [announcement, setAnnouncement] = useState<{
-    text: string | Array<{
-      _type: 'block';
-      children: Array<{
-        _type: 'span';
-        text: string;
-        marks?: string[];
-      }>;
-    }>;
+    text:
+      | string
+      | Array<{
+          _type: 'block';
+          children: Array<{
+            _type: 'span';
+            text: string;
+            marks?: string[];
+          }>;
+        }>;
     isActive: boolean;
   } | null>(null);
 
@@ -35,20 +37,10 @@ export function PageLayout({ children, categories }: PageLayoutProps) {
     async function fetchAnnouncement() {
       const announcementData = await getFloatingAnnouncement();
 
-      // Fallback data if Sanity query fails
-      const fallbackAnnouncement = {
-        text: 'Use code WELCOME20 for 20% off',
-        isActive: false,
-      };
-
-      // Use Sanity data if available and active, otherwise use fallback
-      const finalAnnouncement = announcementData?.isActive
-        ? announcementData
-        : fallbackAnnouncement;
-
-      // Only set if there's an active announcement
-      if (finalAnnouncement?.isActive || finalAnnouncement === fallbackAnnouncement) {
-        setAnnouncement(finalAnnouncement);
+      // Only set if there's an active announcement from Sanity
+      // getFloatingAnnouncement() already filters by isActive, so if it returns data, it's active
+      if (announcementData?.isActive) {
+        setAnnouncement(announcementData);
       }
     }
     fetchAnnouncement();

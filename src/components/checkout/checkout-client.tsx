@@ -10,18 +10,19 @@ import { Input } from '@/components/ui/Input';
 import { CartSummary } from '@/components/cart/cart-summary';
 import { CartItem } from '@/components/cart/cart-item';
 import { useToast } from '@/lib/hooks/use-toast';
-import { getProductPrice } from '@/lib/types';
 import {
   getTaxSettings,
   calculateTax,
   type TaxSettings,
 } from '@/lib/sanity/queries';
+import { useTranslations } from 'next-intl';
 
 export function CheckoutClient() {
   const router = useRouter();
   const { error: showError } = useToast();
   const { cart, getCartSummary } = useCartStore();
-  const { currency } = useCurrencyStore();
+  const { currency, convertPrice } = useCurrencyStore();
+  const t = useTranslations('checkout');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [shippingCost, setShippingCost] = useState(0);
   const [taxSettings, setTaxSettings] = useState<TaxSettings | null>(null);
@@ -38,16 +39,18 @@ export function CheckoutClient() {
   // Calculate tax when subtotal or currency changes (using useMemo instead of useEffect)
   const taxAmount = useMemo(() => {
     if (!taxSettings) return 0;
-    
+
     const subtotal = cart.items.reduce((total, item) => {
-      const priceObj = item.product.prices?.find((p) => p.currency === currency) || item.product.prices?.[0];
-      const basePrice = priceObj?.basePrice || item.product.price;
-      const variantPrice = item.selectedVariant?.priceModifier || 0;
-      return total + (basePrice + variantPrice) * item.quantity;
+      // All prices are in XOF, convert to selected currency
+      const basePriceXOF = item.product.price || 0;
+      const variantPriceXOF = item.selectedVariant?.priceModifier || 0;
+      const totalPriceXOF = basePriceXOF + variantPriceXOF;
+      const convertedPrice = convertPrice(totalPriceXOF, currency);
+      return total + convertedPrice * item.quantity;
     }, 0);
-    
+
     return calculateTax(subtotal, currency, taxSettings);
-  }, [taxSettings, currency, cart.items]);
+  }, [taxSettings, currency, cart.items, convertPrice]);
 
   const cartSummary = getCartSummary(currency, taxAmount, shippingCost);
 
@@ -83,30 +86,18 @@ export function CheckoutClient() {
         !formData.shippingCountry ||
         !formData.shippingPostalCode
       ) {
-        showError('Error', 'Please fill in all required fields.');
+        showError('Error', t('errors.fillAllFields'));
         setIsSubmitting(false);
         return;
       }
 
       // Prepare cart items for the edge function
       const cartItems = cart.items.map((item) => {
-        // Find price for the selected currency from the currency store
-        const priceObj = getProductPrice(item.product, currency);
-
-        // Fallback to first available price if selected currency not found
-        const effectivePrice = priceObj || item.product.prices?.[0];
-        const basePrice = effectivePrice?.basePrice || item.product.price;
-        const baseLomiId = effectivePrice?.lomiPriceId;
-
-        // Determine price ID and quantity
-        const variantLomiId = item.selectedVariant?.lomiPriceId;
-
-        // If variant has a lomi ID (e.g. Pack Price), use it. Otherwise use base ID.
-        const effectiveLomiId = variantLomiId || baseLomiId;
-
-        // If we are using a Pack Price ID, the quantity sent to lomi should be number of packs
-        // item.quantity is now the number of packs (not units), so use it directly
-        const quantityToSend = item.quantity;
+        // All prices are in XOF, convert to selected currency for display/processing
+        const basePriceXOF = item.product.price || 0;
+        const variantPriceXOF = item.selectedVariant?.priceModifier || 0;
+        const totalPriceXOF = basePriceXOF + variantPriceXOF;
+        const convertedPrice = convertPrice(totalPriceXOF, currency);
 
         return {
           productId: item.product.id,
@@ -116,10 +107,9 @@ export function CheckoutClient() {
           variantTitle: item.selectedVariant
             ? `${item.selectedVariant.name} - ${item.selectedVariant.value}`
             : undefined,
-          quantity: quantityToSend,
-          price: basePrice + (item.selectedVariant?.priceModifier || 0),
+          quantity: item.quantity,
+          price: convertedPrice, // Price in selected currency
           productImageUrl: item.product.image,
-          lomiPriceId: effectiveLomiId,
         };
       });
 
@@ -127,10 +117,13 @@ export function CheckoutClient() {
       const shippingFee = shippingCost;
 
       // Call the edge function to create lomi. checkout session
+      // Ensure currency code is always XOF, EUR, or USD (never F CFA)
+      const currencyCode = currency.toUpperCase() as 'XOF' | 'EUR' | 'USD';
+
       const { data, error } = await supabase.functions.invoke('checkout', {
         body: {
           cartItems,
-          currencyCode: currency, // Use the selected currency from the store
+          currencyCode: currencyCode, // Always XOF, EUR, or USD - never F CFA
           userName: formData.userName,
           userEmail: formData.userEmail,
           userPhone: formData.userPhone,
@@ -153,11 +146,7 @@ export function CheckoutClient() {
 
       if (error) {
         console.error('Error creating checkout session:', error);
-        showError(
-          'Error',
-          error.message ||
-          'Failed to create checkout session. Please try again.'
-        );
+        showError('Error', error.message || t('errors.checkoutSessionFailed'));
         setIsSubmitting(false);
         return;
       }
@@ -170,9 +159,7 @@ export function CheckoutClient() {
       }
     } catch (error: unknown) {
       const errorMessage =
-        error instanceof Error
-          ? error.message
-          : 'An unexpected error occurred. Please try again.';
+        error instanceof Error ? error.message : t('errors.unexpectedError');
       console.error('Checkout error:', error);
       showError('Error', errorMessage);
       setIsSubmitting(false);
@@ -183,11 +170,11 @@ export function CheckoutClient() {
     return (
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-md mx-auto text-center">
-          <h1 className="text-2xl font-bold mb-4">Your cart is empty</h1>
-          <p className="text-gray-600 mb-8">
-            Add some items to your cart before checking out.
-          </p>
-          <Button onClick={() => router.push('/')}>Continue Shopping</Button>
+          <h1 className="text-2xl font-bold mb-4">{t('emptyCartTitle')}</h1>
+          <p className="text-gray-600 mb-8">{t('emptyCartDescription')}</p>
+          <Button onClick={() => router.push('/')}>
+            {t('continueShopping')}
+          </Button>
         </div>
       </div>
     );
@@ -195,7 +182,7 @@ export function CheckoutClient() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl sm:text-3xl font-bold mb-8">Checkout</h1>
+      <h1 className="text-2xl sm:text-3xl font-bold mb-8">{t('title')}</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Checkout Form */}
@@ -204,14 +191,14 @@ export function CheckoutClient() {
             {/* Customer Information */}
             <div className="bg-white border border-gray-200 rounded-md p-6">
               <h2 className="text-lg font-semibold mb-4">
-                Your information
+                {t('yourInformation')}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Input
                   name="userName"
                   label={
                     <span>
-                      Full Name <span className="text-red-500">*</span>
+                      {t('fullName')} <span className="text-red-500">*</span>
                     </span>
                   }
                   type="text"
@@ -223,7 +210,7 @@ export function CheckoutClient() {
                   name="userEmail"
                   label={
                     <span>
-                      Email <span className="text-red-500">*</span>
+                      {t('email')} <span className="text-red-500">*</span>
                     </span>
                   }
                   type="email"
@@ -235,7 +222,7 @@ export function CheckoutClient() {
                   name="userPhone"
                   label={
                     <span>
-                      Phone Number <span className="text-red-500">*</span>
+                      {t('phoneNumber')} <span className="text-red-500">*</span>
                     </span>
                   }
                   type="tel"
@@ -245,7 +232,7 @@ export function CheckoutClient() {
                 />
                 <Input
                   name="userOrganization"
-                  label="Organization / Company"
+                  label={t('organization')}
                   type="text"
                   value={formData.userOrganization}
                   onChange={handleInputChange}
@@ -255,13 +242,15 @@ export function CheckoutClient() {
 
             {/* Shipping Address */}
             <div className="bg-white border border-gray-200 rounded-md p-6">
-              <h2 className="text-lg font-semibold mb-4">Shipping address</h2>
+              <h2 className="text-lg font-semibold mb-4">
+                {t('shippingAddress')}
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Input
                   name="shippingCity"
                   label={
                     <span>
-                      City <span className="text-red-500">*</span>
+                      {t('city')} <span className="text-red-500">*</span>
                     </span>
                   }
                   type="text"
@@ -273,7 +262,7 @@ export function CheckoutClient() {
                   name="shippingCountry"
                   label={
                     <span>
-                      Country <span className="text-red-500">*</span>
+                      {t('country')} <span className="text-red-500">*</span>
                     </span>
                   }
                   type="text"
@@ -285,7 +274,8 @@ export function CheckoutClient() {
                   name="shippingAddress"
                   label={
                     <span>
-                      Street Address <span className="text-red-500">*</span>
+                      {t('streetAddress')}{' '}
+                      <span className="text-red-500">*</span>
                     </span>
                   }
                   type="text"
@@ -297,7 +287,7 @@ export function CheckoutClient() {
                   name="shippingPostalCode"
                   label={
                     <span>
-                      Postal Code <span className="text-red-500">*</span>
+                      {t('postalCode')} <span className="text-red-500">*</span>
                     </span>
                   }
                   type="text"
@@ -310,7 +300,7 @@ export function CheckoutClient() {
 
             {/* Order Items */}
             <div className="bg-white border border-gray-200 rounded-md p-6">
-              <h2 className="text-lg font-semibold mb-4">Your order</h2>
+              <h2 className="text-lg font-semibold mb-4">{t('yourOrder')}</h2>
               <div className="space-y-4">
                 {cart.items.map((item) => (
                   <CartItem key={item.id} item={item} showControls={false} />
@@ -324,7 +314,7 @@ export function CheckoutClient() {
               size="lg"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Processing...' : 'Proceed to payment'}
+              {isSubmitting ? t('processing') : t('proceedToPayment')}
             </Button>
           </form>
         </div>

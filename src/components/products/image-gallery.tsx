@@ -1,6 +1,9 @@
+'use client';
+
 import Image from 'next/image';
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 type ImageGalleryProps = {
   images: string[];
@@ -9,11 +12,12 @@ type ImageGalleryProps = {
 
 const ImageGallery = ({ images, alt }: ImageGalleryProps) => {
   const [selectedImage, setSelectedImage] = useState(0);
+  const t = useTranslations('products');
 
   if (!images || images.length === 0) {
     return (
       <div className="aspect-square bg-gray-100 rounded-md flex items-center justify-center">
-        <span className="text-gray-400">No images available</span>
+        <span className="text-gray-400">{t('noImagesAvailable')}</span>
       </div>
     );
   }
@@ -71,10 +75,11 @@ const ImageGallery = ({ images, alt }: ImageGalleryProps) => {
             <button
               key={index}
               onClick={() => setSelectedImage(index)}
-              className={`relative shrink-0 w-16 h-16 rounded-md overflow-hidden border-2 transition-colors ${selectedImage === index
-                ? 'border-blue-500'
-                : 'border-gray-200 hover:border-gray-300'
-                }`}
+              className={`relative shrink-0 w-16 h-16 rounded-md overflow-hidden border-2 transition-colors ${
+                selectedImage === index
+                  ? 'border-blue-500'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
               aria-label={`View image ${index + 1}`}
             >
               <Image

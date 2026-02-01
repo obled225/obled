@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, X } from 'lucide-react';
-import { Product, getProductPrice } from '@/lib/types';
+import { Product } from '@/lib/types';
 import { useCurrencyStore } from '@/lib/store/currency-store';
 import { formatPrice } from '@/lib/utils/format';
 import Image from 'next/image';
@@ -15,7 +15,7 @@ interface SearchBarProps {
 
 export function SearchBar({ className }: SearchBarProps) {
   const t = useTranslations('header');
-  const { currency } = useCurrencyStore();
+  const { currency, convertPrice } = useCurrencyStore();
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [results, setResults] = useState<Product[]>([]);
@@ -104,14 +104,9 @@ export function SearchBar({ className }: SearchBarProps) {
               {results.length} {t('search.resultsFound')}
             </div>
             {results.map((product) => {
-              // Get price for selected currency
-              const currentPrice =
-                getProductPrice(product, currency) ||
-                getProductPrice(product, 'XOF') ||
-                product.prices[0];
-              const displayPrice = currentPrice?.basePrice || product.price;
-              const displayCurrency =
-                currentPrice?.currency || product.currency;
+              // All prices are in XOF, convert to selected currency
+              const priceXOF = product.price || 0;
+              const displayPrice = convertPrice(priceXOF, currency);
 
               return (
                 <button
@@ -140,7 +135,7 @@ export function SearchBar({ className }: SearchBarProps) {
                         {product.name}
                       </div>
                       <div className="text-sm text-gray-600 truncate">
-                        {formatPrice(displayPrice, displayCurrency)}
+                        {formatPrice(displayPrice, currency)}
                       </div>
                     </div>
                   </div>

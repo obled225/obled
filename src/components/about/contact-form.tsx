@@ -36,7 +36,9 @@ export function ContactForm() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Erreur lors de l'envoi du formulaire");
+        throw new Error(
+          data.error || tContact('form.error.formSubmissionError')
+        );
       }
 
       success(
@@ -54,7 +56,9 @@ export function ContactForm() {
       });
     } catch (err) {
       const errorMessage =
-        err instanceof Error ? err.message : 'Une erreur est survenue';
+        err instanceof Error
+          ? err.message
+          : tContact('form.error.unexpectedError');
       error(tContact('form.error.title'), errorMessage);
     } finally {
       setIsSubmitting(false);

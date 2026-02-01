@@ -33,7 +33,6 @@ interface CartItem {
   quantity: number;
   price: number;
   productImageUrl?: string;
-  lomiPriceId?: string;
 }
 
 interface RequestPayload {
@@ -206,7 +205,14 @@ serve(async (req: Request) => {
     console.log('Customer upserted successfully:', customerId);
 
     // --- Calculate totals ---
-    const currencyCode = payload.currencyCode || 'XOF';
+    // Validate and normalize currency code - ensure it's always XOF, EUR, or USD (never F CFA)
+    let currencyCode = (payload.currencyCode || 'XOF').toUpperCase();
+    // Map any invalid currency codes to XOF
+    const validCurrencies = ['XOF', 'EUR', 'USD'];
+    if (!validCurrencies.includes(currencyCode)) {
+      console.warn(`Invalid currency code "${currencyCode}", defaulting to XOF`);
+      currencyCode = 'XOF';
+    }
     let subtotal = 0;
     const shippingFee = payload.shippingFee || 0;
     const taxAmount = payload.taxAmount || 0;
@@ -300,10 +306,12 @@ serve(async (req: Request) => {
     const cancelRedirectPath = payload.cancelUrlPath || '/payment/error';
 
     // Use line_items based checkout for e-commerce
+    // lomi. supports XOF, EUR, and USD currencies
+    // currency_code must be ISO 4217 currency code (XOF, EUR, USD) - never "F CFA"
     const lomiPayload = {
       success_url: `${APP_BASE_URL}${successRedirectPath}?order_id=${encodeURIComponent(orderId)}&status=success`,
       cancel_url: `${APP_BASE_URL}${cancelRedirectPath}?order_id=${encodeURIComponent(orderId)}&status=cancelled`,
-      // amount is calculated by lomi from line_items, but we can send currency_code
+      // Currency code: XOF, EUR, or USD (ISO 4217 format)
       currency_code: currencyCode,
       customer_email: payload.userEmail,
       customer_name: payload.userName,
@@ -313,21 +321,13 @@ serve(async (req: Request) => {
       customer_address: payload.shippingAddress?.address,
       customer_postal_code: payload.shippingAddress?.postalCode,
       line_items: payload.cartItems.map(item => {
-        if (item.lomiPriceId) {
-          return {
-            price: item.lomiPriceId, // Use 'price' for ID reference in some APIs, or 'price_id'
-            // The previous logic used 'price_id' in one place and 'price' in another. 
-            // Looking at line 297 above: 'price_id: item.lomiPriceId'.
-            // Let's stick to the previous key 'price_id' if that's what Lomi uses for IDs.
-            price_id: item.lomiPriceId,
-            quantity: item.quantity
-          };
-        } 
-        
         // Ad-Hoc Pricing (Direct Charge)
+        // unit_amount: For XOF, it's in base units (e.g., 100000 = 100,000 XOF)
+        // For EUR/USD, prices are already converted and should be in base units (e.g., 150.00 EUR = 150)
+        // lomi. handles the currency formatting based on currency_code
         return {
           price_data: {
-            currency: currencyCode,
+            currency: currencyCode, // XOF, EUR, or USD (never "F CFA")
             product_data: {
               name: item.productTitle + (item.variantTitle ? ` (${item.variantTitle})` : ''),
               images: item.productImageUrl ? [item.productImageUrl] : undefined,
@@ -336,7 +336,7 @@ serve(async (req: Request) => {
                 variant_id: item.variantId
               }
             },
-            unit_amount: item.price
+            unit_amount: item.price // Price in selected currency (already converted from XOF)
           },
           quantity: item.quantity
         };

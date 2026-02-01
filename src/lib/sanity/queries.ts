@@ -2,7 +2,6 @@ import { sanityClient } from './client';
 import {
   Product,
   ProductCategory,
-  ProductPrice,
   PortableTextBlock,
 } from '@/lib/types/sanity';
 import { getSanityImageUrl } from './client';
@@ -31,20 +30,9 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
       })
       .filter((url): url is string => url !== null && url !== '') || [];
 
-  // Transform prices array
-  const prices: ProductPrice[] = (doc.prices || []).map((price) => ({
-    currency: (price.currency || 'XOF') as 'XOF' | 'USD' | 'EUR',
-    basePrice: price.basePrice || 0,
-    originalPrice: price.originalPrice,
-    lomiPriceId: price.lomiPriceId || '',
-  }));
-
-  // Get first price as default (for backward compatibility)
-  const defaultPrice = prices[0] || {
-    currency: 'XOF' as const,
-    basePrice: 0,
-    lomiPriceId: '',
-  };
+  // Get price (always in XOF)
+  const price = doc.price || 0;
+  const originalPrice = doc.originalPrice;
 
   // Transform colors array
   const colors = (doc.colors || []).map((color) => {
@@ -52,7 +40,7 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
     // When using image.asset->, the asset is already resolved
     // color.image might be the asset itself, or color.image.asset might be the asset
     const imageAsset = color.image?.asset || color.image;
-    
+
     return {
       name: color.name || '',
       available: color.available !== false,
@@ -138,20 +126,8 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
               })
               .filter((url): url is string => url !== null && url !== '') || [];
 
-          const relatedPrices: ProductPrice[] = (relatedDoc.prices || []).map(
-            (price) => ({
-              currency: (price.currency || 'XOF') as 'XOF' | 'USD' | 'EUR',
-              basePrice: price.basePrice || 0,
-              originalPrice: price.originalPrice,
-              lomiPriceId: price.lomiPriceId || '',
-            })
-          );
-
-          const defaultRelatedPrice = relatedPrices[0] || {
-            currency: 'XOF' as const,
-            basePrice: 0,
-            lomiPriceId: '',
-          };
+          const relatedPrice = relatedDoc.price || 0;
+          const relatedOriginalPrice = relatedDoc.originalPrice;
 
           const relatedCategory = relatedDoc.categories?.[0]
             ? {
@@ -174,10 +150,8 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
                 ? relatedDoc.slug
                 : relatedDoc.slug?.current || relatedDoc._id || '',
             name: relatedDoc.name || '',
-            prices: relatedPrices,
-            price: defaultRelatedPrice.basePrice,
-            originalPrice: defaultRelatedPrice.originalPrice,
-            currency: defaultRelatedPrice.currency,
+            price: relatedPrice,
+            originalPrice: relatedOriginalPrice,
             image: relatedImages[0] || '',
             images: relatedImages.length > 0 ? relatedImages : undefined,
             soldOut: !relatedDoc.inStock,
@@ -227,11 +201,8 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
     slug:
       (typeof doc.slug === 'string' ? doc.slug : doc.slug?.current) || doc._id,
     name: doc.name || '',
-    prices,
-    // Backward compatibility fields (use first price)
-    price: defaultPrice.basePrice,
-    originalPrice: defaultPrice.originalPrice,
-    currency: defaultPrice.currency,
+    price,
+    originalPrice,
     image: primaryImage || '',
     images: images.length > 0 ? images : undefined,
     soldOut: !doc.inStock,
@@ -244,7 +215,6 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
     relatedProducts,
     businessPackProduct,
     isBusinessProduct: doc.isBusinessProduct || false,
-    lomiProductId: doc.lomiProductId,
     featured: doc.featured || false,
     bestSeller: doc.bestSeller || false,
     businessPacks: doc.businessPacks,
@@ -261,26 +231,17 @@ const ALL_PRODUCTS_QUERY = `*[_type == "products" && !(_id in path("drafts.**"))
   name,
   "slug": slug.current,
   isBusinessProduct,
-  lomiProductId,
 
   businessPacks[] {
     quantity,
     label,
-    prices[] {
-      currency,
-      basePrice,
-      originalPrice,
-      lomiPriceId
-    }
+    price,
+    originalPrice
   },
   featured,
   bestSeller,
-  prices[] {
-    currency,
-    basePrice,
-    originalPrice,
-    lomiPriceId
-  },
+  price,
+  originalPrice,
   description,
   inStock,
   "images": images[].asset->,
@@ -302,18 +263,14 @@ const ALL_PRODUCTS_QUERY = `*[_type == "products" && !(_id in path("drafts.**"))
     name,
     "slug": slug.current
   },
-  "relatedProducts": relatedProducts[]->{
-    _id,
-    _createdAt,
-    _updatedAt,
-    name,
-    "slug": slug.current,
-    prices[] {
-      currency,
-      basePrice,
+    "relatedProducts": relatedProducts[]->{
+      _id,
+      _createdAt,
+      _updatedAt,
+      name,
+      "slug": slug.current,
+      price,
       originalPrice,
-      lomiPriceId
-    },
     inStock,
     "images": images[].asset->,
     "categories": categories[]->{
@@ -338,25 +295,16 @@ const PRODUCT_BY_SLUG_QUERY = `*[_type == "products" && slug.current == $slug &&
   name,
   "slug": slug.current,
   isBusinessProduct,
-  lomiProductId,
   businessPacks[] {
     quantity,
     label,
-    prices[] {
-      currency,
-      basePrice,
-      originalPrice,
-      lomiPriceId
-    }
+    price,
+    originalPrice
   },
   featured,
   bestSeller,
-  prices[] {
-    currency,
-    basePrice,
-    originalPrice,
-    lomiPriceId
-  },
+  price,
+  originalPrice,
   description,
   inStock,
   "images": images[].asset->,
@@ -378,18 +326,14 @@ const PRODUCT_BY_SLUG_QUERY = `*[_type == "products" && slug.current == $slug &&
     name,
     "slug": slug.current
   },
-  "relatedProducts": relatedProducts[]->{
-    _id,
-    _createdAt,
-    _updatedAt,
-    name,
-    "slug": slug.current,
-    prices[] {
-      currency,
-      basePrice,
+    "relatedProducts": relatedProducts[]->{
+      _id,
+      _createdAt,
+      _updatedAt,
+      name,
+      "slug": slug.current,
+      price,
       originalPrice,
-      lomiPriceId
-    },
     inStock,
     "images": images[].asset->,
     "categories": categories[]->{
@@ -414,15 +358,10 @@ const PRODUCTS_BY_CATEGORY_QUERY = `*[_type == "products" && $categoryId in cate
   name,
   "slug": slug.current,
   isBusinessProduct,
-  lomiProductId,
   featured,
   bestSeller,
-  prices[] {
-    currency,
-    basePrice,
-    originalPrice,
-    lomiPriceId
-  },
+  price,
+  originalPrice,
   description,
   inStock,
   "images": images[].asset->,
@@ -444,18 +383,14 @@ const PRODUCTS_BY_CATEGORY_QUERY = `*[_type == "products" && $categoryId in cate
     name,
     "slug": slug.current
   },
-  "relatedProducts": relatedProducts[]->{
-    _id,
-    _createdAt,
-    _updatedAt,
-    name,
-    "slug": slug.current,
-    prices[] {
-      currency,
-      basePrice,
+    "relatedProducts": relatedProducts[]->{
+      _id,
+      _createdAt,
+      _updatedAt,
+      name,
+      "slug": slug.current,
+      price,
       originalPrice,
-      lomiPriceId
-    },
     inStock,
     "images": images[].asset->,
     "categories": categories[]->{
@@ -480,15 +415,10 @@ const FEATURED_PRODUCTS_QUERY = `*[_type == "products" && featured == true && !(
   name,
   "slug": slug.current,
   isBusinessProduct,
-  lomiProductId,
   featured,
   bestSeller,
-  prices[] {
-    currency,
-    basePrice,
-    originalPrice,
-    lomiPriceId
-  },
+  price,
+  originalPrice,
   description,
   inStock,
   "images": images[].asset->,
@@ -510,18 +440,14 @@ const FEATURED_PRODUCTS_QUERY = `*[_type == "products" && featured == true && !(
     name,
     "slug": slug.current
   },
-  "relatedProducts": relatedProducts[]->{
-    _id,
-    _createdAt,
-    _updatedAt,
-    name,
-    "slug": slug.current,
-    prices[] {
-      currency,
-      basePrice,
+    "relatedProducts": relatedProducts[]->{
+      _id,
+      _createdAt,
+      _updatedAt,
+      name,
+      "slug": slug.current,
+      price,
       originalPrice,
-      lomiPriceId
-    },
     inStock,
     "images": images[].asset->,
     "categories": categories[]->{
@@ -563,16 +489,10 @@ export async function getShopProducts(): Promise<Product[]> {
       name,
       "slug": slug.current,
       isBusinessProduct,
-      lomiProductId,
       featured,
       bestSeller,
-  bestSeller,
-      prices[] {
-        currency,
-        basePrice,
-        originalPrice,
-        lomiPriceId
-      },
+      price,
+      originalPrice,
       description,
       inStock,
       "images": images[].asset->,
@@ -590,18 +510,14 @@ export async function getShopProducts(): Promise<Product[]> {
         "image": image.asset->
       },
       sizes,
-      "relatedProducts": relatedProducts[]->{
-        _id,
-        _createdAt,
-        _updatedAt,
-        name,
-        "slug": slug.current,
-        prices[] {
-          currency,
-          basePrice,
-          originalPrice,
-          lomiPriceId
-        },
+    "relatedProducts": relatedProducts[]->{
+      _id,
+      _createdAt,
+      _updatedAt,
+      name,
+      "slug": slug.current,
+      price,
+      originalPrice,
         inStock,
         "images": images[].asset->,
         "categories": categories[]->{
@@ -637,26 +553,17 @@ export async function getBusinessProducts(): Promise<Product[]> {
       name,
       "slug": slug.current,
       isBusinessProduct,
-      lomiProductId,
       featured,
       bestSeller,
   bestSeller,
       businessPacks[] {
         quantity,
         label,
-        prices[] {
-          currency,
-          basePrice,
-          originalPrice,
-          lomiPriceId
-        }
+        price,
+        originalPrice
       },
-      prices[] {
-        currency,
-        basePrice,
-        originalPrice,
-        lomiPriceId
-      },
+      price,
+      originalPrice,
       description,
       inStock,
       "images": images[].asset->,
@@ -674,18 +581,14 @@ export async function getBusinessProducts(): Promise<Product[]> {
         "image": image.asset->
       },
       sizes,
-      "relatedProducts": relatedProducts[]->{
-        _id,
-        _createdAt,
-        _updatedAt,
-        name,
-        "slug": slug.current,
-        prices[] {
-          currency,
-          basePrice,
-          originalPrice,
-          lomiPriceId
-        },
+    "relatedProducts": relatedProducts[]->{
+      _id,
+      _createdAt,
+      _updatedAt,
+      name,
+      "slug": slug.current,
+      price,
+      originalPrice,
         inStock,
         "images": images[].asset->,
         "categories": categories[]->{
@@ -773,23 +676,14 @@ export async function getProductById(id: string): Promise<Product | null> {
       name,
       "slug": slug.current,
       isBusinessProduct,
-      lomiProductId,
       businessPacks[] {
         quantity,
         label,
-        prices[] {
-          currency,
-          basePrice,
-          originalPrice,
-          lomiPriceId
-        }
+        price,
+        originalPrice
       },
-      prices[] {
-        currency,
-        basePrice,
-        originalPrice,
-        lomiPriceId
-      },
+      price,
+      originalPrice,
       description,
       inStock,
       "images": images[].asset->,
@@ -807,18 +701,14 @@ export async function getProductById(id: string): Promise<Product | null> {
         "image": image.asset->
       },
       sizes,
-      "relatedProducts": relatedProducts[]->{
-        _id,
-        _createdAt,
-        _updatedAt,
-        name,
-        "slug": slug.current,
-        prices[] {
-          currency,
-          basePrice,
-          originalPrice,
-          lomiPriceId
-        },
+    "relatedProducts": relatedProducts[]->{
+      _id,
+      _createdAt,
+      _updatedAt,
+      name,
+      "slug": slug.current,
+      price,
+      originalPrice,
         inStock,
         "images": images[].asset->,
         "categories": categories[]->{
@@ -961,6 +851,8 @@ export async function getFloatingAnnouncement(): Promise<FloatingAnnouncementDat
   try {
     const doc = await sanityClient.fetch(FLOATING_ANNOUNCEMENT_QUERY);
     if (!doc?.floatingAnnouncement) return null;
+    // Only return if the announcement is active
+    if (doc.floatingAnnouncement.isActive !== true) return null;
     return doc.floatingAnnouncement;
   } catch (error) {
     console.error('Error fetching floating announcement from Sanity:', error);
@@ -1114,15 +1006,10 @@ export async function getProductsByCategorySlug(
       name,
       "slug": slug.current,
       isBusinessProduct,
-      lomiProductId,
       featured,
       bestSeller,
-      prices[] {
-        currency,
-        basePrice,
-        originalPrice,
-        lomiPriceId
-      },
+      price,
+      originalPrice,
       description,
       inStock,
       "images": images[].asset->,
@@ -1145,18 +1032,14 @@ export async function getProductsByCategorySlug(
         name,
         "slug": slug.current
       },
-      "relatedProducts": relatedProducts[]->{
-        _id,
-        _createdAt,
-        _updatedAt,
-        name,
-        "slug": slug.current,
-        prices[] {
-          currency,
-          basePrice,
-          originalPrice,
-          lomiPriceId
-        },
+    "relatedProducts": relatedProducts[]->{
+      _id,
+      _createdAt,
+      _updatedAt,
+      name,
+      "slug": slug.current,
+      price,
+      originalPrice,
         inStock,
         "images": images[].asset->,
         "categories": categories[]->{
@@ -1188,29 +1071,26 @@ const SHIPPING_AND_TAXES_QUERY = `*[_type == "shippingAndTaxes" && !(_id in path
   _id,
   _createdAt,
   _updatedAt,
+  globalFreeShippingThreshold {
+    enabled,
+    amount
+  },
   shippingOptions[] {
     name,
     type,
     description,
     estimatedDays,
-    prices[] {
-      currency,
-      price
-    },
+    price,
     isActive,
     sortOrder,
     freeShippingThreshold {
       enabled,
-      thresholds[] {
-        currency,
-        amount
-      }
+      amount
     }
   },
   taxSettings {
     isActive,
     taxRates[] {
-      currency,
       type,
       rate
     },
@@ -1218,62 +1098,41 @@ const SHIPPING_AND_TAXES_QUERY = `*[_type == "shippingAndTaxes" && !(_id in path
   }
 }`;
 
-export interface ShippingPrice {
-  currency: 'XOF' | 'USD' | 'EUR';
-  price: number;
-}
-
-export interface FreeShippingThreshold {
-  currency: 'XOF' | 'USD' | 'EUR';
-  amount: number;
-}
-
 export interface ShippingOption {
   id: string;
   name: string;
   type: 'standard' | 'express' | 'overnight' | 'international';
   description: string;
   estimatedDays: string;
-  prices: ShippingPrice[];
+  price: number; // Price in XOF (base currency)
   isActive: boolean;
   sortOrder: number;
   freeShippingThreshold?: {
     enabled: boolean;
-    thresholds?: FreeShippingThreshold[];
+    amount?: number; // Threshold amount in XOF (base currency)
   };
   createdAt: Date;
   updatedAt: Date;
 }
 
 // Sanity document types
-interface SanityShippingPrice {
-  currency?: string;
-  price?: number;
-}
-
-interface SanityFreeShippingThreshold {
-  currency?: string;
-  amount?: number;
-}
-
 interface SanityShippingOptionItem {
   name?: string;
   type?: string;
   description?: string;
   estimatedDays?: string;
-  prices?: SanityShippingPrice[];
+  price?: number; // Price in XOF
   isActive?: boolean;
   sortOrder?: number;
   freeShippingThreshold?: {
     enabled?: boolean;
-    thresholds?: SanityFreeShippingThreshold[];
+    amount?: number; // Threshold amount in XOF
   };
 }
 
 interface SanityTaxRate {
-  currency?: string;
   type?: string;
-  rate?: number;
+  rate?: number; // Rate in XOF (for fixed) or percentage (for percentage)
 }
 
 interface SanityTaxSettings {
@@ -1282,10 +1141,16 @@ interface SanityTaxSettings {
   displayMessage?: string;
 }
 
+interface SanityGlobalFreeShippingThreshold {
+  enabled?: boolean;
+  amount?: number; // Threshold amount in XOF
+}
+
 interface SanityShippingAndTaxesDocument {
   _id?: string;
   _createdAt?: string;
   _updatedAt?: string;
+  globalFreeShippingThreshold?: SanityGlobalFreeShippingThreshold;
   shippingOptions?: SanityShippingOptionItem[];
   taxSettings?: SanityTaxSettings;
 }
@@ -1305,22 +1170,13 @@ function transformSanityShippingOption(
     type: (item.type || 'standard') as ShippingOption['type'],
     description: item.description || '',
     estimatedDays: item.estimatedDays || '',
-    prices: (item.prices || []).map((price) => ({
-      currency: (price.currency || 'XOF') as 'XOF' | 'USD' | 'EUR',
-      price: price.price || 0,
-    })),
+    price: item.price || 0, // Price in XOF
     isActive: item.isActive !== false,
     sortOrder: item.sortOrder || 0,
     freeShippingThreshold: item.freeShippingThreshold
       ? {
           enabled: item.freeShippingThreshold.enabled || false,
-          thresholds: (item.freeShippingThreshold.thresholds || []).map(
-            (threshold) => ({
-              currency: (threshold.currency ||
-                'XOF') as 'XOF' | 'USD' | 'EUR',
-              amount: threshold.amount || 0,
-            })
-          ),
+          amount: item.freeShippingThreshold.amount, // Amount in XOF
         }
       : undefined,
     createdAt: createdAt ? new Date(createdAt) : new Date(),
@@ -1337,7 +1193,7 @@ export async function getAllShippingOptions(): Promise<ShippingOption[]> {
       SHIPPING_AND_TAXES_QUERY
     );
     if (!doc || !doc.shippingOptions) return [];
-    
+
     return doc.shippingOptions
       .map((item) =>
         transformSanityShippingOption(
@@ -1363,7 +1219,7 @@ export async function getActiveShippingOptions(): Promise<ShippingOption[]> {
       SHIPPING_AND_TAXES_QUERY
     );
     if (!doc || !doc.shippingOptions) return [];
-    
+
     return doc.shippingOptions
       .filter((item) => item.isActive !== false)
       .map((item) =>
@@ -1382,6 +1238,37 @@ export async function getActiveShippingOptions(): Promise<ShippingOption[]> {
 }
 
 /**
+ * Get global free shipping threshold from Sanity
+ */
+export async function getGlobalFreeShippingThreshold(): Promise<{
+  enabled: boolean;
+  amount?: number; // Threshold amount in XOF
+} | null> {
+  try {
+    const doc = await sanityClient.fetch<SanityShippingAndTaxesDocument>(
+      SHIPPING_AND_TAXES_QUERY
+    );
+    if (!doc || !doc.globalFreeShippingThreshold) return null;
+
+    const threshold = doc.globalFreeShippingThreshold;
+    if (!threshold.enabled || threshold.amount === undefined) {
+      return null;
+    }
+
+    return {
+      enabled: threshold.enabled,
+      amount: threshold.amount, // Amount in XOF
+    };
+  } catch (error) {
+    console.error(
+      'Error fetching global free shipping threshold from Sanity:',
+      error
+    );
+    return null;
+  }
+}
+
+/**
  * Get a shipping option by name (since we now use array items)
  */
 export async function getShippingOptionByName(
@@ -1392,10 +1279,10 @@ export async function getShippingOptionByName(
       SHIPPING_AND_TAXES_QUERY
     );
     if (!doc || !doc.shippingOptions) return null;
-    
+
     const item = doc.shippingOptions.find((opt) => opt.name === name);
     if (!item) return null;
-    
+
     return transformSanityShippingOption(
       item,
       doc._id || '',
@@ -1414,9 +1301,8 @@ export async function getShippingOptionByName(
 // Tax settings are now part of the shippingAndTaxes document
 
 export interface TaxRate {
-  currency: 'XOF' | 'USD' | 'EUR';
   type: 'percentage' | 'fixed';
-  rate: number;
+  rate: number; // Rate in XOF (for fixed) or percentage decimal (for percentage, e.g., 0.1 for 10%)
 }
 
 export interface TaxSettings {
@@ -1438,14 +1324,13 @@ function transformSanityTaxSettings(
   updatedAt: string
 ): TaxSettings | null {
   if (!taxSettings) return null;
-  
+
   return {
     id: documentId || '',
     isActive: taxSettings.isActive !== false,
     taxRates: (taxSettings.taxRates || []).map((rate) => ({
-      currency: (rate.currency || 'XOF') as 'XOF' | 'USD' | 'EUR',
       type: (rate.type || 'percentage') as 'percentage' | 'fixed',
-      rate: rate.rate || 0,
+      rate: rate.rate || 0, // Rate in XOF (for fixed) or percentage decimal (for percentage)
     })),
     displayMessage: taxSettings.displayMessage || 'Taxes included in price',
     createdAt: createdAt ? new Date(createdAt) : new Date(),
@@ -1462,7 +1347,7 @@ export async function getTaxSettings(): Promise<TaxSettings | null> {
       SHIPPING_AND_TAXES_QUERY
     );
     if (!doc || !doc.taxSettings) return null;
-    
+
     return transformSanityTaxSettings(
       doc.taxSettings,
       doc._id || '',
@@ -1477,25 +1362,41 @@ export async function getTaxSettings(): Promise<TaxSettings | null> {
 
 /**
  * Calculate tax amount based on subtotal and currency
+ * Note: All tax rates are stored in XOF. The subtotal should already be converted to the target currency.
+ * For percentage rates, we apply the percentage to the subtotal.
+ * For fixed rates, we convert the XOF amount to the target currency.
  */
 export function calculateTax(
   subtotal: number,
   currency: 'XOF' | 'USD' | 'EUR',
   taxSettings: TaxSettings | null
 ): number {
-  if (!taxSettings || !taxSettings.isActive) {
+  if (
+    !taxSettings ||
+    !taxSettings.isActive ||
+    taxSettings.taxRates.length === 0
+  ) {
     return 0;
   }
 
-  const taxRate = taxSettings.taxRates.find((r) => r.currency === currency);
+  // Use the first tax rate (we only support one rate per currency now)
+  // In the future, if multiple rates are needed, they can be combined
+  const taxRate = taxSettings.taxRates[0];
   if (!taxRate) {
     return 0;
   }
 
   if (taxRate.type === 'percentage') {
+    // Percentage applies to the subtotal (which is already in the target currency)
     return subtotal * taxRate.rate;
   } else {
-    // Fixed amount
-    return taxRate.rate;
+    // Fixed amount: convert from XOF to target currency
+    // Import conversion rates - using the same rates as currency store
+    const CONVERSION_RATES: Record<'XOF' | 'USD' | 'EUR', number> = {
+      XOF: 1,
+      EUR: 0.0015,
+      USD: 0.0016,
+    };
+    return taxRate.rate * CONVERSION_RATES[currency];
   }
 }

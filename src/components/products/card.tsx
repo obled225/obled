@@ -3,17 +3,18 @@
 import { useState, useLayoutEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Product, formatPrice, getProductPrice } from '@/lib/types';
+import { Product, formatPrice } from '@/lib/types';
 import { useCurrencyStore } from '@/lib/store/currency-store';
 import { useTranslations } from 'next-intl';
 
 interface ProductCardProps {
   product: Product;
+  isFirst?: boolean;
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, isFirst = false }: ProductCardProps) {
   const t = useTranslations('products');
-  const { currency } = useCurrencyStore();
+  const { currency, convertPrice } = useCurrencyStore();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isHovering, setIsHovering] = useState(false);
   const lastSeenIndexRef = useRef(0); // Track the last image we saw while hovering
@@ -101,14 +102,12 @@ export function ProductCard({ product }: ProductCardProps) {
     };
   }, [isHovering, hasMultipleImages, allImages.length]);
 
-  // Get price for selected currency
-  const currentPrice =
-    getProductPrice(product, currency) ||
-    getProductPrice(product, 'XOF') ||
-    product.prices[0];
-  const displayPrice = currentPrice?.basePrice || product.price;
-  const displayCurrency = currentPrice?.currency || product.currency;
-  const displayOriginalPrice = currentPrice?.originalPrice;
+  // All prices are in XOF, convert to selected currency
+  const priceXOF = product.price || 0;
+  const displayPrice = convertPrice(priceXOF, currency);
+  const displayOriginalPrice = product.originalPrice
+    ? convertPrice(product.originalPrice, currency)
+    : undefined;
 
   return (
     <Link
@@ -129,18 +128,21 @@ export function ProductCard({ product }: ProductCardProps) {
                 src={imageUrl}
                 alt={`${product.name} - Image ${index + 1}`}
                 fill
-                className={`object-cover transition-opacity duration-500 ${index === currentImageIndex
+                className={`object-cover transition-opacity duration-500 ${
+                  index === currentImageIndex
                     ? 'opacity-100'
                     : 'opacity-0 absolute'
-                  }`}
+                }`}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                 unoptimized
+                priority={isFirst && index === 0}
+                loading={isFirst && index === 0 ? 'eager' : 'lazy'}
               />
             ))}
           </>
         ) : (
           <div className="flex items-center justify-center h-full text-gray-400 text-sm">
-            <span>No image</span>
+            <span>{t('noImage')}</span>
           </div>
         )}
         {!product.inStock && (
@@ -156,16 +158,16 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="mt-2 flex items-center gap-2">
           {displayOriginalPrice && displayOriginalPrice > displayPrice && (
             <span className="text-sm text-gray-500 line-through">
-              {formatPrice(displayOriginalPrice, displayCurrency)}
+              {formatPrice(displayOriginalPrice, currency)}
             </span>
           )}
           <span className="text-sm font-medium text-gray-900">
             {/* Only show "From" for business products with packs (multiple items) */}
             {product.isBusinessProduct &&
-              product.businessPacks &&
-              product.businessPacks.length > 0
-              ? `${t('from')} ${formatPrice(displayPrice, displayCurrency)}`
-              : formatPrice(displayPrice, displayCurrency)}
+            product.businessPacks &&
+            product.businessPacks.length > 0
+              ? `${t('from')} ${formatPrice(displayPrice, currency)}`
+              : formatPrice(displayPrice, currency)}
           </span>
         </div>
       </div>

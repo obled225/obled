@@ -42,14 +42,12 @@ export function ShareModalWrapper({
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent
-        side={isMobile ? "bottom" : "right"}
+        side={isMobile ? 'bottom' : 'right'}
         floating={!isMobile}
         hideCloseButton={isMobile}
         className={cn(
-          "flex flex-col overflow-hidden p-0",
-          isMobile 
-            ? "w-full max-h-[90vh]" 
-            : "w-full sm:max-w-xl max-h-[90vh]"
+          'flex flex-col overflow-hidden p-0',
+          isMobile ? 'w-full max-h-[90vh]' : 'w-full sm:max-w-xl max-h-[90vh]'
         )}
       >
         <SheetHeader className="px-6 pt-6 pb-4 border-b">

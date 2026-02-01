@@ -24,7 +24,26 @@
       "checkout": "Checkout",
       "taxesIncluded": "All taxes included",
       "summary": "Cart summary and checkout",
-      "pack": "/pack"
+      "pack": "/pack",
+      "tax": "Tax",
+      "noImage": "No image",
+      "each": "each",
+      "decreaseQuantity": "Decrease quantity",
+      "increaseQuantity": "Increase quantity",
+      "removeItem": "Remove item",
+      "summaryTitle": "Summary",
+      "subtotalWithItems": "Subtotal ({count} items)",
+      "shipping": "Shipping",
+      "free": "Free",
+      "addMoreForFreeShipping": "Add {amount} more for free shipping!",
+      "proceedToCheckout": "Proceed to checkout",
+      "shoppingCartTitle": "Shopping cart ({count} items)",
+      "clearCart": "Clear cart",
+      "emptyCartTitle": "Your cart is empty",
+      "emptyCartDescription": "Looks like you haven't added anything to your cart yet. Discover our products and find something you love.",
+      "startShopping": "Start shopping",
+      "secureCheckout": "Secure checkout powered by lomi.",
+      "securePayment": "🔒 Secure payment"
     },
     "menu": {
       "ariaLabel": "Menu",
@@ -61,6 +80,7 @@
       "size": "Size",
       "quantity": "Quantity",
       "adding": "Adding...",
+      "addingToCart": "Adding to Cart...",
       "addToCart": "Add to cart",
       "buyNow": "Buy now",
       "sizeGuide": "Size guide",
@@ -70,7 +90,35 @@
       "viewVariant": "View",
       "relatedProducts": "Related Products",
       "relatedProductsDescription": "You might also like these products",
-      "taxesIncluded": "All taxes included"
+      "taxesIncluded": "All taxes included",
+      "total": "Total",
+      "each": "each"
+    },
+    "productTabs": {
+      "productInformation": "Product Information",
+      "shippingReturns": "Shipping & Returns",
+      "category": "Category",
+      "stockStatus": "Stock Status",
+      "inStock": "In Stock",
+      "outOfStock": "Out of Stock",
+      "description": "Description",
+      "noDescriptionAvailable": "No description available",
+      "fastDelivery": {
+        "title": "Fast Delivery",
+        "description": "Your package will arrive in 3-5 business days at your pick up location or in the comfort of your home."
+      },
+      "easyReturns": {
+        "title": "Easy Returns",
+        "description": "Just return your product and we'll refund your money. No questions asked – we'll do our best to make sure your return is hassle-free."
+      },
+      "qualityGuarantee": {
+        "title": "Quality Guarantee",
+        "description": "We stand behind our products. If you're not completely satisfied, we'll make it right."
+      }
+    },
+    "relatedProducts": {
+      "defaultTitle": "Related Products",
+      "defaultDescription": "You might also want to check out these products."
     },
     "share": {
       "title": "Share",
@@ -91,6 +139,8 @@
       "allProducts": "All products",
       "ourPacks": "Our packs"
     },
+    "noImage": "No image",
+    "noImagesAvailable": "No images available",
     "filters": {
       "availability": {
         "title": "Availability",
@@ -119,7 +169,8 @@
   },
   "footer": {
     "copyright": "© 2026, KYS Factory — All rights reserved.",
-    "terms": "Privacy Policy"
+    "terms": "Privacy Policy",
+    "openSource": "This store is open-source"
   },
   "terms": {
     "title": "Privacy Policy",
@@ -378,7 +429,9 @@
       },
       "error": {
         "title": "Error",
-        "description": "An error occurred while sending your message. Please try again."
+        "description": "An error occurred while sending your message. Please try again.",
+        "formSubmissionError": "Error submitting form",
+        "unexpectedError": "An unexpected error occurred"
       }
     }
   },
@@ -469,6 +522,44 @@
     "fallback": {
       "manufacturer": "KYS FACTORY manufacturer & supplier of blank t-shirts",
       "businessOffers": "Offers for brands and businesses"
+    }
+  },
+  "shipping": {
+    "title": "Shipping options",
+    "addMoreForFreeShipping": "Add {amount} more for FREE shipping!",
+    "addAmountToEnableFreeShipping": "Add {amount} worth of items to qualify for free shipping",
+    "spent": "{amount} spent",
+    "forFreeShipping": "{amount} for free shipping",
+    "fast": "Fast",
+    "fastest": "Fastest",
+    "free": "FREE",
+    "estimatedDelivery": "Estimated delivery",
+    "freeShippingActive": "Free shipping",
+    "freeShippingActiveDescription": "Your order qualifies for free shipping."
+  },
+  "checkout": {
+    "title": "Checkout",
+    "metaDescription": "Complete your order securely. Enter your shipping information and proceed to payment.",
+    "emptyCartTitle": "Your cart is empty",
+    "emptyCartDescription": "Add some items to your cart before checking out.",
+    "continueShopping": "Continue shopping",
+    "yourInformation": "Your information",
+    "fullName": "Full name",
+    "email": "Email",
+    "phoneNumber": "Phone number",
+    "organization": "Organization / Company",
+    "shippingAddress": "Shipping address",
+    "city": "City",
+    "country": "Country",
+    "streetAddress": "Street address",
+    "postalCode": "Postal code",
+    "yourOrder": "Your order",
+    "processing": "Processing...",
+    "proceedToPayment": "Proceed to payment",
+    "errors": {
+      "fillAllFields": "Please fill in all required fields.",
+      "checkoutSessionFailed": "Failed to create checkout session. Please try again.",
+      "unexpectedError": "An unexpected error occurred. Please try again."
     }
   }
 }

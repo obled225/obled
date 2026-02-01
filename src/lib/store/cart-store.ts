@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { Cart, CartItem, CartSummary } from '@/lib/types';
-import { Product, ProductVariant, getProductPrice } from '@/lib/types';
+import { Product, ProductVariant } from '@/lib/types';
 import type { Currency } from './currency-store';
 
 interface CartStore {
@@ -23,16 +23,28 @@ interface CartStore {
   getCartTotal: (currency?: Currency) => number;
 }
 
+// Conversion rates from XOF (base currency) to other currencies
+const CONVERSION_RATES: Record<Currency, number> = {
+  XOF: 1,
+  EUR: 0.0015,
+  USD: 0.0016,
+};
+
+const convertPrice = (priceInXOF: number, currency: Currency): number => {
+  return priceInXOF * CONVERSION_RATES[currency];
+};
+
 const calculateCartTotal = (
   items: CartItem[],
   currency: Currency = 'XOF'
 ): number => {
   return items.reduce((total, item) => {
-    // Get price for the current currency
-    const priceObj = getProductPrice(item.product, currency);
-    const basePrice = priceObj?.basePrice || item.product.price;
-    const variantPrice = item.selectedVariant?.priceModifier || 0;
-    return total + (basePrice + variantPrice) * item.quantity;
+    // All prices are stored in XOF, convert to target currency
+    const basePriceXOF = item.product.price || 0;
+    const variantPriceXOF = item.selectedVariant?.priceModifier || 0;
+    const totalPriceXOF = basePriceXOF + variantPriceXOF;
+    const convertedPrice = convertPrice(totalPriceXOF, currency);
+    return total + convertedPrice * item.quantity;
   }, 0);
 };
 
@@ -41,27 +53,29 @@ const calculateOriginalSubtotal = (
   currency: Currency = 'XOF'
 ): number => {
   return items.reduce((total, item) => {
-    // Get price for the current currency
-    const priceObj = getProductPrice(item.product, currency);
-    const basePrice = priceObj?.basePrice || item.product.price;
-    const variantPrice = item.selectedVariant?.priceModifier || 0;
-    const finalPrice = basePrice + variantPrice;
-    
+    // All prices are stored in XOF
+    const basePriceXOF = item.product.price || 0;
+    const variantPriceXOF = item.selectedVariant?.priceModifier || 0;
+    const finalPriceXOF = basePriceXOF + variantPriceXOF;
+
     // Find original price for pack if it exists
-    let originalPrice: number | undefined;
+    let originalPriceXOF: number | undefined;
     if (item.selectedVariant?.packSize && item.product.businessPacks) {
       const pack = item.product.businessPacks.find(
         (p) => p.quantity === item.selectedVariant?.packSize
       );
-      const packPriceObj = pack?.prices?.find((p) => p.currency === currency);
-      originalPrice = packPriceObj?.originalPrice;
+      originalPriceXOF = pack?.originalPrice;
     } else {
-      originalPrice = priceObj?.originalPrice;
+      originalPriceXOF = item.product.originalPrice;
     }
-    
+
     // Use original price if available and greater than final price, otherwise use final price
-    const priceToUse = originalPrice && originalPrice > finalPrice ? originalPrice : finalPrice;
-    return total + priceToUse * item.quantity;
+    const priceToUseXOF =
+      originalPriceXOF && originalPriceXOF > finalPriceXOF
+        ? originalPriceXOF
+        : finalPriceXOF;
+    const convertedPrice = convertPrice(priceToUseXOF, currency);
+    return total + convertedPrice * item.quantity;
   }, 0);
 };
 
@@ -197,12 +211,17 @@ const createCartStore = () =>
         ): CartSummary => {
           const { cart } = get();
           const subtotal = calculateCartTotal(cart.items, currency);
-          const originalSubtotal = calculateOriginalSubtotal(cart.items, currency);
-          const discount = originalSubtotal > subtotal ? originalSubtotal - subtotal : 0;
+          const originalSubtotal = calculateOriginalSubtotal(
+            cart.items,
+            currency
+          );
+          const discount =
+            originalSubtotal > subtotal ? originalSubtotal - subtotal : 0;
 
           return {
             subtotal,
-            originalSubtotal: originalSubtotal > subtotal ? originalSubtotal : undefined,
+            originalSubtotal:
+              originalSubtotal > subtotal ? originalSubtotal : undefined,
             tax: taxAmount,
             shipping: shippingAmount,
             discount,

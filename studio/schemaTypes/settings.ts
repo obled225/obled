@@ -2,13 +2,40 @@ import {defineField, defineType} from 'sanity'
 
 export default defineType({
   name: 'shippingAndTaxes',
-  title: 'Shipping and Taxes',
+  title: 'Settings',
   type: 'document',
   fields: [
+    defineField({
+      name: 'globalFreeShippingThreshold',
+      title: 'Free shipping threshold',
+      type: 'object',
+      description: 'When enabled, all shipping options become free when cart subtotal reaches this threshold. This applies globally to all shipping options.',
+      fields: [
+        {
+          name: 'enabled',
+          title: 'Enable Global Free Shipping',
+          type: 'boolean',
+          initialValue: false,
+          description: 'Enable free shipping for all orders above the threshold amount',
+        },
+        {
+          name: 'amount',
+          title: 'Threshold amount',
+          type: 'number',
+          hidden: ({parent}) => !parent?.enabled,
+          options: {
+            controls: false,
+          },
+          description: 'Cart subtotal amount needed for free shipping in F CFA (e.g., 100000 for 100,000 XOF). When an order exceeds this amount, all shipping options become free.',
+          validation: (Rule) => Rule.required().min(0),
+        },
+      ],
+    }),
+
     // Shipping Options Section
     defineField({
       name: 'shippingOptions',
-      title: 'Shipping Options',
+      title: 'Shipping options',
       type: 'array',
       description: 'Configure up to 3 shipping options',
       validation: (Rule) => Rule.max(3).error('Maximum 3 shipping options allowed'),
@@ -18,14 +45,14 @@ export default defineType({
           fields: [
             {
               name: 'name',
-              title: 'Shipping Option Name',
+              title: 'Shipping option name',
               type: 'string',
-              description: 'e.g., Standard Shipping, Express Shipping',
+              description: 'e.g., Standard, Express',
               validation: (Rule) => Rule.required(),
             },
             {
               name: 'type',
-              title: 'Shipping Type',
+              title: 'Shipping type',
               type: 'string',
               options: {
                 list: [
@@ -52,52 +79,14 @@ export default defineType({
               validation: (Rule) => Rule.required(),
             },
             {
-              name: 'prices',
-              title: 'Prices',
-              type: 'array',
-              description: 'Shipping prices in different currencies (EUR, USD, XOF)',
-              validation: (Rule) => Rule.min(1).error('At least one price is required'),
-              of: [
-                {
-                  type: 'object',
-                  fields: [
-                    {
-                      name: 'currency',
-                      title: 'Currency',
-                      type: 'string',
-                      options: {
-                        list: [
-                          {title: 'West African CFA Franc (XOF)', value: 'XOF'},
-                          {title: 'US Dollar (USD)', value: 'USD'},
-                          {title: 'Euro (EUR)', value: 'EUR'},
-                        ],
-                      },
-                      validation: (Rule) => Rule.required(),
-                    },
-                    {
-                      name: 'price',
-                      title: 'Price',
-                      type: 'number',
-                      options: {
-                        controls: false,
-                      },
-                      description: 'Shipping cost in this currency',
-                      validation: (Rule) => Rule.required().min(0),
-                    },
-                  ],
-                  preview: {
-                    select: {
-                      currency: 'currency',
-                      price: 'price',
-                    },
-                    prepare({currency, price}) {
-                      return {
-                        title: `${currency}: ${price}`,
-                      };
-                    },
-                  },
-                },
-              ],
+              name: 'price',
+              title: 'Price',
+              type: 'number',
+              options: {
+                controls: false,
+              },
+              description: 'Shipping cost in F CFA (West African CFA Franc).',
+              validation: (Rule) => Rule.required().min(0),
             },
             {
               name: 'isActive',
@@ -127,51 +116,15 @@ export default defineType({
                   initialValue: false,
                 },
                 {
-                  name: 'thresholds',
-                  title: 'Thresholds by Currency',
-                  type: 'array',
+                  name: 'amount',
+                  title: 'Threshold amount',
+                  type: 'number',
                   hidden: ({parent}) => !parent?.enabled,
-                  of: [
-                    {
-                      type: 'object',
-                      fields: [
-                        {
-                          name: 'currency',
-                          title: 'Currency',
-                          type: 'string',
-                          options: {
-                            list: [
-                              {title: 'West African CFA Franc (XOF)', value: 'XOF'},
-                              {title: 'US Dollar (USD)', value: 'USD'},
-                              {title: 'Euro (EUR)', value: 'EUR'},
-                            ],
-                          },
-                          validation: (Rule) => Rule.required(),
-                        },
-                        {
-                          name: 'amount',
-                          title: 'Threshold Amount',
-                          type: 'number',
-                          options: {
-                            controls: false,
-                          },
-                          description: 'Cart subtotal amount needed for free shipping in this currency',
-                          validation: (Rule) => Rule.required().min(0),
-                        },
-                      ],
-                      preview: {
-                        select: {
-                          currency: 'currency',
-                          amount: 'amount',
-                        },
-                        prepare({currency, amount}) {
-                          return {
-                            title: `${currency}: ${amount}`,
-                          };
-                        },
-                      },
-                    },
-                  ],
+                  options: {
+                    controls: false,
+                  },
+                  description: 'Cart subtotal amount needed for free shipping in F CFA.',
+                  validation: (Rule) => Rule.required().min(0),
                 },
               ],
             },
@@ -180,13 +133,13 @@ export default defineType({
             select: {
               title: 'name',
               type: 'type',
-              prices: 'prices',
+              price: 'price',
               isActive: 'isActive',
             },
-            prepare({title, type, prices, isActive}) {
-              const priceDisplay = prices && prices.length > 0
-                ? `${prices[0].currency} ${prices[0].price}${prices.length > 1 ? ` (+${prices.length - 1} more)` : ''}`
-                : 'No prices set';
+            prepare({title, type, price, isActive}) {
+              const priceDisplay = price !== undefined
+                ? `${price} F CFA`
+                : 'No price set';
               return {
                 title: title || 'Untitled Shipping Option',
                 subtitle: `${type || 'standard'} • ${priceDisplay}${isActive ? '' : ' (Inactive)'}`,
@@ -212,27 +165,14 @@ export default defineType({
         },
         {
           name: 'taxRates',
-          title: 'Tax Rates by Currency',
+          title: 'Tax Rates',
           type: 'array',
-          description: 'Configure up to 2 tax rates. Can be percentage-based or fixed amount.',
+          description: 'Configure up to 2 tax rates. Can be percentage-based or fixed amount. All rates are in F CFA - currency conversion is handled automatically.',
           validation: (Rule) => Rule.max(2).error('Maximum 2 tax rates allowed'),
           of: [
             {
               type: 'object',
               fields: [
-                {
-                  name: 'currency',
-                  title: 'Currency',
-                  type: 'string',
-                  options: {
-                    list: [
-                      {title: 'West African CFA Franc (XOF)', value: 'XOF'},
-                      {title: 'US Dollar (USD)', value: 'USD'},
-                      {title: 'Euro (EUR)', value: 'EUR'},
-                    ],
-                  },
-                  validation: (Rule) => Rule.required(),
-                },
                 {
                   name: 'type',
                   title: 'Tax Type',
@@ -247,28 +187,27 @@ export default defineType({
                 },
                 {
                   name: 'rate',
-                  title: 'Tax Rate',
+                  title: 'Tax rate',
                   type: 'number',
                   options: {
                     controls: false,
                   },
-                  description: 'For percentage: enter as decimal (e.g., 0.1 for 10%). For fixed: enter the amount.',
+                  description: 'For percentage: enter as decimal (e.g., 0.1 for 10%). For fixed: enter the amount in F CFA.',
                   validation: (Rule) => Rule.required().min(0),
                 },
               ],
               preview: {
                 select: {
-                  currency: 'currency',
                   type: 'type',
                   rate: 'rate',
                 },
-                prepare({currency, type, rate}) {
+                prepare({type, rate}) {
                   const displayRate =
                     type === 'percentage'
                       ? `${(rate * 100).toFixed(1)}%`
-                      : `${rate}`;
+                      : `${rate} F CFA`;
                   return {
-                    title: `${currency}: ${displayRate}`,
+                    title: displayRate,
                     subtitle: type === 'percentage' ? 'Percentage' : 'Fixed Amount',
                   };
                 },
@@ -296,7 +235,7 @@ export default defineType({
       const taxCount = taxSettings?.taxRates?.length || 0;
       const taxActive = taxSettings?.isActive !== false;
       return {
-        title: 'Shipping and Taxes',
+        title: 'Settings',
         subtitle: `${shippingCount} shipping option(s), ${taxCount} tax rate(s)${taxActive ? '' : ' (Tax inactive)'}`,
       };
     },

@@ -56,8 +56,8 @@ const sheetVariants = cva(
 
 interface SheetContentProps
   extends
-  React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
-  VariantProps<typeof sheetVariants> {
+    React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
+    VariantProps<typeof sheetVariants> {
   floating?: boolean;
   hideCloseButton?: boolean;
 }
@@ -65,39 +65,55 @@ interface SheetContentProps
 const SheetContent = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Content>,
   SheetContentProps
->(({ side = 'right', floating = false, hideCloseButton = false, className, children, ...props }, ref) => {
-  // Override default positioning when floating, but preserve animation classes
-  // On mobile: full screen, on larger screens: floating with margins
-  // For bottom side on mobile, ensure it slides from bottom and takes full width
-  const floatingClasses = floating
-    ? side === 'right'
-      ? '!right-0 !top-0 !bottom-0 !left-auto !h-full sm:!right-4 sm:!top-4 sm:!bottom-4 !rounded-none sm:rounded-md data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right'
-      : side === 'left'
-        ? '!left-0 !top-0 !bottom-0 !right-auto !h-full sm:!left-4 sm:!top-4 sm:!bottom-4 !rounded-none sm:rounded-md data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left'
-        : side === 'top'
-          ? '!top-0 !left-0 !right-0 sm:!top-4 sm:!left-4 sm:!right-4 !rounded-none sm:rounded-md data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top'
-          : '!bottom-0 !left-0 !right-0 !inset-x-0 !rounded-t-xl !rounded-b-none !h-auto sm:!bottom-4 sm:!left-4 sm:!right-4 sm:!rounded-md data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom'
-    : '';
+>(
+  (
+    {
+      side = 'right',
+      floating = false,
+      hideCloseButton = false,
+      className,
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    // Override default positioning when floating, but preserve animation classes
+    // On mobile: full screen, on larger screens: floating with margins
+    // For bottom side on mobile, ensure it slides from bottom and takes full width
+    const floatingClasses = floating
+      ? side === 'right'
+        ? '!right-0 !top-0 !bottom-0 !left-auto !h-full sm:!right-4 sm:!top-4 sm:!bottom-4 !rounded-none sm:rounded-md data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right'
+        : side === 'left'
+          ? '!left-0 !top-0 !bottom-0 !right-auto !h-full sm:!left-4 sm:!top-4 sm:!bottom-4 !rounded-none sm:rounded-md data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left'
+          : side === 'top'
+            ? '!top-0 !left-0 !right-0 sm:!top-4 sm:!left-4 sm:!right-4 !rounded-none sm:rounded-md data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top'
+            : '!bottom-0 !left-0 !right-0 !inset-x-0 !rounded-t-xl !rounded-b-none !h-auto sm:!bottom-4 sm:!left-4 sm:!right-4 sm:!rounded-md data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom'
+      : '';
 
-  return (
-    <SheetPortal>
-      <SheetOverlay />
-      <SheetPrimitive.Content
-        ref={ref}
-        className={cn(sheetVariants({ side, floating }), floatingClasses, className)}
-        {...props}
-      >
-        {children}
-        {!hideCloseButton && (
-          <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
-            <X className="h-4 w-4" />
-            <span className="sr-only">Close</span>
-          </SheetPrimitive.Close>
-        )}
-      </SheetPrimitive.Content>
-    </SheetPortal>
-  );
-});
+    return (
+      <SheetPortal>
+        <SheetOverlay />
+        <SheetPrimitive.Content
+          ref={ref}
+          className={cn(
+            sheetVariants({ side, floating }),
+            floatingClasses,
+            className
+          )}
+          {...props}
+        >
+          {children}
+          {!hideCloseButton && (
+            <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
+              <X className="h-4 w-4" />
+              <span className="sr-only">Close</span>
+            </SheetPrimitive.Close>
+          )}
+        </SheetPrimitive.Content>
+      </SheetPortal>
+    );
+  }
+);
 SheetContent.displayName = SheetPrimitive.Content.displayName;
 
 const SheetHeader = ({

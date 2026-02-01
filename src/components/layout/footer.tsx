@@ -37,6 +37,15 @@ export function Footer() {
               {t('terms')}
             </Link>
             <span className="hidden sm:inline mx-2">·</span>
+            <Link
+              href="https://github.com/lomiafrica/commerce"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-normal hover:text-black transition-colors"
+            >
+              {t('openSource')}
+            </Link>
+            <span className="hidden sm:inline mx-2">·</span>
             <button
               onClick={handleLocaleSwitch}
               className="font-normal hover:text-black hover:underline transition-colors cursor-pointer text-left"

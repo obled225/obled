@@ -352,13 +352,13 @@ export function AboutClient({
                         href={method.href}
                         target={
                           method.key === 'whatsapp' ||
-                            method.key === 'instagram'
+                          method.key === 'instagram'
                             ? '_blank'
                             : undefined
                         }
                         rel={
                           method.key === 'whatsapp' ||
-                            method.key === 'instagram'
+                          method.key === 'instagram'
                             ? 'noopener noreferrer'
                             : undefined
                         }

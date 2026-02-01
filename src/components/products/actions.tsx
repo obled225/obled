@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Product, getProductPrice } from '@/lib/types';
+import { Product } from '@/lib/types';
 import { useCartStore } from '@/lib/store/cart-store';
 import { useCurrencyStore } from '@/lib/store/currency-store';
 import { Button } from '@/components/ui/button';
 import { formatPrice } from '@/lib/utils/format';
 import { Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 type ProductActionsProps = {
   product: Product;
@@ -14,22 +15,17 @@ type ProductActionsProps = {
 
 const ProductActions = ({ product }: ProductActionsProps) => {
   const { addItem } = useCartStore();
-  const { currency } = useCurrencyStore();
+  const { currency, convertPrice } = useCurrencyStore();
+  const t = useTranslations('products.productDetail');
+  const tProducts = useTranslations('products');
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
 
-  // Get price for selected currency
-  const currentPrice =
-    getProductPrice(product, currency) ||
-    getProductPrice(product, 'XOF') ||
-    product.prices[0];
-  const basePrice = currentPrice?.basePrice || product.price;
-  const displayCurrency = currentPrice?.currency || product.currency;
-
-  // Calculate the final price (no variant modifier since Product type doesn't support variants array)
+  // All prices are in XOF, convert to selected currency
+  const priceXOF = product.price || 0;
   const finalPrice = useMemo(() => {
-    return basePrice;
-  }, [basePrice]);
+    return convertPrice(priceXOF, currency);
+  }, [priceXOF, currency, convertPrice]);
 
   // Check if the product is available for purchase
   const isAvailable = useMemo(() => {
@@ -62,7 +58,9 @@ const ProductActions = ({ product }: ProductActionsProps) => {
     <div className="space-y-6">
       {/* Quantity Selection */}
       <div>
-        <h3 className="text-sm font-medium text-gray-900 mb-3">Quantity</h3>
+        <h3 className="text-sm font-medium text-gray-900 mb-3">
+          {t('quantity')}
+        </h3>
         <div className="flex items-center space-x-3">
           <button
             onClick={() => updateQuantity(quantity - 1)}
@@ -84,11 +82,11 @@ const ProductActions = ({ product }: ProductActionsProps) => {
       {/* Price Display */}
       <div className="flex items-center justify-between py-4 border-t border-b">
         <span className="text-lg font-semibold text-gray-900">
-          Total: {formatPrice(finalPrice * quantity, displayCurrency)}
+          {t('total')}: {formatPrice(finalPrice * quantity, currency)}
         </span>
         {quantity > 1 && (
           <span className="text-sm text-gray-600">
-            ({formatPrice(finalPrice, displayCurrency)} each)
+            ({formatPrice(finalPrice, currency)} {t('each')})
           </span>
         )}
       </div>
@@ -103,15 +101,14 @@ const ProductActions = ({ product }: ProductActionsProps) => {
         {isAdding ? (
           <>
             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            Adding to Cart...
+            {t('addingToCart')}
           </>
         ) : !isAvailable ? (
-          'Out of Stock'
+          tProducts('outOfStock')
         ) : (
-          'Add to Cart'
+          t('addToCart')
         )}
       </Button>
-
     </div>
   );
 };

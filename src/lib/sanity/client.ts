@@ -6,6 +6,8 @@ export const sanityClient = createClient({
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
   apiVersion: '2024-01-01',
   useCdn: process.env.NODE_ENV === 'production',
+  // Add token if available for browser requests (optional - can also configure CORS in Sanity)
+  token: process.env.NEXT_PUBLIC_SANITY_READ_TOKEN,
 });
 
 const builder = imageUrlBuilder(sanityClient);

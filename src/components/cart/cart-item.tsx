@@ -5,9 +5,9 @@ import Link from 'next/link';
 import { useCartStore } from '@/lib/store/cart-store';
 import { useCurrencyStore } from '@/lib/store/currency-store';
 import { formatPrice } from '@/lib/utils/format';
-import { getProductPrice } from '@/lib/types';
 import { Trash2, Plus, Minus } from 'lucide-react';
 import { CartItem as CartItemType } from '@/lib/types';
+import { useTranslations } from 'next-intl';
 
 interface CartItemProps {
   item: CartItemType;
@@ -16,18 +16,15 @@ interface CartItemProps {
 
 export function CartItem({ item, showControls = true }: CartItemProps) {
   const { updateQuantity, removeItem } = useCartStore();
-  const { currency } = useCurrencyStore();
+  const { currency, convertPrice } = useCurrencyStore();
+  const t = useTranslations('header.cart');
 
-  // Get price for selected currency
-  const currentPrice =
-    getProductPrice(item.product, currency) ||
-    getProductPrice(item.product, 'XOF') ||
-    item.product.prices[0];
-  const basePrice = currentPrice?.basePrice || item.product.price;
-  const displayCurrency = currentPrice?.currency || item.product.currency;
-
-  const itemTotal =
-    (basePrice + (item.selectedVariant?.priceModifier || 0)) * item.quantity;
+  // All prices are in XOF, convert to selected currency
+  const basePriceXOF = item.product.price || 0;
+  const variantPriceXOF = item.selectedVariant?.priceModifier || 0;
+  const totalPriceXOF = basePriceXOF + variantPriceXOF;
+  const convertedPrice = convertPrice(totalPriceXOF, currency);
+  const itemTotal = convertedPrice * item.quantity;
 
   return (
     <div className="bg-white border border-gray-200 rounded-md p-3 sm:p-4 hover:shadow-sm transition-shadow">
@@ -71,33 +68,39 @@ export function CartItem({ item, showControls = true }: CartItemProps) {
 
             <div className="flex items-center gap-2 mt-1">
               {(() => {
-                const packPrice = basePrice + (item.selectedVariant?.priceModifier || 0);
+                const packPriceXOF = basePriceXOF + variantPriceXOF;
+                const packPrice = convertPrice(packPriceXOF, currency);
 
                 // Find original price for pack if it exists
-                let originalPrice: number | undefined;
-                if (item.selectedVariant?.packSize && item.product.businessPacks) {
+                let originalPriceXOF: number | undefined;
+                if (
+                  item.selectedVariant?.packSize &&
+                  item.product.businessPacks
+                ) {
                   const pack = item.product.businessPacks.find(
                     (p) => p.quantity === item.selectedVariant?.packSize
                   );
-                  const packPriceObj = pack?.prices?.find((p) => p.currency === currency);
-                  originalPrice = packPriceObj?.originalPrice;
+                  originalPriceXOF = pack?.originalPrice;
                 } else {
-                  originalPrice = currentPrice?.originalPrice;
+                  originalPriceXOF = item.product.originalPrice;
                 }
+                const originalPrice = originalPriceXOF
+                  ? convertPrice(originalPriceXOF, currency)
+                  : undefined;
 
                 return (
                   <>
                     {originalPrice && originalPrice > packPrice && (
                       <span className="text-xs text-gray-500 line-through">
-                        {formatPrice(originalPrice, displayCurrency)}
+                        {formatPrice(originalPrice, currency)}
                       </span>
                     )}
                     <span className="text-sm text-gray-600">
-                      {formatPrice(packPrice, displayCurrency)}
+                      {formatPrice(packPrice, currency)}
                       {item.selectedVariant?.packSize ? (
-                        <span className="text-xs"> /pack</span>
+                        <span className="text-xs"> {t('pack')}</span>
                       ) : (
-                        <span> each</span>
+                        <span> {t('each')}</span>
                       )}
                     </span>
                   </>
@@ -115,7 +118,7 @@ export function CartItem({ item, showControls = true }: CartItemProps) {
                   onClick={() => updateQuantity(item.id, item.quantity - 1)}
                   disabled={item.quantity <= 1}
                   className="p-2 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed touch-target"
-                  aria-label="Decrease quantity"
+                  aria-label={t('decreaseQuantity')}
                 >
                   <Minus className="w-3 h-3" />
                 </button>
@@ -125,7 +128,7 @@ export function CartItem({ item, showControls = true }: CartItemProps) {
                 <button
                   onClick={() => updateQuantity(item.id, item.quantity + 1)}
                   className="p-2 hover:bg-gray-50 touch-target"
-                  aria-label="Increase quantity"
+                  aria-label={t('increaseQuantity')}
                 >
                   <Plus className="w-3 h-3" />
                 </button>
@@ -135,13 +138,13 @@ export function CartItem({ item, showControls = true }: CartItemProps) {
 
           <div className="flex flex-col items-end gap-2">
             <p className="text-sm sm:text-base font-semibold text-gray-900">
-              {formatPrice(itemTotal, displayCurrency)}
+              {formatPrice(itemTotal, currency)}
             </p>
             {showControls && (
               <button
                 onClick={() => removeItem(item.id)}
                 className="text-red-500 hover:text-red-700 p-1 touch-target"
-                aria-label="Remove item"
+                aria-label={t('removeItem')}
               >
                 <Trash2 className="w-4 h-4" />
               </button>

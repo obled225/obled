@@ -24,7 +24,26 @@
       "checkout": "Commander",
       "taxesIncluded": "Toutes taxes comprises",
       "summary": "Résumé du panier et commande",
-      "pack": "/pack"
+      "pack": "/pack",
+      "tax": "Taxe",
+      "noImage": "Aucune image",
+      "each": "l'unité",
+      "decreaseQuantity": "Diminuer la quantité",
+      "increaseQuantity": "Augmenter la quantité",
+      "removeItem": "Retirer l'article",
+      "summaryTitle": "Résumé",
+      "subtotalWithItems": "Sous-total ({count} articles)",
+      "shipping": "Livraison",
+      "free": "Gratuit",
+      "addMoreForFreeShipping": "Ajoutez {amount} de plus pour la livraison gratuite !",
+      "proceedToCheckout": "Passer à la commande",
+      "shoppingCartTitle": "Panier ({count} articles)",
+      "clearCart": "Vider le panier",
+      "emptyCartTitle": "Votre panier est vide",
+      "emptyCartDescription": "Il semble que vous n'ayez encore rien ajouté à votre panier. Découvrez nos produits et trouvez quelque chose qui vous plaît.",
+      "startShopping": "Commencer les achats",
+      "secureCheckout": "Paiement sécurisé propulsé par lomi.",
+      "securePayment": "Paiement sécurisé"
     },
     "menu": {
       "ariaLabel": "Menu",
@@ -61,6 +80,7 @@
       "size": "Taille",
       "quantity": "Quantité",
       "adding": "Ajout en cours...",
+      "addingToCart": "Ajout au panier...",
       "addToCart": "Ajouter au panier",
       "buyNow": "Acheter maintenant",
       "sizeGuide": "Guide des tailles",
@@ -70,7 +90,35 @@
       "viewVariant": "Voir",
       "relatedProducts": "Produits associés",
       "relatedProductsDescription": "Vous pourriez également aimer ces produits",
-      "taxesIncluded": "Toutes taxes comprises"
+      "taxesIncluded": "Toutes taxes comprises",
+      "total": "Total",
+      "each": "l'unité"
+    },
+    "productTabs": {
+      "productInformation": "Informations produit",
+      "shippingReturns": "Livraison et retours",
+      "category": "Catégorie",
+      "stockStatus": "État des stocks",
+      "inStock": "En stock",
+      "outOfStock": "Rupture de stock",
+      "description": "Description",
+      "noDescriptionAvailable": "Aucune description disponible",
+      "fastDelivery": {
+        "title": "Livraison rapide",
+        "description": "Votre colis arrivera sous 3 à 5 jours ouvrables à votre point de retrait ou dans le confort de votre domicile."
+      },
+      "easyReturns": {
+        "title": "Retours faciles",
+        "description": "Retournez simplement votre produit et nous vous rembourserons. Sans poser de questions – nous ferons de notre mieux pour que votre retour soit sans tracas."
+      },
+      "qualityGuarantee": {
+        "title": "Garantie qualité",
+        "description": "Nous garantissons nos produits. Si vous n'êtes pas entièrement satisfait, nous ferons en sorte de corriger cela."
+      }
+    },
+    "relatedProducts": {
+      "defaultTitle": "Produits associés",
+      "defaultDescription": "Vous pourriez également vouloir consulter ces produits."
     },
     "share": {
       "title": "Partager",
@@ -91,6 +139,8 @@
       "allProducts": "Tous les produits",
       "ourPacks": "Nos packs"
     },
+    "noImage": "Aucune image",
+    "noImagesAvailable": "Aucune image disponible",
     "filters": {
       "availability": {
         "title": "Disponibilité",
@@ -119,7 +169,8 @@
   },
   "footer": {
     "copyright": "© 2026, KYS Factory - Tous droits réservés.",
-    "terms": "Politique de confidentialité"
+    "terms": "Politique de confidentialité",
+    "openSource": "Cette boutique est open-source"
   },
   "terms": {
     "title": "Politique de confidentialité",
@@ -381,7 +432,9 @@
       },
       "error": {
         "title": "Erreur",
-        "description": "Une erreur est survenue lors de l'envoi de votre message. Veuillez réessayer."
+        "description": "Une erreur est survenue lors de l'envoi de votre message. Veuillez réessayer.",
+        "formSubmissionError": "Erreur lors de l'envoi du formulaire",
+        "unexpectedError": "Une erreur est survenue"
       }
     }
   },
@@ -472,6 +525,45 @@
     "fallback": {
       "manufacturer": "KYS FACTORY fabricant & fournisseur de t-shirts vierges",
       "businessOffers": "Offres marques et entreprises"
+    }
+  },
+  "shipping": {
+    "title": "Options de livraison",
+    "addMoreForFreeShipping": "Ajoutez {amount} de plus pour la livraison GRATUITE !",
+    "addAmountToEnableFreeShipping": "Ajoutez {amount} d'articles pour bénéficier de la livraison gratuite",
+    "spent": "{amount} dépensé",
+    "forFreeShipping": "{amount} pour la livraison gratuite",
+    "fast": "Rapide",
+    "fastest": "Le plus rapide",
+    "free": "GRATUIT",
+    "estimatedDelivery": "Délai de livraison estimé",
+    "freeShippingActive": "Livraison gratuite",
+    "freeShippingActiveDescription": "Votre commande bénéficie de la livraison gratuite.",
+    "addAmountForFreeShipping": "Ajoutez {amount} pour activer la livraison gratuite"
+  },
+  "checkout": {
+    "title": "Commande",
+    "metaDescription": "Finalisez votre commande en toute sécurité. Entrez vos informations de livraison et procédez au paiement.",
+    "emptyCartTitle": "Votre panier est vide",
+    "emptyCartDescription": "Ajoutez quelques articles à votre panier avant de passer commande.",
+    "continueShopping": "Continuer les achats",
+    "yourInformation": "Vos informations",
+    "fullName": "Nom complet",
+    "email": "Email",
+    "phoneNumber": "Numéro de téléphone",
+    "organization": "Organisation",
+    "shippingAddress": "Adresse de livraison",
+    "city": "Ville",
+    "country": "Pays",
+    "streetAddress": "Adresse",
+    "postalCode": "Code postal",
+    "yourOrder": "Votre commande",
+    "processing": "Traitement en cours...",
+    "proceedToPayment": "Procéder au paiement",
+    "errors": {
+      "fillAllFields": "Veuillez remplir tous les champs obligatoires.",
+      "checkoutSessionFailed": "Échec de la création de la session de paiement. Veuillez réessayer.",
+      "unexpectedError": "Une erreur inattendue s'est produite. Veuillez réessayer."
     }
   }
 }

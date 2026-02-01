@@ -28,12 +28,8 @@ export interface SanityProductExpanded extends Omit<
     };
     description?: string;
   }>;
-  prices?: Array<{
-    currency: 'XOF' | 'USD' | 'EUR';
-    basePrice: number;
-    originalPrice?: number;
-    lomiPriceId?: string; // Optional - can use ad-hoc pricing if not provided
-  }>;
+  price?: number; // Price in XOF (base currency)
+  originalPrice?: number; // Original price in XOF (before discount)
   colors?: Array<{
     name: string;
     value: string;
@@ -68,12 +64,8 @@ export interface SanityProductExpanded extends Omit<
           current?: string;
         }
       | string;
-    prices?: Array<{
-      currency: 'XOF' | 'USD' | 'EUR';
-      basePrice: number;
-      originalPrice?: number;
-      lomiPriceId?: string;
-    }>;
+    price?: number; // Price in XOF
+    originalPrice?: number; // Original price in XOF
     inStock?: boolean;
     images?: Array<{
       asset?: {
@@ -98,16 +90,11 @@ export interface SanityProductExpanded extends Omit<
     };
   };
   isBusinessProduct?: boolean;
-  lomiProductId?: string;
   businessPacks?: Array<{
     quantity: number;
     label?: string;
-    prices?: Array<{
-      currency: 'XOF' | 'USD' | 'EUR';
-      basePrice: number;
-      originalPrice?: number;
-      lomiPriceId?: string;
-    }>;
+    price?: number; // Price in XOF
+    originalPrice?: number; // Original price in XOF
   }>;
   featured?: boolean;
   bestSeller?: boolean;
@@ -136,13 +123,13 @@ export function isSanityCategory(
 }
 
 /**
- * Product price in a specific currency
+ * @deprecated ProductPrice is no longer used. Products now have a single price in XOF.
+ * Use convertPrice from currency store to convert to other currencies.
  */
 export interface ProductPrice {
   currency: 'XOF' | 'USD' | 'EUR';
   basePrice: number;
   originalPrice?: number;
-  lomiPriceId?: string; // Optional - can use ad-hoc pricing if not provided
 }
 
 /**
@@ -175,11 +162,9 @@ export interface Product {
   id: string;
   slug: string;
   name: string;
-  prices: ProductPrice[];
-  // Convenience fields for backward compatibility (uses first price or selected currency)
+  // Price in XOF (base currency)
   price: number;
-  originalPrice?: number;
-  currency: string;
+  originalPrice?: number; // Original price in XOF (before discount)
   image: string;
   images?: string[];
   soldOut: boolean;
@@ -207,16 +192,11 @@ export interface Product {
     slug: string;
   };
   isBusinessProduct: boolean;
-  lomiProductId?: string;
   businessPacks?: Array<{
     quantity: number;
     label?: string;
-    prices?: Array<{
-      currency: 'XOF' | 'USD' | 'EUR';
-      basePrice: number;
-      originalPrice?: number;
-      lomiPriceId?: string;
-    }>;
+    price?: number; // Price in XOF
+    originalPrice?: number; // Original price in XOF
   }>;
   featured?: boolean;
   bestSeller?: boolean;
@@ -228,8 +208,7 @@ export interface ProductVariant {
   id: string;
   name: string;
   value: string;
-  priceModifier: number;
-  lomiPriceId?: string;
+  priceModifier: number; // Price modifier in XOF
   packSize?: number;
 }
 
@@ -289,26 +268,30 @@ export function getProductById(
 export { formatPrice } from '@/lib/utils/format';
 
 /**
- * Get product price for a specific currency
+ * @deprecated Use product.price directly and convertPrice from currency store.
+ * This function is kept for backward compatibility but always returns the XOF price.
  */
 export function getProductPrice(
   product: Product,
-  currency: 'XOF' | 'USD' | 'EUR' = 'XOF'
-): ProductPrice | null {
-  return (
-    product.prices.find((p) => p.currency === currency) ||
-    product.prices[0] ||
-    null
-  );
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _currency: 'XOF' | 'USD' | 'EUR' = 'XOF'
+): { currency: 'XOF'; basePrice: number; originalPrice?: number } | null {
+  if (!product.price) return null;
+  return {
+    currency: 'XOF',
+    basePrice: product.price,
+    originalPrice: product.originalPrice,
+  };
 }
 
 /**
- * Get product price value for a specific currency (for backward compatibility)
+ * Get product price value (always returns XOF price)
+ * @deprecated Use product.price directly
  */
 export function getProductPriceValue(
   product: Product,
-  currency: 'XOF' | 'USD' | 'EUR' = 'XOF'
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _currency: 'XOF' | 'USD' | 'EUR' = 'XOF'
 ): number {
-  const price = getProductPrice(product, currency);
-  return price?.basePrice || product.price || 0;
+  return product.price || 0;
 }

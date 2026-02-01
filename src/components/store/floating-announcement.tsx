@@ -134,11 +134,13 @@ export function FloatingAnnouncement({
   return (
     <div
       ref={containerRef}
-      className={`fixed top-4 right-4 z-50 transition-all duration-500 ease-out ${isDragging ? 'transition-none' : ''
-        } ${isVisible
+      className={`fixed top-4 right-4 z-50 transition-all duration-500 ease-out ${
+        isDragging ? 'transition-none' : ''
+      } ${
+        isVisible
           ? 'translate-y-0 opacity-100 scale-100'
           : '-translate-y-2 opacity-0 scale-95 pointer-events-none'
-        }`}
+      }`}
       style={{
         transform: isDragging
           ? `translate(${dragOffset.x}px, ${dragOffset.y}px)`

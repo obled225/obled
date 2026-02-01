@@ -1,9 +1,18 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Minus, Plus, Share2, ZoomIn, Ruler, Package, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  Minus,
+  Plus,
+  Share2,
+  ZoomIn,
+  Ruler,
+  Package,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Product, formatPrice, getProductPrice } from '@/lib/types';
+import { Product, formatPrice } from '@/lib/types';
 import { useCartStore } from '@/lib/store/cart-store';
 import { useCurrencyStore } from '@/lib/store/currency-store';
 import { useToast } from '@/lib/hooks/use-toast';
@@ -32,7 +41,7 @@ interface ProductDetailProps {
 export function ProductDetail({ product }: ProductDetailProps) {
   const t = useTranslations('products');
   const { addItem } = useCartStore();
-  const { currency } = useCurrencyStore();
+  const { currency, convertPrice } = useCurrencyStore();
   const { success, error } = useToast();
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState(
@@ -47,7 +56,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
   // Business Pack Selection - default to first pack if available
   const [selectedPack, setSelectedPack] = useState<
     NonNullable<Product['businessPacks']>[number] | null
-  >(product.isBusinessProduct && product.businessPacks?.[0] || null);
+  >((product.isBusinessProduct && product.businessPacks?.[0]) || null);
 
   // Get color image if available, otherwise use main images
   // Make it reactive so it updates when selectedColor changes
@@ -71,31 +80,28 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isFullscreenGalleryOpen, setIsFullscreenGalleryOpen] = useState(false);
 
-  // Get price for selected currency
-  const currentPrice =
-    getProductPrice(product, currency) ||
-    getProductPrice(product, 'XOF') ||
-    product.prices[0];
-
-  // Calculate display price based on Pack selection
-  const baseDisplayPrice = currentPrice?.basePrice || product.price;
+  // All prices are in XOF, convert to selected currency
+  const basePriceXOF = product.price || 0;
 
   // Get pack price for selected currency
   const getPackPrice = (
     pack: NonNullable<Product['businessPacks']>[number]
   ) => {
-    const packPriceObj = pack.prices?.find((p) => p.currency === currency);
-    return packPriceObj?.basePrice || baseDisplayPrice * pack.quantity;
+    const packPriceXOF = pack.price || basePriceXOF * pack.quantity;
+    return convertPrice(packPriceXOF, currency);
   };
 
   // Get pack original price for selected currency (if available)
   const getPackOriginalPrice = (
     pack: NonNullable<Product['businessPacks']>[number]
   ) => {
-    const packPriceObj = pack.prices?.find((p) => p.currency === currency);
-    return packPriceObj?.originalPrice;
+    const originalPriceXOF = pack.originalPrice;
+    return originalPriceXOF
+      ? convertPrice(originalPriceXOF, currency)
+      : undefined;
   };
 
+  const baseDisplayPrice = convertPrice(basePriceXOF, currency);
   const packDisplayPrice = selectedPack
     ? getPackPrice(selectedPack)
     : baseDisplayPrice;
@@ -106,12 +112,20 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
   // Base price (before quantity multiplication)
   const basePrice = packDisplayPrice;
-  const displayCurrency = currentPrice?.currency || product.currency;
-  const baseOriginalPrice = packOriginalPrice || currentPrice?.originalPrice;
+  const baseOriginalPriceXOF = packOriginalPrice
+    ? selectedPack?.originalPrice
+      ? selectedPack.originalPrice
+      : product.originalPrice
+    : product.originalPrice;
+  const baseOriginalPrice = baseOriginalPriceXOF
+    ? convertPrice(baseOriginalPriceXOF, currency)
+    : undefined;
 
   // Display price multiplied by quantity (for both packs and non-packs)
   const displayPrice = basePrice * quantity;
-  const displayOriginalPrice = baseOriginalPrice ? baseOriginalPrice * quantity : undefined;
+  const displayOriginalPrice = baseOriginalPrice
+    ? baseOriginalPrice * quantity
+    : undefined;
 
   // Reset selected image when color changes
   const handleColorChange = (colorName: string) => {
@@ -141,7 +155,9 @@ export function ProductDetail({ product }: ProductDetailProps) {
       setSelectedImage((selectedImage + 1) % displayImages.length);
     }
     if (isRightSwipe) {
-      setSelectedImage((selectedImage - 1 + displayImages.length) % displayImages.length);
+      setSelectedImage(
+        (selectedImage - 1 + displayImages.length) % displayImages.length
+      );
     }
   };
 
@@ -151,7 +167,9 @@ export function ProductDetail({ product }: ProductDetailProps) {
   };
 
   const goToPrevImage = () => {
-    setSelectedImage((selectedImage - 1 + displayImages.length) % displayImages.length);
+    setSelectedImage(
+      (selectedImage - 1 + displayImages.length) % displayImages.length
+    );
   };
 
   const router = useRouter();
@@ -166,29 +184,27 @@ export function ProductDetail({ product }: ProductDetailProps) {
     setIsAdding(true);
     try {
       // For business products with packs, always use a pack
-      if (product.isBusinessProduct && product.businessPacks && product.businessPacks.length > 0 && selectedPack) {
-        // Get pack price for selected currency
-        const packPriceObj = selectedPack.prices?.find(
-          (p) => p.currency === currency
-        );
-        const base = currentPrice?.basePrice || product.price;
-        const packPrice = packPriceObj?.basePrice || base * selectedPack.quantity;
+      if (
+        product.isBusinessProduct &&
+        product.businessPacks &&
+        product.businessPacks.length > 0 &&
+        selectedPack
+      ) {
+        // All prices are in XOF
+        const packPriceXOF =
+          selectedPack.price || basePriceXOF * selectedPack.quantity;
 
-        // Calculate price modifier: pack price minus base unit price
+        // Calculate price modifier: pack price minus base unit price (in XOF)
         // The cart calculates: (basePrice + modifier) * quantity
         // For packs: (basePrice + (packPrice - basePrice)) * quantity = packPrice * quantity
         // This ensures 1 pack shows as packPrice, not basePrice * packSize
-        const priceModifier = packPrice - base;
-
-        // Get lomi price ID for selected currency
-        const packLomiId = packPriceObj?.lomiPriceId;
+        const priceModifier = packPriceXOF - basePriceXOF;
 
         const variant = {
           id: `pack-${selectedPack.quantity}`,
           name: selectedPack.label || `Pack ${selectedPack.quantity}`,
           value: String(selectedPack.quantity),
           priceModifier: priceModifier,
-          lomiPriceId: packLomiId,
           packSize: selectedPack.quantity,
         };
 
@@ -209,30 +225,27 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const handleBuyNow = async () => {
     try {
       // For business products with packs, always use a pack
-      if (product.isBusinessProduct && product.businessPacks && product.businessPacks.length > 0 && selectedPack) {
-        const base = currentPrice?.basePrice || product.price;
+      if (
+        product.isBusinessProduct &&
+        product.businessPacks &&
+        product.businessPacks.length > 0 &&
+        selectedPack
+      ) {
+        // All prices are in XOF
+        const packPriceXOF =
+          selectedPack.price || basePriceXOF * selectedPack.quantity;
 
-        // Get pack price for selected currency
-        const packPriceObj = selectedPack.prices?.find(
-          (p) => p.currency === currency
-        );
-        const packPrice = packPriceObj?.basePrice || base * selectedPack.quantity;
-
-        // Calculate price modifier: pack price minus base unit price
+        // Calculate price modifier: pack price minus base unit price (in XOF)
         // The cart calculates: (basePrice + modifier) * quantity
         // For packs: (basePrice + (packPrice - basePrice)) * quantity = packPrice * quantity
         // This ensures 1 pack shows as packPrice, not basePrice * packSize
-        const priceModifier = packPrice - base;
-
-        // Get lomi price ID for selected currency
-        const packLomiId = packPriceObj?.lomiPriceId;
+        const priceModifier = packPriceXOF - basePriceXOF;
 
         const variant = {
           id: `pack-${selectedPack.quantity}`,
           name: selectedPack.label || `Pack ${selectedPack.quantity}`,
           value: String(selectedPack.quantity),
           priceModifier: priceModifier,
-          lomiPriceId: packLomiId,
           packSize: selectedPack.quantity,
         };
         // Add packs, not units (quantity = number of packs)
@@ -323,7 +336,8 @@ export function ProductDetail({ product }: ProductDetailProps) {
                         onClick={() => setSelectedImage(index)}
                         className={cn(
                           'relative aspect-square overflow-hidden bg-transparent rounded-md transition-all',
-                          selectedImage === index && 'ring-2 ring-blue-600 scale-105'
+                          selectedImage === index &&
+                            'ring-2 ring-blue-600 scale-105'
                         )}
                       >
                         {/* Use object-contain for thumbnails to show full image */}
@@ -370,22 +384,25 @@ export function ProductDetail({ product }: ProductDetailProps) {
           <div className="mb-6">
             <div className="flex items-center gap-3 mb-1">
               <div className="flex items-center gap-2">
-                {displayOriginalPrice && displayOriginalPrice > displayPrice && (
-                  <span className="text-sm text-gray-500 line-through">
-                    {formatPrice(displayOriginalPrice, displayCurrency)}
-                  </span>
-                )}
+                {displayOriginalPrice &&
+                  displayOriginalPrice > displayPrice && (
+                    <span className="text-sm text-gray-500 line-through">
+                      {formatPrice(displayOriginalPrice, currency)}
+                    </span>
+                  )}
                 <span className="text-lg font-medium text-gray-900">
-                  {formatPrice(displayPrice, displayCurrency)}
+                  {formatPrice(displayPrice, currency)}
                 </span>
               </div>
               {product.soldOut && (
                 <span className="rounded-sm bg-gray-900 px-3 py-1 text-xs font-medium text-white">
-                  Out of Stock
+                  {t('outOfStock')}
                 </span>
               )}
             </div>
-            <p className="text-xs text-gray-500">{t('productDetail.taxesIncluded')}</p>
+            <p className="text-xs text-gray-500">
+              {t('productDetail.taxesIncluded')}
+            </p>
           </div>
 
           {/* Color Selector */}
@@ -395,7 +412,9 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 {product.colors.map((color, index) => {
                   const normalizedColor = normalizeColorName(color.name);
                   const isMix = normalizedColor === 'mix';
-                  const isWhite = normalizedColor === 'white' || color.name.toLowerCase() === 'blanc';
+                  const isWhite =
+                    normalizedColor === 'white' ||
+                    color.name.toLowerCase() === 'blanc';
 
                   return (
                     <button
@@ -414,14 +433,23 @@ export function ProductDetail({ product }: ProductDetailProps) {
                         !color.available && 'opacity-40',
                         isMix && 'bg-white'
                       )}
-                      style={!isMix ? { backgroundColor: normalizedColor } : undefined}
+                      style={
+                        !isMix
+                          ? { backgroundColor: normalizedColor }
+                          : undefined
+                      }
                       aria-label={color.name}
                     >
                       {isMix && (
                         <>
                           {/* Half white, half black circle */}
                           <div className="absolute inset-0 bg-white" />
-                          <div className="absolute inset-0 bg-black" style={{ clipPath: 'polygon(0 0, 50% 0, 50% 100%, 0 100%)' }} />
+                          <div
+                            className="absolute inset-0 bg-black"
+                            style={{
+                              clipPath: 'polygon(0 0, 50% 0, 50% 100%, 0 100%)',
+                            }}
+                          />
                         </>
                       )}
                       {!color.available && (
@@ -434,7 +462,10 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 })}
               </div>
               <p className="text-sm font-medium text-gray-900">
-                {t('productDetail.color')}: {capitalizeColorName(selectedColor || product.colors[0]?.name || '')}
+                {t('productDetail.color')}:{' '}
+                {capitalizeColorName(
+                  selectedColor || product.colors[0]?.name || ''
+                )}
               </p>
             </div>
           )}
@@ -457,7 +488,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                         ? 'border-gray-900 bg-gray-900 text-white'
                         : 'border-gray-200 bg-white text-gray-900 hover:border-gray-900',
                       !size.available &&
-                      'cursor-not-allowed border-gray-200 text-gray-400 opacity-50'
+                        'cursor-not-allowed border-gray-200 text-gray-400 opacity-50'
                     )}
                   >
                     {size.name}

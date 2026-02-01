@@ -6,9 +6,11 @@ import { CartSummary } from '@/components/cart/cart-summary';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ShoppingBag } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function CartPage() {
   const { cart, clearCart } = useCartStore();
+  const t = useTranslations('header.cart');
 
   if (cart.items.length === 0) {
     return (
@@ -19,15 +21,14 @@ export default function CartPage() {
               <ShoppingBag className="h-12 w-12 text-gray-400" />
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
-              Your cart is empty
+              {t('emptyCartTitle')}
             </h1>
             <p className="text-gray-500 max-w-md mx-auto mb-8">
-              Looks like you haven&apos;t added anything to your cart yet.
-              Discover our products and find something you love.
+              {t('emptyCartDescription')}
             </p>
             <Link href="/">
               <Button size="lg" className="h-12 px-8">
-                Start Shopping
+                {t('startShopping')}
               </Button>
             </Link>
           </div>
@@ -65,7 +66,7 @@ export default function CartPage() {
                   variant="ghost"
                   className="pl-0 hover:pl-2 transition-all"
                 >
-                  ← Continue Shopping
+                  ← {t('continueShopping')}
                 </Button>
               </Link>
             </div>
@@ -81,10 +82,10 @@ export default function CartPage() {
               />
 
               <div className="mt-6 text-center text-xs text-gray-500">
-                <p>Secure Checkout powered by lomi.</p>
+                <p>{t('secureCheckout')}</p>
                 <div className="flex justify-center gap-2 mt-2 opacity-60">
                   {/* Payment icons could go here */}
-                  <span>🔒 Secure Payment</span>
+                  <span>{t('securePayment')}</span>
                 </div>
               </div>
             </div>
