@@ -8,6 +8,7 @@ import { useIsMobile } from '@/lib/hooks/use-is-mobile';
 
 export type SortOption =
   | 'featured'
+  | 'best-seller'
   | 'price-asc'
   | 'price-desc'
   | 'date-asc'
@@ -98,6 +99,11 @@ export function ProductFilters({
           // Featured first, then by date desc
           if (a.featured && !b.featured) return -1;
           if (!a.featured && b.featured) return 1;
+          return b.createdAt.getTime() - a.createdAt.getTime();
+        case 'best-seller':
+          // Best sellers first, then by date desc
+          if (a.bestSeller && !b.bestSeller) return -1;
+          if (!a.bestSeller && b.bestSeller) return 1;
           return b.createdAt.getTime() - a.createdAt.getTime();
         case 'price-asc':
           return a.price - b.price;
@@ -314,6 +320,7 @@ export function ProductFilters({
               {(
                 [
                   'featured',
+                  'best-seller',
                   'price-asc',
                   'price-desc',
                   'date-asc',

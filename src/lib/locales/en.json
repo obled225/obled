@@ -82,6 +82,7 @@
         "title": "Sort by",
         "options": {
           "featured": "Featured",
+          "best-seller": "Best sellers",
           "price-asc": "Price low to high",
           "price-desc": "Price high to low",
           "date-asc": "Oldest first",

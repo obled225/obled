@@ -129,9 +129,10 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
         }
       : undefined,
     variant,
-    productType: doc.productType || 'normal',
+    isBusinessProduct: doc.isBusinessProduct || false,
     lomiProductId: doc.lomiProductId,
     featured: doc.featured || false,
+    bestSeller: doc.bestSeller || false,
     businessPacks: doc.businessPacks,
     createdAt: doc._createdAt ? new Date(doc._createdAt) : new Date(),
     updatedAt: doc._updatedAt ? new Date(doc._updatedAt) : new Date(),
@@ -145,7 +146,7 @@ const ALL_PRODUCTS_QUERY = `*[_type == "products" && !(_id in path("drafts.**"))
   _updatedAt,
   name,
   "slug": slug.current,
-  productType,
+  isBusinessProduct,
   lomiProductId,
 
   businessPacks[] {
@@ -155,6 +156,7 @@ const ALL_PRODUCTS_QUERY = `*[_type == "products" && !(_id in path("drafts.**"))
     label
   },
   featured,
+  bestSeller,
   prices[] {
     currency,
     basePrice,
@@ -194,7 +196,7 @@ const PRODUCT_BY_SLUG_QUERY = `*[_type == "products" && slug.current == $slug &&
   _updatedAt,
   name,
   "slug": slug.current,
-  productType,
+  isBusinessProduct,
   lomiProductId,
   businessPacks[] {
     quantity,
@@ -203,6 +205,7 @@ const PRODUCT_BY_SLUG_QUERY = `*[_type == "products" && slug.current == $slug &&
     label
   },
   featured,
+  bestSeller,
   prices[] {
     currency,
     basePrice,
@@ -242,9 +245,10 @@ const PRODUCTS_BY_CATEGORY_QUERY = `*[_type == "products" && $categoryId in cate
   _updatedAt,
   name,
   "slug": slug.current,
-  productType,
+  isBusinessProduct,
   lomiProductId,
   featured,
+  bestSeller,
   prices[] {
     currency,
     basePrice,
@@ -284,9 +288,10 @@ const FEATURED_PRODUCTS_QUERY = `*[_type == "products" && featured == true && !(
   _updatedAt,
   name,
   "slug": slug.current,
-  productType,
+  isBusinessProduct,
   lomiProductId,
   featured,
+  bestSeller,
   prices[] {
     currency,
     basePrice,
@@ -333,19 +338,21 @@ export async function getAllProducts(): Promise<Product[]> {
 }
 
 /**
- * Get products for shop page (normal and collab, excluding business)
+ * Get products for shop page (excluding business products)
  */
 export async function getShopProducts(): Promise<Product[]> {
   try {
-    const query = `*[_type == "products" && productType != "business" && !(_id in path("drafts.**"))] | order(_createdAt desc) {
+    const query = `*[_type == "products" && isBusinessProduct != true && !(_id in path("drafts.**"))] | order(_createdAt desc) {
       _id,
       _createdAt,
       _updatedAt,
       name,
       "slug": slug.current,
-      productType,
+      isBusinessProduct,
       lomiProductId,
       featured,
+      bestSeller,
+  bestSeller,
       prices[] {
         currency,
         basePrice,
@@ -387,19 +394,21 @@ export async function getShopProducts(): Promise<Product[]> {
 }
 
 /**
- * Get products for business page (only business type)
+ * Get products for business page (only business products)
  */
 export async function getBusinessProducts(): Promise<Product[]> {
   try {
-    const query = `*[_type == "products" && productType == "business" && !(_id in path("drafts.**"))] | order(_createdAt desc) {
+    const query = `*[_type == "products" && isBusinessProduct == true && !(_id in path("drafts.**"))] | order(_createdAt desc) {
       _id,
       _createdAt,
       _updatedAt,
       name,
       "slug": slug.current,
-      productType,
+      isBusinessProduct,
       lomiProductId,
       featured,
+      bestSeller,
+  bestSeller,
       prices[] {
         currency,
         basePrice,
@@ -503,7 +512,7 @@ export async function getProductById(id: string): Promise<Product | null> {
       _updatedAt,
       name,
       "slug": slug.current,
-      productType,
+      isBusinessProduct,
       lomiProductId,
       businessPacks[] {
         quantity,

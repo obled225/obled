@@ -61,10 +61,9 @@ export default defineType({
               name: 'lomiPriceId',
               title: 'lomi. Price ID',
               type: 'string',
-              description: 'The price ID from lomi. payment processor for this currency',
+              description: 'The price ID from lomi. payment processor for this currency (optional)',
               validation: (Rule) => 
-      Rule.required()
-        .regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i, {
+      Rule.regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i, {
           name: 'UUID', // Error message is "Does not match UUID pattern"
           invert: false, // Don't allow non-matches
         })
@@ -139,12 +138,6 @@ export default defineType({
       title: 'SKU',
       type: 'string',
       description: 'Stock Keeping Unit (SKU) is a unique identifier for a product',
-    }),
-    defineField({
-      name: 'lomiPriceId',
-      title: 'lomi. Price ID',
-      type: 'string',
-      description: 'Specific price ID for this product from lomi.',
     }),
     defineField({
       name: 'colors',
@@ -248,35 +241,32 @@ export default defineType({
           initialValue: false,
         },
         {
+          name: '2xl',
+          title: '2XL',
+          type: 'boolean',
+          initialValue: false,
+        },
+                {
           name: 'xxl',
           title: 'XXL',
           type: 'boolean',
           initialValue: false,
-        },
+        }
       ],
     }),
     defineField({
-      name: 'productType',
-      title: 'Product type',
-      type: 'string',
-      description: 'Determines where this product appears: Business products go to /business, Normal and Collab products go to /shop',
-      options: {
-        list: [
-          {title: 'Normal', value: 'normal'},
-          {title: 'Collab', value: 'collab'},
-          {title: 'Business (B2B)', value: 'business'},
-        ],
-        layout: 'radio',
-      },
-      initialValue: 'normal',
-      validation: (Rule) => Rule.required(),
+      name: 'isBusinessProduct',
+      title: 'Is this a business offer product?',
+      type: 'boolean',
+      description: 'Business products appear on /business page, regular products appear on /shop',
+      initialValue: false,
     }),
     defineField({
       name: 'businessPacks',
       title: 'Business packs',
       type: 'array',
       description: 'Pack sizes and pricing for business offers',
-      hidden: ({document}) => document?.productType !== 'business',
+      hidden: ({document}) => !document?.isBusinessProduct,
       of: [
         {
           type: 'object',
@@ -334,7 +324,14 @@ export default defineType({
       title: 'Featured product',
       type: 'boolean',
       initialValue: false,
-      description: 'Show this product in featured sections',
+      description: 'Sorting feature: Featured products appear first when "Featured" sort option is selected',
+    }),
+    defineField({
+      name: 'bestSeller',
+      title: 'Best seller',
+      type: 'boolean',
+      initialValue: false,
+      description: 'Sorting feature: Best seller products appear first when "Best sellers" sort option is selected',
     }),
     defineField({
       name: 'dimensions',

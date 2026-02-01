@@ -53,13 +53,14 @@ export interface SanityProductExpanded extends Omit<
     l?: boolean;
     xl?: boolean;
     xxl?: boolean;
+    '2xl'?: boolean;
   };
   variant?: {
     _id: string;
     name?: string;
     slug?: string;
   };
-  productType?: 'normal' | 'collab' | 'business';
+  isBusinessProduct?: boolean;
   lomiProductId?: string;
   businessPacks?: Array<{
     quantity: number;
@@ -68,6 +69,7 @@ export interface SanityProductExpanded extends Omit<
     label?: string;
   }>;
   featured?: boolean;
+  bestSeller?: boolean;
   dimensions?: {
     length?: number;
     width?: number;
@@ -172,7 +174,7 @@ export interface Product {
     name: string;
     slug: string;
   };
-  productType: 'normal' | 'collab' | 'business';
+  isBusinessProduct: boolean;
   lomiProductId?: string;
   businessPacks?: Array<{
     quantity: number;
@@ -181,6 +183,7 @@ export interface Product {
     label?: string;
   }>;
   featured?: boolean;
+  bestSeller?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

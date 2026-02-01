@@ -82,6 +82,7 @@
         "title": "Trier par",
         "options": {
           "featured": "En vedette",
+          "best-seller": "Best sellers",
           "price-asc": "Prix croissant",
           "price-desc": "Prix décroissant",
           "date-asc": "Plus ancien",

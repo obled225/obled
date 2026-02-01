@@ -307,7 +307,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
           )}
 
           {/* Pack Selector (Business Only) */}
-          {product.productType === 'business' &&
+          {product.isBusinessProduct &&
             product.businessPacks &&
             product.businessPacks.length > 0 && (
               <div className="mb-6">
