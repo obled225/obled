@@ -14,6 +14,7 @@ import {
   type TaxSettings,
 } from '@/lib/sanity/queries';
 import { useTranslations } from 'next-intl';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface CartSummaryProps {
   showCheckoutButton?: boolean;
@@ -44,16 +45,23 @@ export function CartSummary({
       enabled: boolean;
       amount?: number;
     } | null>(null);
+  const [loading, setLoading] = useState(true);
 
   // Fetch tax settings and global free shipping threshold
   useEffect(() => {
     async function fetchSettings() {
-      const [tax, globalThreshold] = await Promise.all([
-        getTaxSettings(),
-        getGlobalFreeShippingThreshold(),
-      ]);
-      setTaxSettings(tax);
-      setGlobalFreeShippingThreshold(globalThreshold);
+      try {
+        const [tax, globalThreshold] = await Promise.all([
+          getTaxSettings(),
+          getGlobalFreeShippingThreshold(),
+        ]);
+        setTaxSettings(tax);
+        setGlobalFreeShippingThreshold(globalThreshold);
+      } catch (error) {
+        console.error('Error fetching settings:', error);
+      } finally {
+        setLoading(false);
+      }
     }
     fetchSettings();
   }, []);
@@ -103,6 +111,57 @@ export function CartSummary({
   // Subtotal already reflects discounted prices, so don't subtract discount again
   // Discount is only for display purposes to show savings
   const finalTotal = cartSummary.subtotal + cartSummary.tax + shippingCost;
+
+  // Show skeleton while loading
+  if (loading) {
+    return (
+      <div className={`space-y-4 sm:space-y-6 ${className}`}>
+        {showShippingCalculator && (
+          <ShippingCalculator
+            subtotal={cartSummary.subtotal}
+            selectedShipping={selectedShipping}
+            onShippingChange={handleShippingChange}
+          />
+        )}
+
+        <div className="bg-white border border-gray-200 rounded-md p-4 sm:p-6">
+          {/* Title skeleton */}
+          <Skeleton className="h-4 sm:h-5 w-20 mb-3 sm:mb-4" />
+
+          {/* Summary rows skeleton */}
+          <div className="space-y-2 sm:space-y-3 mb-3 sm:mb-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="flex justify-between text-sm">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-4 w-16" />
+              </div>
+            ))}
+          </div>
+
+          {/* Total skeleton */}
+          <div className="border-t pt-4 mb-0">
+            <div className="flex justify-between">
+              <Skeleton className="h-4 sm:h-5 w-12" />
+              <Skeleton className="h-4 sm:h-5 w-20" />
+            </div>
+          </div>
+
+          {/* Buttons skeleton */}
+          {showCheckoutButton && (
+            <div className="block mb-2 sm:mb-3 mt-4">
+              <Skeleton className="w-full h-11 sm:h-12 rounded-md" />
+            </div>
+          )}
+
+          {showContinueShopping && (
+            <div className="mt-2 sm:mt-3">
+              <Skeleton className="w-full h-11 sm:h-12 rounded-md" />
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`space-y-4 sm:space-y-6 ${className}`}>
@@ -167,13 +226,11 @@ export function CartSummary({
                 ? t('taxesIncluded')
                 : taxSettings?.taxRates?.[0]?.name || t('tax')}
             </span>
-            <span className="font-medium">
-              {cartSummary.tax === 0 ? (
-                <span className="text-gray-500 text-xs">0</span>
-              ) : (
-                formatPrice(cartSummary.tax, currency)
-              )}
-            </span>
+            {cartSummary.tax !== 0 && (
+              <span className="font-medium">
+                {formatPrice(cartSummary.tax, currency)}
+              </span>
+            )}
           </div>
         </div>
 

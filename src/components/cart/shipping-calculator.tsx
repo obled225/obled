@@ -10,6 +10,7 @@ import {
   type ShippingOption,
 } from '@/lib/sanity/queries';
 import { useTranslations } from 'next-intl';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface ShippingCalculatorProps {
   subtotal: number;
@@ -156,9 +157,54 @@ export function ShippingCalculator({
     }
   };
 
-  // Don't show anything if loading
+  // Show skeleton while loading
   if (loading) {
-    return null;
+    return (
+      <div className="bg-white border border-gray-200 rounded-md p-6">
+        {/* Header skeleton */}
+        <div className="flex items-center mb-4">
+          <Skeleton className="w-5 h-5 rounded" />
+          <Skeleton className="h-5 w-32 ml-2" />
+        </div>
+
+        {/* Free shipping message skeleton */}
+        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
+          <Skeleton className="h-4 w-full" />
+        </div>
+
+        {/* Shipping options skeleton */}
+        <div className="space-y-3 mb-6">
+          {[1, 2].map((i) => (
+            <div
+              key={i}
+              className="block p-4 border border-gray-200 rounded-md"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <Skeleton className="w-4 h-4 rounded-full mr-3" />
+                  <div>
+                    <Skeleton className="h-5 w-32 mb-2" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                </div>
+                <Skeleton className="h-5 w-16" />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Additional information skeleton */}
+        <div className="border-t pt-4 mt-4">
+          <div className="bg-gray-50 rounded-md p-5">
+            <Skeleton className="h-4 w-full mb-2" />
+            <div className="space-y-1.5 mt-3">
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-4 w-2/3" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   // If no options available, this shouldn't happen (getActiveShippingOptions returns default)
