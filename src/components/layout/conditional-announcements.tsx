@@ -15,7 +15,7 @@ export function ConditionalAnnouncements() {
   useEffect(() => {
     async function fetchAnnouncements() {
       const announcementData = await getAnnouncements();
-      
+
       // Use announcements from Sanity if available, otherwise use translated fallback
       const fallbackAnnouncements: Announcement[] = [
         {

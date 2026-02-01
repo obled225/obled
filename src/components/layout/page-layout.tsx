@@ -34,7 +34,7 @@ export function PageLayout({ children, categories }: PageLayoutProps) {
   useEffect(() => {
     async function fetchAnnouncement() {
       const announcementData = await getFloatingAnnouncement();
-      
+
       // Fallback data if Sanity query fails
       const fallbackAnnouncement = {
         text: 'Use code WELCOME20 for 20% off',
