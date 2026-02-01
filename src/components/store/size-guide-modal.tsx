@@ -28,14 +28,14 @@ export function SizeGuideContent({ onClose }: { onClose?: () => void }) {
 
   return (
     <div className="w-full max-w-full space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg sm:text-xl font-bold tracking-wider">
+      <div className="flex items-center justify-center relative">
+        <h2 className="text-lg sm:text-xl font-bold tracking-wider text-center">
           {t('sizeGuide.title')}
         </h2>
         {onClose && (
           <button
             onClick={onClose}
-            className="md:hidden p-1 hover:bg-gray-100 rounded touch-target"
+            className="md:hidden p-1 hover:bg-gray-100 rounded-md touch-target absolute right-0"
             aria-label="Close size guide"
           >
             <X className="h-5 w-5" />
@@ -72,17 +72,17 @@ export function SizeGuideContent({ onClose }: { onClose?: () => void }) {
       </div>
 
       {/* Size Table */}
-      <div className="overflow-hidden rounded-lg border border-gray-200">
+      <div className="overflow-hidden rounded-md border border-gray-200">
         <table className="w-full">
           <thead>
-            <tr className="bg-gray-900 text-white">
-              <th className="px-4 py-3 text-left text-sm font-medium">
+            <tr className="bg-gray-950 text-white">
+              <th className="px-4 py-3 text-left text-sm font-medium rounded-tl-md">
                 {t('sizeGuide.size')}
               </th>
               <th className="px-4 py-3 text-center text-sm font-medium">
                 {t('sizeGuide.chest')}
               </th>
-              <th className="px-4 py-3 text-center text-sm font-medium">
+              <th className="px-4 py-3 text-center text-sm font-medium rounded-tr-md">
                 {t('sizeGuide.length')}
               </th>
             </tr>
@@ -113,7 +113,7 @@ export function SizeGuideContent({ onClose }: { onClose?: () => void }) {
           alt="Size Guide Visual"
           width={1000}
           height={1000}
-          className="w-full h-auto rounded-lg border border-gray-200"
+          className="w-full h-auto rounded-md border border-gray-200"
           unoptimized
         />
       </div>

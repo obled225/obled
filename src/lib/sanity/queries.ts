@@ -65,6 +65,7 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
       l: 'L',
       xl: 'XL',
       xxl: 'XXL',
+      twoXl: '2XL',
     };
     Object.entries(doc.sizes).forEach(([key, value]) => {
       if (typeof value === 'boolean' && value && sizeMap[key]) {

@@ -53,7 +53,7 @@ export interface SanityProductExpanded extends Omit<
     l?: boolean;
     xl?: boolean;
     xxl?: boolean;
-    '2xl'?: boolean;
+    twoXl?: boolean;
   };
   variant?: {
     _id: string;

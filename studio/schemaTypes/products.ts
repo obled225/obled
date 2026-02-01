@@ -241,14 +241,14 @@ export default defineType({
           initialValue: false,
         },
         {
-          name: '2xl',
-          title: '2XL',
+          name: 'xxl',
+          title: 'XXL',
           type: 'boolean',
           initialValue: false,
         },
-                {
-          name: 'xxl',
-          title: 'XXL',
+        {
+          name: 'twoXl',
+          title: '2XL',
           type: 'boolean',
           initialValue: false,
         }
