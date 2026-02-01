@@ -73,9 +73,9 @@ export function ContactForm() {
 
   return (
     <div className="mt-8">
-      <h3 className="text-lg sm:text-xl font-medium mb-4">
+      <p className="text-sm sm:text-lg leading-relaxed mb-4 text-foreground/80">
         {tContact('form.title')}
-      </h3>
+      </p>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid gap-4 md:grid-cols-2">
           <Input
@@ -126,7 +126,7 @@ export function ContactForm() {
           disabled={isSubmitting}
           className="min-h-[120px]"
         />
-        <div className="flex justify-end">
+        <div className="flex justify-end mb-8">
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting
               ? tContact('form.submitting')

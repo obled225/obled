@@ -11,6 +11,7 @@ import { CurrencySelector } from './currency-selector';
 import { CartDrawer } from '@/components/cart/cart-drawer';
 import { Badge } from '@/components/ui/badge';
 import { useCartStore } from '@/lib/store/cart-store';
+import { useIsMobile } from '@/lib/hooks/use-is-mobile';
 
 // Define props extended with categories
 import { ProductCategory } from '@/lib/types';
@@ -25,6 +26,9 @@ export function Header({ categories = [] }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const cartItemCount = useCartStore((state) => state.cart.itemCount);
+
+  // Check if we're on mobile
+  const isMobile = useIsMobile();
 
   // Combine static links with dynamic categories
   // We'll add categories under a "Shop" dropdown or just list them if few?
@@ -55,38 +59,40 @@ export function Header({ categories = [] }: HeaderProps) {
               alt="KYS Factory"
               width={550}
               height={150}
-              className="h-16 sm:h-20 md:h-24 lg:h-32 w-auto"
+              className="h-28 sm:h-24 md:h-28 lg:h-32 w-auto"
               priority
             />
           </Link>
 
           {/* Right side actions */}
-          <div className="flex items-center gap-1 sm:gap-2">
+          <div className="flex items-center gap-2 sm:gap-2">
             {/* Currency Selector - hidden on very small screens, shown in mobile menu */}
             <div className="hidden sm:block">
               <CurrencySelector />
             </div>
 
-            {/* Search */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-9 w-9 sm:h-10 sm:w-10"
-              onClick={() => setIsSearchOpen(!isSearchOpen)}
-              aria-label={t('search.ariaLabel')}
-            >
-              <Search className="h-4 w-4 sm:h-5 sm:w-5" />
-            </Button>
+            {/* Search - hidden on mobile */}
+            {!isMobile && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9 sm:h-10 sm:w-10"
+                onClick={() => setIsSearchOpen(!isSearchOpen)}
+                aria-label={t('search.ariaLabel')}
+              >
+                <Search className="h-4 w-4 sm:h-5 sm:w-5" />
+              </Button>
+            )}
 
             {/* Cart */}
             <Button
               variant="ghost"
               size="icon"
-              className="relative h-9 w-9 sm:h-10 sm:w-10"
+              className="relative h-11 w-11 sm:h-10 sm:w-10"
               aria-label={t('cart.ariaLabel')}
               onClick={() => setIsCartOpen(true)}
             >
-              <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5" />
+              <ShoppingCart className="h-5 w-5 sm:h-5 sm:w-5" />
               {cartItemCount > 0 && (
                 <Badge
                   variant="destructive"
@@ -106,11 +112,11 @@ export function Header({ categories = [] }: HeaderProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="h-9 w-9 sm:h-10 sm:w-10 md:hidden"
+              className="h-11 w-11 sm:h-10 sm:w-10 md:hidden"
               onClick={() => setIsMobileMenuOpen(true)}
               aria-label={t('menu.ariaLabel')}
             >
-              <Menu className="h-4 w-4 sm:h-5 sm:w-5" />
+              <Menu className="h-5 w-5 sm:h-5 sm:w-5" />
             </Button>
           </div>
         </div>
@@ -131,8 +137,8 @@ export function Header({ categories = [] }: HeaderProps) {
           </ul>
         </nav>
 
-        {/* Search bar */}
-        {isSearchOpen && (
+        {/* Search bar - only on desktop */}
+        {isSearchOpen && !isMobile && (
           <div className="border-t border-border py-3 sm:py-4 px-4 sm:px-6 lg:px-8">
             <div className="relative">
               <input

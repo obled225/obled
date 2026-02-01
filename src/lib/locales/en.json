@@ -52,6 +52,13 @@
       "sizeGuide": "Size guide",
       "share": "Share"
     },
+    "share": {
+      "title": "Share",
+      "whatsappButton": "WhatsApp",
+      "instagramButton": "Instagram",
+      "copySuccess": "Link copied to clipboard!",
+      "copyButton": "Copy link"
+    },
     "sizeGuide": {
       "title": "Size guide",
       "inches": "Inches",
@@ -75,15 +82,18 @@
         "title": "Sort by",
         "options": {
           "featured": "Featured",
-          "price-asc": "Price: Low to High",
-          "price-desc": "Price: High to Low",
-          "date-asc": "Date: Oldest First",
-          "date-desc": "Date: Newest First"
+          "price-asc": "Price low to high",
+          "price-desc": "Price high to low",
+          "date-asc": "Oldest first",
+          "date-desc": "Newest first"
         }
       },
       "reset": "Reset",
       "productCount": "product",
-      "productCount_plural": "products"
+      "productCount_plural": "products",
+      "filtersButton": "Filters",
+      "allCategories": "All categories",
+      "category": "Category"
     }
   },
   "footer": {
@@ -311,7 +321,7 @@
   },
   "contact": {
     "title": "Contact",
-    "description": "For any questions, feel free to contact us.",
+    "description": "Or contact us directly via :",
     "methods": {
       "whatsapp": {
         "title": "WhatsApp",
@@ -331,7 +341,7 @@
       }
     },
     "form": {
-      "title": "Send us a message",
+      "title": "For any questions, feel free to contact us.",
       "fields": {
         "name": "Name",
         "company": "Organization",

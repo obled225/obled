@@ -38,7 +38,7 @@ export default function HomeClient({ products }: HomeClientProps) {
 
   return (
     <main className="grow">
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12">
+      <section className="mx-auto max-w-7xl px-4 py-6  border-border">
         {productsWithCategories.length > 0 && (
           <ProductFilters
             products={productsWithCategories}

@@ -47,7 +47,7 @@ function ProductNotFound() {
 
   return (
     <main className="grow">
-      <div className="flex justify-center py-16">
+      <div className="flex justify-center items-center w-full py-12 sm:py-16 md:py-20">
         <div className="bg-background border border-border rounded-lg overflow-hidden max-w-md w-full">
           <div className="p-6 text-center">
             <h1 className="text-2xl font-medium text-foreground mb-4">

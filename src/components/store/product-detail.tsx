@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Minus, Plus, Share2, ZoomIn, Ruler } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Product, formatPrice, getProductPrice } from '@/lib/types';
@@ -10,9 +10,11 @@ import { useToast } from '@/lib/hooks/use-toast';
 import { cn } from '@/lib/actions/utils';
 import Modal from '@/components/ui/modal';
 import { SizeGuideContent } from './size-guide-modal';
+import { ShareContent } from './share-modal';
 import { PortableText } from '@/components/ui/portable-text';
 import { useTranslations } from 'next-intl';
 import { FullscreenGallery } from '@/components/products/fullscreen-gallery';
+import { useIsMobile } from '@/lib/hooks/use-is-mobile';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
@@ -25,6 +27,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const { addItem } = useCartStore();
   const { currency } = useCurrencyStore();
   const { success, error } = useToast();
+  const isMobile = useIsMobile();
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState(
     product.colors?.[0]?.name || ''
@@ -54,6 +57,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
   const [isFullscreenGalleryOpen, setIsFullscreenGalleryOpen] = useState(false);
 
   // Get price for selected currency
@@ -79,6 +83,12 @@ export function ProductDetail({ product }: ProductDetailProps) {
   };
 
   const router = useRouter();
+  const [productUrl, setProductUrl] = useState('');
+
+  // Set product URL on client side
+  useEffect(() => {
+    setProductUrl(`${window.location.origin}/products/${product.slug}`);
+  }, [product.slug]);
 
   const handleAddToCart = async () => {
     setIsAdding(true);
@@ -411,6 +421,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
             <Button
               variant="ghost"
               className="h-10 px-2 sm:px-3 gap-2 text-xs sm:text-sm touch-target"
+              onClick={() => setIsShareOpen(true)}
               aria-label={t('productDetail.share')}
             >
               <Share2 className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -431,6 +442,24 @@ export function ProductDetail({ product }: ProductDetailProps) {
         <Modal.Body>
           <div className="w-full max-w-full">
             <SizeGuideContent onClose={() => setIsSizeGuideOpen(false)} />
+          </div>
+        </Modal.Body>
+      </Modal>
+
+      {/* Share Modal */}
+      <Modal
+        isOpen={isShareOpen}
+        close={() => setIsShareOpen(false)}
+        size="medium"
+        position={isMobile ? 'bottom' : 'center'}
+      >
+        <Modal.Body>
+          <div className="w-full max-w-full">
+            <ShareContent
+              url={productUrl}
+              title={product.name}
+              onClose={() => setIsShareOpen(false)}
+            />
           </div>
         </Modal.Body>
       </Modal>

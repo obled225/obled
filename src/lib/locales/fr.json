@@ -52,6 +52,13 @@
       "sizeGuide": "Guide des tailles",
       "share": "Partager"
     },
+    "share": {
+      "title": "Partager",
+      "whatsappButton": "WhatsApp",
+      "instagramButton": "Instagram",
+      "copySuccess": "Lien copié dans le presse-papiers !",
+      "copyButton": "Copier le lien"
+    },
     "sizeGuide": {
       "title": "GUIDE DES TAILLES",
       "inches": "POUCES",
@@ -75,15 +82,18 @@
         "title": "Trier par",
         "options": {
           "featured": "En vedette",
-          "price-asc": "Prix : Croissant",
-          "price-desc": "Prix : Décroissant",
-          "date-asc": "Date : Plus ancien",
-          "date-desc": "Date : Plus récent"
+          "price-asc": "Prix croissant",
+          "price-desc": "Prix décroissant",
+          "date-asc": "Plus ancien",
+          "date-desc": "Plus récent"
         }
       },
       "reset": "Réinitialiser",
       "productCount": "produit",
-      "productCount_plural": "produits"
+      "productCount_plural": "produits",
+      "filtersButton": "Filtres",
+      "allCategories": "Toutes les catégories",
+      "category": "Catégorie"
     }
   },
   "footer": {
@@ -314,7 +324,7 @@
   },
   "contact": {
     "title": "Contact",
-    "description": "Pour toute question, n'hésitez pas à nous contacter.",
+    "description": "Ou contactez-nous directement via :",
     "methods": {
       "whatsapp": {
         "title": "WhatsApp",
@@ -334,7 +344,7 @@
       }
     },
     "form": {
-      "title": "Envoyez-nous un message",
+      "title": "Pour toute question, n'hésitez pas à nous contacter.",
       "fields": {
         "name": "Nom",
         "company": "Organisation",

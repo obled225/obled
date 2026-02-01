@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { ArrowRight, Phone, Mail, Play } from 'lucide-react';
 import { WhatsAppIcon, InstagramIcon } from '@/components/ui/icons';
 import { ContactForm } from './contact-form';
+import { useIsMobile } from '@/lib/hooks/use-is-mobile';
 
 interface SectionImage {
   url?: string;
@@ -40,10 +41,7 @@ export function AboutClient({
   };
 
   // Check if device is mobile
-  const isMobile = () => {
-    if (typeof window === 'undefined') return false;
-    return window.innerWidth < 768;
-  };
+  const isMobile = useIsMobile();
 
   // Helper function to render section with optional images
   const renderSectionWithImages = (
@@ -75,7 +73,7 @@ export function AboutClient({
                   />
                 )}
                 {image.caption && (
-                  <p className="text-sm text-muted-foreground mt-2 italic text-center">
+                  <p className="text-xs text-muted-foreground mt-2 italic text-right">
                     {image.caption}
                   </p>
                 )}
@@ -97,7 +95,7 @@ export function AboutClient({
               <video
                 ref={videoRef}
                 className="w-full h-[500px] md:h-[1000px] object-cover"
-                controls={!isMobile()}
+                controls={!isMobile}
                 preload="metadata"
                 muted
                 playsInline
@@ -304,6 +302,10 @@ export function AboutClient({
             <h2 className="text-xl sm:text-2xl font-medium mb-6">
               {tContact('title')}
             </h2>
+            
+            {/* Contact Form */}
+            <ContactForm />
+            
             <p className="text-sm sm:text-lg leading-relaxed mb-6 text-foreground/80">
               {tContact('description')}
             </p>
@@ -383,9 +385,6 @@ export function AboutClient({
                 </div>
               </div>
             </div>
-
-            {/* Contact Form */}
-            <ContactForm />
           </div>
         </div>
       </section>

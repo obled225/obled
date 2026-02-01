@@ -38,7 +38,7 @@ export function ProductGrid({
 
   if (products.length === 0) {
     return (
-      <div className="flex justify-center items-center w-full">
+      <div className="flex justify-center items-center w-full py-12 sm:py-16 md:py-20">
         <div className="bg-background border border-border rounded-lg overflow-hidden max-w-md w-full">
           <div className="p-4 sm:p-6 text-center">
             <h2 className="text-lg sm:text-xl md:text-2xl font-medium text-foreground mb-3 sm:mb-4">
