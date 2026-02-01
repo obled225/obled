@@ -128,11 +128,10 @@ export function ProductCard({ product, isFirst = false }: ProductCardProps) {
                 src={imageUrl}
                 alt={`${product.name} - Image ${index + 1}`}
                 fill
-                className={`object-cover transition-opacity duration-500 ${
-                  index === currentImageIndex
+                className={`object-cover transition-opacity duration-500 ${index === currentImageIndex
                     ? 'opacity-100'
                     : 'opacity-0 absolute'
-                }`}
+                  }`}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                 unoptimized
                 priority={isFirst && index === 0}
@@ -155,20 +154,25 @@ export function ProductCard({ product, isFirst = false }: ProductCardProps) {
         <h3 className="text-sm font-normal text-gray-900 leading-snug group-hover:underline">
           {product.name}
         </h3>
-        <div className="mt-2 flex items-center gap-2">
-          {displayOriginalPrice && displayOriginalPrice > displayPrice && (
-            <span className="text-sm text-gray-500 line-through">
-              {formatPrice(displayOriginalPrice, currency)}
+        <div className="mt-2 flex items-center justify-between gap-2">
+          <p className="text-sm text-gray-600">
+            {product.category?.name || ''}
+          </p>
+          <div className="flex items-center space-x-2">
+            {displayOriginalPrice && displayOriginalPrice > displayPrice && (
+              <span className="text-sm text-gray-500 line-through">
+                {formatPrice(displayOriginalPrice, currency)}
+              </span>
+            )}
+            <span className="text-sm font-medium text-gray-900">
+              {/* Only show "From" for business products with packs (multiple items) */}
+              {product.isBusinessProduct &&
+                product.businessPacks &&
+                product.businessPacks.length > 0
+                ? `${t('from')} ${formatPrice(displayPrice, currency)}`
+                : formatPrice(displayPrice, currency)}
             </span>
-          )}
-          <span className="text-sm font-medium text-gray-900">
-            {/* Only show "From" for business products with packs (multiple items) */}
-            {product.isBusinessProduct &&
-            product.businessPacks &&
-            product.businessPacks.length > 0
-              ? `${t('from')} ${formatPrice(displayPrice, currency)}`
-              : formatPrice(displayPrice, currency)}
-          </span>
+          </div>
         </div>
       </div>
     </Link>

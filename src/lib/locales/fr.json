@@ -88,7 +88,6 @@
       "businessPackAvailable": "Commandes en gros disponibles",
       "viewVariant": "Voir",
       "relatedProducts": "Produits associés",
-      "relatedProductsDescription": "Vous pourriez également aimer ces produits",
       "taxesIncluded": "Toutes taxes comprises",
       "total": "Total",
       "each": "l'unité"
@@ -116,8 +115,7 @@
       }
     },
     "relatedProducts": {
-      "defaultTitle": "Produits associés",
-      "defaultDescription": "Vous pourriez également vouloir consulter ces produits."
+      "defaultTitle": "Produits associés"
     },
     "share": {
       "title": "Partager",

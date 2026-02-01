@@ -88,7 +88,6 @@
       "businessPackAvailable": "Bulk orders available",
       "viewVariant": "View",
       "relatedProducts": "Related Products",
-      "relatedProductsDescription": "You might also like these products",
       "taxesIncluded": "All taxes included",
       "total": "Total",
       "each": "each"
@@ -116,8 +115,7 @@
       }
     },
     "relatedProducts": {
-      "defaultTitle": "Related Products",
-      "defaultDescription": "You might also want to check out these products."
+      "defaultTitle": "Related Products"
     },
     "share": {
       "title": "Share",

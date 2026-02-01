@@ -10,34 +10,28 @@ import { useTranslations } from 'next-intl';
 type RelatedProductsProps = {
   products: Product[];
   title?: string;
-  description?: string;
 };
 
 export default function RelatedProducts({
   products,
   title,
-  description,
 }: RelatedProductsProps) {
   const { currency, convertPrice } = useCurrencyStore();
   const t = useTranslations('products');
   const tRelated = useTranslations('products.relatedProducts');
 
   const displayTitle = title || tRelated('defaultTitle');
-  const displayDescription = description || tRelated('defaultDescription');
 
   if (!products.length) {
     return null;
   }
 
   return (
-    <div className="py-12">
-      <div className="flex flex-col items-center text-center mb-8">
-        <span className="text-sm font-medium text-gray-600 mb-2 uppercase tracking-wide">
+    <div className="pb-12">
+      <div className="flex flex-col items-start text-left mb-4">
+        <span className="text-sm font-medium text-gray-600 mb-1 uppercase tracking-wide">
           {displayTitle}
         </span>
-        <p className="text-xl sm:text-2xl font-bold text-gray-900 max-w-lg">
-          {displayDescription}
-        </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -82,21 +76,22 @@ export default function RelatedProducts({
                     {product.name}
                   </h3>
 
-                  <div className="flex items-center space-x-2">
-                    <span className="font-semibold text-gray-900">
-                      {formatPrice(displayPrice, currency)}
-                    </span>
-                    {displayOriginalPrice &&
-                      displayOriginalPrice > displayPrice && (
-                        <span className="text-sm text-gray-500 line-through">
-                          {formatPrice(displayOriginalPrice, currency)}
-                        </span>
-                      )}
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm text-gray-600">
+                      {product.category.name}
+                    </p>
+                    <div className="flex items-center space-x-2">
+                      {displayOriginalPrice &&
+                        displayOriginalPrice > displayPrice && (
+                          <span className="text-sm text-gray-500 line-through">
+                            {formatPrice(displayOriginalPrice, currency)}
+                          </span>
+                        )}
+                      <span className="font-semibold text-gray-900">
+                        {formatPrice(displayPrice, currency)}
+                      </span>
+                    </div>
                   </div>
-
-                  <p className="text-sm text-gray-600 line-clamp-2">
-                    {product.category.name}
-                  </p>
                 </div>
               </Link>
             </div>
