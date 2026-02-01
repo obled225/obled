@@ -28,8 +28,8 @@ export interface SanityProductExpanded extends Omit<
     };
     description?: string;
   }>;
-  price?: number; // Price in XOF (base currency)
-  originalPrice?: number; // Original price in XOF (before discount)
+  currentPrice?: number; // Current selling price in XOF (base currency)
+  basePrice?: number; // Base price in XOF (shown with strikethrough)
   colors?: Array<{
     name: string;
     value: string;
@@ -64,8 +64,8 @@ export interface SanityProductExpanded extends Omit<
           current?: string;
         }
       | string;
-    price?: number; // Price in XOF
-    originalPrice?: number; // Original price in XOF
+    currentPrice?: number; // Current selling price in XOF
+    basePrice?: number; // Base price in XOF
     inStock?: boolean;
     images?: Array<{
       asset?: {
@@ -93,8 +93,8 @@ export interface SanityProductExpanded extends Omit<
   businessPacks?: Array<{
     quantity: number;
     label?: string;
-    price?: number; // Price in XOF
-    originalPrice?: number; // Original price in XOF
+    price?: number; // Current selling price in XOF (mapped from currentPrice)
+    originalPrice?: number; // Base price in XOF (mapped from basePrice, shown with strikethrough)
   }>;
   featured?: boolean;
   bestSeller?: boolean;
@@ -195,8 +195,8 @@ export interface Product {
   businessPacks?: Array<{
     quantity: number;
     label?: string;
-    price?: number; // Price in XOF
-    originalPrice?: number; // Original price in XOF
+    price?: number; // Current selling price in XOF (mapped from currentPrice)
+    originalPrice?: number; // Base price in XOF (mapped from basePrice, shown with strikethrough)
   }>;
   featured?: boolean;
   bestSeller?: boolean;

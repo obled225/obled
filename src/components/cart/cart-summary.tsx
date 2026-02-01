@@ -34,7 +34,7 @@ export function CartSummary({
   const { currency, convertPrice } = useCurrencyStore();
   const t = useTranslations('header.cart');
   const tShipping = useTranslations('shipping');
-  const [selectedShipping, setSelectedShipping] = useState('standard');
+  const [selectedShipping, setSelectedShipping] = useState<string | undefined>(undefined);
   const [shippingCost, setShippingCost] = useState(0);
   const [taxSettings, setTaxSettings] = useState<TaxSettings | null>(null);
   const [globalFreeShippingThreshold, setGlobalFreeShippingThreshold] =
@@ -57,20 +57,17 @@ export function CartSummary({
   }, []);
 
   // Calculate tax when subtotal or currency changes (using useMemo instead of useEffect)
+  // Tax should be calculated on the discounted subtotal, not the full subtotal
   const taxAmount = useMemo(() => {
     if (!taxSettings) return 0;
 
-    // Calculate subtotal manually
-    const subtotal = cart.items.reduce((total, item) => {
-      // All prices are in XOF, convert to selected currency
-      const basePriceXOF = item.product.price || 0;
-      const basePrice = convertPrice(basePriceXOF, currency);
-      const variantPrice = item.selectedVariant?.priceModifier || 0;
-      return total + (basePrice + variantPrice) * item.quantity;
-    }, 0);
+    // First, calculate the subtotal and discount
+    const tempSummary = getCartSummary(currency, 0, 0);
+    const discountedSubtotal = tempSummary.subtotal - tempSummary.discount;
 
-    return calculateTax(subtotal, currency, taxSettings);
-  }, [taxSettings, currency, cart.items, convertPrice]);
+    // Calculate tax on the discounted subtotal
+    return calculateTax(discountedSubtotal, currency, taxSettings);
+  }, [taxSettings, currency, getCartSummary]);
 
   const cartSummary = getCartSummary(currency, taxAmount, shippingCost);
 
@@ -101,11 +98,12 @@ export function CartSummary({
     onShippingCostChange?.(cost);
   };
 
+  // Subtotal already reflects discounted prices, so don't subtract discount again
+  // Discount is only for display purposes to show savings
   const finalTotal =
     cartSummary.subtotal +
     cartSummary.tax +
-    shippingCost -
-    cartSummary.discount;
+    shippingCost;
 
   return (
     <div className={`space-y-4 sm:space-y-6 ${className}`}>
@@ -128,7 +126,7 @@ export function CartSummary({
               {t('subtotalWithItems', { count: cart.itemCount })}
             </span>
             {cartSummary.originalSubtotal &&
-            cartSummary.originalSubtotal > cartSummary.subtotal ? (
+              cartSummary.originalSubtotal > cartSummary.subtotal ? (
               <span className="text-sm text-gray-500">
                 {formatPrice(cartSummary.originalSubtotal, currency)}
               </span>
@@ -151,19 +149,23 @@ export function CartSummary({
           <div className="flex justify-between text-sm">
             <span className="text-gray-600">{t('shipping')}</span>
             <span className="font-medium">
-              {globalFreeShippingActive || shippingCost === 0 ? (
+              {selectedShipping && (globalFreeShippingActive || shippingCost === 0) ? (
                 <span className="text-green-600 font-semibold">
                   {tShipping('free')}
                 </span>
-              ) : (
+              ) : selectedShipping ? (
                 formatPrice(shippingCost, currency)
+              ) : (
+                <span className="text-gray-400">—</span>
               )}
             </span>
           </div>
 
           <div className="flex justify-between text-sm">
             <span className="text-gray-600">
-              {cartSummary.tax === 0 ? t('taxesIncluded') : t('tax')}
+              {cartSummary.tax === 0
+                ? t('taxesIncluded')
+                : taxSettings?.taxRates?.[0]?.name || t('tax')}
             </span>
             <span className="font-medium">
               {cartSummary.tax === 0 ? (
@@ -175,7 +177,7 @@ export function CartSummary({
           </div>
         </div>
 
-        <div className="border-t pt-4 mb-6">
+        <div className="border-t pt-4 mb-0">
           <div className="flex justify-between text-base sm:text-lg font-semibold">
             <span>{t('total')}</span>
             <span>{formatPrice(finalTotal, currency)}</span>

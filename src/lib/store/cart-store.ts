@@ -63,7 +63,7 @@ const calculateOriginalSubtotal = (
     if (item.selectedVariant?.packSize && item.product.businessPacks) {
       const pack = item.product.businessPacks.find(
         (p) => p.quantity === item.selectedVariant?.packSize
-      );
+      ) as { quantity: number; label?: string; price?: number; originalPrice?: number } | undefined;
       originalPriceXOF = pack?.originalPrice;
     } else {
       originalPriceXOF = item.product.originalPrice;
@@ -225,7 +225,9 @@ const createCartStore = () =>
             tax: taxAmount,
             shipping: shippingAmount,
             discount,
-            total: subtotal + taxAmount + shippingAmount - discount,
+            // Subtotal already reflects discounted prices, so don't subtract discount again
+            // Discount is only for display purposes to show savings
+            total: subtotal + taxAmount + shippingAmount,
           };
         },
 

@@ -7,6 +7,7 @@ import { Footer } from './footer';
 import { CartProvider } from '@/lib/context/cart-provider';
 import { ConditionalAnnouncements } from './conditional-announcements';
 import { FloatingAnnouncementClient } from '@/components/store/floating-announcement-client';
+import { Dock } from '@/components/ui/dock';
 import { ProductCategory } from '@/lib/types';
 import { useEffect, useState } from 'react';
 import { getFloatingAnnouncement } from '@/lib/sanity/queries';
@@ -19,17 +20,18 @@ interface PageLayoutProps {
 export function PageLayout({ children, categories }: PageLayoutProps) {
   const pathname = usePathname();
   const isCheckoutPage = pathname === '/checkout';
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [announcement, setAnnouncement] = useState<{
     text:
-      | string
-      | Array<{
-          _type: 'block';
-          children: Array<{
-            _type: 'span';
-            text: string;
-            marks?: string[];
-          }>;
-        }>;
+    | string
+    | Array<{
+      _type: 'block';
+      children: Array<{
+        _type: 'span';
+        text: string;
+        marks?: string[];
+      }>;
+    }>;
     isActive: boolean;
   } | null>(null);
 
@@ -49,13 +51,17 @@ export function PageLayout({ children, categories }: PageLayoutProps) {
   return (
     <CartProvider>
       <div className="min-h-screen flex flex-col">
-        <Header categories={categories} />
+        <Header
+          categories={categories}
+          onVisibilityChange={setIsHeaderVisible}
+        />
         <ConditionalAnnouncements />
         <div className="flex-1">{children}</div>
         <Footer />
         {!isCheckoutPage && announcement && (
           <FloatingAnnouncementClient announcement={announcement} />
         )}
+        <Dock isHeaderVisible={isHeaderVisible} />
       </div>
     </CartProvider>
   );

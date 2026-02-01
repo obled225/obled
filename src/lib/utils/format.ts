@@ -2,20 +2,22 @@
  * Currency formatting utilities
  *
  * Formats:
- * - XOF: "15 000 F CFA" (French number format with spaces as thousand separators)
- * - USD: "55 $" (space before symbol, symbol on right)
- * - EUR: "55 €" (space before symbol, symbol on right)
+ * - XOF: "15 000 F CFA" (French number format with spaces as thousand separators, no decimals)
+ * - USD: "55 $" or "55.50 $" (space before symbol, symbol on right, up to 2 decimals)
+ * - EUR: "55 €" or "55.50 €" (space before symbol, symbol on right, up to 2 decimals)
  */
 
 export type Currency = 'XOF' | 'USD' | 'EUR';
 
 /**
  * Format a number with French locale (spaces as thousand separators)
+ * @param value - The number to format
+ * @param maxDecimals - Maximum number of decimal places (default: 0)
  */
-function formatFrenchNumber(value: number): string {
+function formatFrenchNumber(value: number, maxDecimals: number = 0): string {
   return new Intl.NumberFormat('fr-FR', {
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+    maximumFractionDigits: maxDecimals,
   }).format(value);
 }
 
@@ -28,8 +30,8 @@ function formatFrenchNumber(value: number): string {
  *
  * @example
  * formatPrice(15000, 'XOF') // "15 000 F CFA"
- * formatPrice(55, 'USD') // "55 $"
- * formatPrice(55, 'EUR') // "55 €"
+ * formatPrice(55.5, 'USD') // "55.50 $"
+ * formatPrice(55.5, 'EUR') // "55.50 €"
  */
 export function formatPrice(
   price: number,
@@ -41,20 +43,20 @@ export function formatPrice(
 
   switch (normalizedCurrency) {
     case 'XOF':
-      // French format: "15 000 F CFA"
-      return `${formatFrenchNumber(numericValue)} F CFA`;
+      // French format: "15 000 F CFA" (no decimals)
+      return `${formatFrenchNumber(numericValue, 0)} F CFA`;
 
     case 'USD':
-      // Format: "55 $" (space before symbol)
-      return `${formatFrenchNumber(numericValue)} $`;
+      // Format: "55 $" or "55.50 $" (space before symbol, up to 2 decimals)
+      return `${formatFrenchNumber(numericValue, 2)} $`;
 
     case 'EUR':
-      // Format: "55 €" (space before symbol)
-      return `${formatFrenchNumber(numericValue)} €`;
+      // Format: "55 €" or "55.50 €" (space before symbol, up to 2 decimals)
+      return `${formatFrenchNumber(numericValue, 2)} €`;
 
     default:
-      // Fallback to XOF format
-      return `${formatFrenchNumber(numericValue)} F CFA`;
+      // Fallback to XOF format (no decimals)
+      return `${formatFrenchNumber(numericValue, 0)} F CFA`;
   }
 }
 

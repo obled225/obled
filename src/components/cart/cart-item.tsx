@@ -79,7 +79,7 @@ export function CartItem({ item, showControls = true }: CartItemProps) {
                 ) {
                   const pack = item.product.businessPacks.find(
                     (p) => p.quantity === item.selectedVariant?.packSize
-                  );
+                  ) as { quantity: number; label?: string; price?: number; originalPrice?: number } | undefined;
                   originalPriceXOF = pack?.originalPrice;
                 } else {
                   originalPriceXOF = item.product.originalPrice;
@@ -97,10 +97,11 @@ export function CartItem({ item, showControls = true }: CartItemProps) {
                     )}
                     <span className="text-sm text-gray-600">
                       {formatPrice(packPrice, currency)}
-                      {item.selectedVariant?.packSize ? (
+                      {item.selectedVariant?.packSize && (
                         <span className="text-xs"> {t('pack')}</span>
-                      ) : (
-                        <span> {t('each')}</span>
+                      )}
+                      {item.quantity > 1 && (
+                        <span className="text-xs ml-1">× {item.quantity}</span>
                       )}
                     </span>
                   </>

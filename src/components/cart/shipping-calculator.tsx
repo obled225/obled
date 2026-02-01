@@ -1,7 +1,7 @@
 'use client';
 
-import { useMemo, useEffect, useState } from 'react';
-import { Truck, Clock } from 'lucide-react';
+import React, { useMemo, useEffect, useState } from 'react';
+import { Truck } from 'lucide-react';
 import { formatPrice } from '@/lib/utils/format';
 import { useCurrencyStore } from '@/lib/store/currency-store';
 import {
@@ -44,11 +44,14 @@ export function ShippingCalculator({
         ]);
         setShippingOptions(options);
         setGlobalFreeShippingThreshold(globalThreshold);
-        // Auto-select first option if none selected
-        if (!selectedShipping && options.length > 0 && onShippingChange) {
-          const firstOption = options[0];
-          const price = convertPrice(firstOption.price, currency);
-          onShippingChange(firstOption.id, price);
+        // Always auto-select first option if none selected or selected option doesn't exist
+        if (options.length > 0 && onShippingChange) {
+          const isValidSelection = selectedShipping && options.some(opt => opt.id === selectedShipping);
+          if (!isValidSelection) {
+            const firstOption = options[0];
+            const price = convertPrice(firstOption.price, currency);
+            onShippingChange(firstOption.id, price);
+          }
         }
       } catch (error) {
         console.error('Error fetching shipping data:', error);
@@ -60,9 +63,8 @@ export function ShippingCalculator({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Get free shipping threshold for current currency (prioritize global threshold)
+  // Get free shipping threshold for current currency (global threshold only)
   const freeShippingThreshold = useMemo(() => {
-    // First check global free shipping threshold
     if (
       globalFreeShippingThreshold?.enabled &&
       globalFreeShippingThreshold?.amount !== undefined
@@ -70,22 +72,8 @@ export function ShippingCalculator({
       // Convert threshold from XOF to current currency
       return convertPrice(globalFreeShippingThreshold.amount, currency);
     }
-
-    // Fall back to per-option threshold (find the first option with free shipping threshold enabled)
-    const optionWithThreshold = shippingOptions.find(
-      (opt) =>
-        opt.freeShippingThreshold?.enabled &&
-        opt.freeShippingThreshold?.amount !== undefined
-    );
-    if (!optionWithThreshold?.freeShippingThreshold?.amount) {
-      return null;
-    }
-    // Convert threshold from XOF to current currency
-    return convertPrice(
-      optionWithThreshold.freeShippingThreshold.amount,
-      currency
-    );
-  }, [globalFreeShippingThreshold, shippingOptions, currency, convertPrice]);
+    return null;
+  }, [globalFreeShippingThreshold, currency, convertPrice]);
 
   const amountForFreeShipping = freeShippingThreshold
     ? Math.max(0, freeShippingThreshold - subtotal)
@@ -117,25 +105,12 @@ export function ShippingCalculator({
         };
       }
 
-      // Otherwise, check if this specific option has free shipping threshold enabled
-      const optionThreshold =
-        option.freeShippingThreshold?.enabled &&
-        option.freeShippingThreshold?.amount
-          ? convertPrice(option.freeShippingThreshold.amount, currency)
-          : null;
-
-      // Apply free shipping if this option's threshold is met
-      const isFreeShippingEligible =
-        optionThreshold !== null && optionThreshold !== undefined
-          ? subtotal >= optionThreshold
-          : false;
-
       return {
         ...option,
-        price: isFreeShippingEligible ? 0 : basePrice,
+        price: basePrice,
       };
     });
-  }, [shippingOptions, currency, subtotal, convertPrice, globalThresholdMet]);
+  }, [shippingOptions, currency, convertPrice, globalThresholdMet]);
 
   // Update shipping cost when currency or subtotal changes (if option is selected)
   useEffect(() => {
@@ -145,12 +120,21 @@ export function ShippingCalculator({
       return;
     }
 
-    if (selectedShipping && availableOptions.length > 0 && onShippingChange) {
-      const option = availableOptions.find(
-        (opt) => opt.id === selectedShipping
-      );
-      if (option) {
-        onShippingChange(selectedShipping, option.price);
+    // Always ensure a shipping option is selected
+    if (availableOptions.length > 0 && onShippingChange) {
+      // If no option is selected or selected option doesn't exist, select the first one
+      const selectedOption = selectedShipping
+        ? availableOptions.find((opt) => opt.id === selectedShipping)
+        : undefined;
+
+      if (!selectedOption || !selectedShipping) {
+        // Select first option if current selection is invalid or not set
+        const firstOption = availableOptions[0];
+        const price = convertPrice(firstOption.price, currency);
+        onShippingChange(firstOption.id, price);
+      } else {
+        // Update price for selected option
+        onShippingChange(selectedShipping, selectedOption.price);
       }
     }
   }, [
@@ -160,12 +144,8 @@ export function ShippingCalculator({
     availableOptions,
     onShippingChange,
     globalThresholdMet,
+    convertPrice,
   ]);
-
-  const selectedOption = globalThresholdMet
-    ? availableOptions[0] || { estimatedDays: '' }
-    : availableOptions.find((option) => option.id === selectedShipping) ||
-      availableOptions[0];
 
   const handleShippingChange = (shippingId: string) => {
     const option = availableOptions.find((opt) => opt.id === shippingId);
@@ -174,8 +154,14 @@ export function ShippingCalculator({
     }
   };
 
-  // Don't show anything if loading or no options available
-  if (loading || availableOptions.length === 0) {
+  // Don't show anything if loading
+  if (loading) {
+    return null;
+  }
+
+  // If no options available, this shouldn't happen (getActiveShippingOptions returns default)
+  // But handle it gracefully
+  if (availableOptions.length === 0) {
     return null;
   }
 
@@ -193,9 +179,20 @@ export function ShippingCalculator({
         !globalThresholdMet && (
           <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
             <p className="text-sm text-blue-900">
-              {t('addAmountToEnableFreeShipping', {
-                amount: formatPrice(amountForFreeShipping, currency),
-              })}
+              {(() => {
+                const formattedAmount = formatPrice(amountForFreeShipping, currency);
+                const message = t('addAmountToEnableFreeShipping', {
+                  amount: formattedAmount,
+                });
+                const parts = message.split(formattedAmount);
+                return (
+                  <>
+                    {parts[0]}
+                    <span className="font-bold">{formattedAmount}</span>
+                    {parts[1]}
+                  </>
+                );
+              })()}
             </p>
           </div>
         )}
@@ -204,30 +201,23 @@ export function ShippingCalculator({
       {globalThresholdMet ? (
         // When global threshold is met, show only Free Shipping option
         <div className="space-y-3 mb-6">
-          <label className="block p-4 border-2 border-green-500 bg-green-50 rounded-md cursor-pointer">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  type="radio"
-                  name="shipping"
-                  value="free-shipping"
-                  checked={true}
-                  readOnly
-                  className="mr-3 text-green-600 focus:ring-green-500"
-                />
-                <div>
-                  <span className="font-medium text-gray-900">
-                    {t('freeShippingActive')}
-                  </span>
-                  <p className="text-sm text-gray-600 mt-1">
-                    {t('freeShippingActiveDescription')}
-                  </p>
-                </div>
-              </div>
-              <div className="text-right">
-                <span className="font-semibold text-green-600">
-                  {t('free')}
+          <label className="block p-4 border-2 border-blue-500 bg-blue-50 rounded-md cursor-pointer">
+            <div className="flex items-center">
+              <input
+                type="radio"
+                name="shipping"
+                value="free-shipping"
+                checked={true}
+                readOnly
+                className="mr-3 text-blue-600 focus:ring-blue-500"
+              />
+              <div>
+                <span className="font-medium text-gray-900">
+                  {t('freeShippingActive')}
                 </span>
+                <p className="text-sm text-gray-600 mt-1">
+                  {t('freeShippingActiveDescription')}
+                </p>
               </div>
             </div>
           </label>
@@ -238,11 +228,10 @@ export function ShippingCalculator({
           {availableOptions.map((option) => (
             <label
               key={option.id}
-              className={`block p-4 border rounded-md cursor-pointer transition-colors ${
-                selectedShipping === option.id
+              className={`block p-4 border rounded-md cursor-pointer transition-colors ${selectedShipping === option.id
                   ? 'border-blue-500 bg-blue-50'
                   : 'border-gray-200 hover:border-gray-300'
-              }`}
+                }`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
@@ -259,21 +248,15 @@ export function ShippingCalculator({
                       <span className="font-medium text-gray-900 mr-2">
                         {option.name}
                       </span>
-                      {(option.type === 'express' ||
-                        option.type === 'overnight') && (
-                        <span className="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-md">
-                          {option.type === 'express' ? t('fast') : t('fastest')}
-                        </span>
-                      )}
                     </div>
                     <p className="text-sm text-gray-600 mt-1">
-                      {option.description}
+                      {option.estimatedDaysDisplay}
                     </p>
                   </div>
                 </div>
                 <div className="text-right">
                   <span
-                    className={`font-semibold ${option.price === 0 ? 'text-green-600' : 'text-gray-900'}`}
+                    className={`font-semibold ${option.price === 0 ? 'text-blue-600' : 'text-gray-900'}`}
                   >
                     {option.price === 0
                       ? t('free')
@@ -286,19 +269,21 @@ export function ShippingCalculator({
         </div>
       )}
 
-      {/* Selected Shipping Details */}
-      <div className="border-t pt-4">
-        <div className="flex items-start space-x-3">
-          <Clock className="w-5 h-5 text-gray-400 mt-0.5" />
-          <div>
-            <p className="text-sm font-medium text-gray-900">
-              {t('estimatedDelivery')}
-            </p>
-            <p className="text-sm text-gray-600">
-              {selectedOption?.estimatedDays ||
-                availableOptions[0]?.estimatedDays ||
-                ''}
-            </p>
+      {/* Additional Information */}
+      <div className="border-t pt-4 mt-4">
+        <div className="bg-gray-50 rounded-md p-5">
+          <div className="text-sm text-gray-700 leading-relaxed space-y-2">
+            <p>{t('shippingInfo')}</p>
+            <ul className="list-none space-y-1.5 mt-3">
+              <li className="flex items-start">
+                <span className="mr-2">-</span>
+                <span>{t('shippingInfoContact')}</span>
+              </li>
+              <li className="flex items-start">
+                <span className="mr-2">-</span>
+                <span>{t('shippingInfoPromoCode')}</span>
+              </li>
+            </ul>
           </div>
         </div>
       </div>

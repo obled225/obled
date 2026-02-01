@@ -31,8 +31,38 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
       .filter((url): url is string => url !== null && url !== '') || [];
 
   // Get price (always in XOF)
-  const price = doc.price || 0;
-  const originalPrice = doc.originalPrice;
+  // Map from new schema field names: currentPrice -> price, basePrice -> originalPrice
+  // For business products, use the minimum pack price instead of currentPrice (which is hidden)
+  let price = doc.currentPrice || 0;
+  let originalPrice = doc.basePrice;
+  
+  // For business products with packs, calculate price from the minimum pack price
+  // Note: At this point, doc.businessPacks has the raw Sanity structure with currentPrice/basePrice
+  if (doc.isBusinessProduct && doc.businessPacks && doc.businessPacks.length > 0) {
+    // Type assertion: GROQ query returns currentPrice/basePrice, not price/originalPrice
+    const rawPacks = doc.businessPacks as Array<{
+      quantity: number;
+      label?: string;
+      currentPrice?: number;
+      basePrice?: number;
+    }>;
+    
+    const packPrices = rawPacks
+      .map((pack) => pack.currentPrice)
+      .filter((p): p is number => p !== undefined && p !== null && p > 0);
+    
+    if (packPrices.length > 0) {
+      price = Math.min(...packPrices);
+      // For original price, use the minimum basePrice from packs
+      const packOriginalPrices = rawPacks
+        .map((pack) => pack.basePrice)
+        .filter((p): p is number => p !== undefined && p !== null && p > 0);
+      
+      if (packOriginalPrices.length > 0) {
+        originalPrice = Math.min(...packOriginalPrices);
+      }
+    }
+  }
 
   // Transform colors array
   const colors = (doc.colors || []).map((color) => {
@@ -126,8 +156,8 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
               })
               .filter((url): url is string => url !== null && url !== '') || [];
 
-          const relatedPrice = relatedDoc.price || 0;
-          const relatedOriginalPrice = relatedDoc.originalPrice;
+          const relatedPrice = relatedDoc.currentPrice || 0;
+          const relatedOriginalPrice = relatedDoc.basePrice;
 
           const relatedCategory = relatedDoc.categories?.[0]
             ? {
@@ -217,7 +247,17 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
     isBusinessProduct: doc.isBusinessProduct || false,
     featured: doc.featured || false,
     bestSeller: doc.bestSeller || false,
-    businessPacks: doc.businessPacks,
+    businessPacks: doc.businessPacks?.map((pack: {
+      quantity: number;
+      label?: string;
+      currentPrice?: number;
+      basePrice?: number;
+    }) => ({
+      quantity: pack.quantity,
+      label: pack.label,
+      price: pack.currentPrice,
+      originalPrice: pack.basePrice,
+    })),
     createdAt: doc._createdAt ? new Date(doc._createdAt) : new Date(),
     updatedAt: doc._updatedAt ? new Date(doc._updatedAt) : new Date(),
   };
@@ -235,13 +275,13 @@ const ALL_PRODUCTS_QUERY = `*[_type == "products" && !(_id in path("drafts.**"))
   businessPacks[] {
     quantity,
     label,
-    price,
-    originalPrice
+    currentPrice,
+    basePrice
   },
   featured,
   bestSeller,
-  price,
-  originalPrice,
+  currentPrice,
+  basePrice,
   description,
   inStock,
   "images": images[].asset->,
@@ -269,8 +309,8 @@ const ALL_PRODUCTS_QUERY = `*[_type == "products" && !(_id in path("drafts.**"))
       _updatedAt,
       name,
       "slug": slug.current,
-      price,
-      originalPrice,
+      currentPrice,
+      basePrice,
     inStock,
     "images": images[].asset->,
     "categories": categories[]->{
@@ -298,13 +338,13 @@ const PRODUCT_BY_SLUG_QUERY = `*[_type == "products" && slug.current == $slug &&
   businessPacks[] {
     quantity,
     label,
-    price,
-    originalPrice
+    currentPrice,
+    basePrice
   },
   featured,
   bestSeller,
-  price,
-  originalPrice,
+  currentPrice,
+  basePrice,
   description,
   inStock,
   "images": images[].asset->,
@@ -332,8 +372,8 @@ const PRODUCT_BY_SLUG_QUERY = `*[_type == "products" && slug.current == $slug &&
       _updatedAt,
       name,
       "slug": slug.current,
-      price,
-      originalPrice,
+      currentPrice,
+      basePrice,
     inStock,
     "images": images[].asset->,
     "categories": categories[]->{
@@ -360,8 +400,8 @@ const PRODUCTS_BY_CATEGORY_QUERY = `*[_type == "products" && $categoryId in cate
   isBusinessProduct,
   featured,
   bestSeller,
-  price,
-  originalPrice,
+  currentPrice,
+  basePrice,
   description,
   inStock,
   "images": images[].asset->,
@@ -389,8 +429,8 @@ const PRODUCTS_BY_CATEGORY_QUERY = `*[_type == "products" && $categoryId in cate
       _updatedAt,
       name,
       "slug": slug.current,
-      price,
-      originalPrice,
+      currentPrice,
+      basePrice,
     inStock,
     "images": images[].asset->,
     "categories": categories[]->{
@@ -417,8 +457,8 @@ const FEATURED_PRODUCTS_QUERY = `*[_type == "products" && featured == true && !(
   isBusinessProduct,
   featured,
   bestSeller,
-  price,
-  originalPrice,
+  currentPrice,
+  basePrice,
   description,
   inStock,
   "images": images[].asset->,
@@ -446,8 +486,8 @@ const FEATURED_PRODUCTS_QUERY = `*[_type == "products" && featured == true && !(
       _updatedAt,
       name,
       "slug": slug.current,
-      price,
-      originalPrice,
+      currentPrice,
+      basePrice,
     inStock,
     "images": images[].asset->,
     "categories": categories[]->{
@@ -491,8 +531,8 @@ export async function getShopProducts(): Promise<Product[]> {
       isBusinessProduct,
       featured,
       bestSeller,
-      price,
-      originalPrice,
+      currentPrice,
+      basePrice,
       description,
       inStock,
       "images": images[].asset->,
@@ -516,8 +556,8 @@ export async function getShopProducts(): Promise<Product[]> {
       _updatedAt,
       name,
       "slug": slug.current,
-      price,
-      originalPrice,
+      currentPrice,
+      basePrice,
         inStock,
         "images": images[].asset->,
         "categories": categories[]->{
@@ -555,15 +595,14 @@ export async function getBusinessProducts(): Promise<Product[]> {
       isBusinessProduct,
       featured,
       bestSeller,
-  bestSeller,
       businessPacks[] {
         quantity,
         label,
-        price,
-        originalPrice
+        currentPrice,
+        basePrice
       },
-      price,
-      originalPrice,
+      currentPrice,
+      basePrice,
       description,
       inStock,
       "images": images[].asset->,
@@ -587,8 +626,8 @@ export async function getBusinessProducts(): Promise<Product[]> {
       _updatedAt,
       name,
       "slug": slug.current,
-      price,
-      originalPrice,
+      currentPrice,
+      basePrice,
         inStock,
         "images": images[].asset->,
         "categories": categories[]->{
@@ -679,11 +718,11 @@ export async function getProductById(id: string): Promise<Product | null> {
       businessPacks[] {
         quantity,
         label,
-        price,
-        originalPrice
+        currentPrice,
+        basePrice
       },
-      price,
-      originalPrice,
+      currentPrice,
+      basePrice,
       description,
       inStock,
       "images": images[].asset->,
@@ -707,8 +746,8 @@ export async function getProductById(id: string): Promise<Product | null> {
       _updatedAt,
       name,
       "slug": slug.current,
-      price,
-      originalPrice,
+      currentPrice,
+      basePrice,
         inStock,
         "images": images[].asset->,
         "categories": categories[]->{
@@ -1038,8 +1077,8 @@ export async function getProductsByCategorySlug(
       _updatedAt,
       name,
       "slug": slug.current,
-      price,
-      originalPrice,
+      currentPrice,
+      basePrice,
         inStock,
         "images": images[].asset->,
         "categories": categories[]->{
@@ -1075,42 +1114,42 @@ const SHIPPING_AND_TAXES_QUERY = `*[_type == "shippingAndTaxes" && !(_id in path
     enabled,
     amount
   },
+  defaultShipping {
+    price,
+    estimatedDays {
+      minDays,
+      maxDays
+    }
+  },
   shippingOptions[] {
     name,
-    type,
-    description,
-    estimatedDays,
+    estimatedDays {
+      minDays,
+      maxDays
+    },
     price,
-    isActive,
-    sortOrder,
-    freeShippingThreshold {
-      enabled,
-      amount
-    }
+    isActive
   },
   taxSettings {
     isActive,
     taxRates[] {
+      name,
       type,
       rate
-    },
-    displayMessage
+    }
   }
 }`;
 
 export interface ShippingOption {
   id: string;
   name: string;
-  type: 'standard' | 'express' | 'overnight' | 'international';
-  description: string;
-  estimatedDays: string;
+  estimatedDays: {
+    minDays: number;
+    maxDays: number;
+  };
+  estimatedDaysDisplay: string; // Formatted string like "5-7 business days"
   price: number; // Price in XOF (base currency)
   isActive: boolean;
-  sortOrder: number;
-  freeShippingThreshold?: {
-    enabled: boolean;
-    amount?: number; // Threshold amount in XOF (base currency)
-  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -1118,19 +1157,16 @@ export interface ShippingOption {
 // Sanity document types
 interface SanityShippingOptionItem {
   name?: string;
-  type?: string;
-  description?: string;
-  estimatedDays?: string;
+  estimatedDays?: {
+    minDays?: number;
+    maxDays?: number;
+  };
   price?: number; // Price in XOF
   isActive?: boolean;
-  sortOrder?: number;
-  freeShippingThreshold?: {
-    enabled?: boolean;
-    amount?: number; // Threshold amount in XOF
-  };
 }
 
 interface SanityTaxRate {
+  name?: string;
   type?: string;
   rate?: number; // Rate in XOF (for fixed) or percentage (for percentage)
 }
@@ -1138,7 +1174,6 @@ interface SanityTaxRate {
 interface SanityTaxSettings {
   isActive?: boolean;
   taxRates?: SanityTaxRate[];
-  displayMessage?: string;
 }
 
 interface SanityGlobalFreeShippingThreshold {
@@ -1146,11 +1181,20 @@ interface SanityGlobalFreeShippingThreshold {
   amount?: number; // Threshold amount in XOF
 }
 
+interface SanityDefaultShipping {
+  price?: number; // Price in XOF
+  estimatedDays?: {
+    minDays?: number;
+    maxDays?: number;
+  };
+}
+
 interface SanityShippingAndTaxesDocument {
   _id?: string;
   _createdAt?: string;
   _updatedAt?: string;
   globalFreeShippingThreshold?: SanityGlobalFreeShippingThreshold;
+  defaultShipping?: SanityDefaultShipping;
   shippingOptions?: SanityShippingOptionItem[];
   taxSettings?: SanityTaxSettings;
 }
@@ -1164,21 +1208,22 @@ function transformSanityShippingOption(
   createdAt: string,
   updatedAt: string
 ): ShippingOption {
+  const minDays = item.estimatedDays?.minDays || 0;
+  const maxDays = item.estimatedDays?.maxDays || 0;
+  const estimatedDaysDisplay = minDays === maxDays
+    ? `${minDays} business day${minDays !== 1 ? 's' : ''}`
+    : `${minDays}-${maxDays} business days`;
+
   return {
     id: `${documentId}-${item.name || 'shipping'}`,
     name: item.name || '',
-    type: (item.type || 'standard') as ShippingOption['type'],
-    description: item.description || '',
-    estimatedDays: item.estimatedDays || '',
+    estimatedDays: {
+      minDays,
+      maxDays,
+    },
+    estimatedDaysDisplay,
     price: item.price || 0, // Price in XOF
     isActive: item.isActive !== false,
-    sortOrder: item.sortOrder || 0,
-    freeShippingThreshold: item.freeShippingThreshold
-      ? {
-          enabled: item.freeShippingThreshold.enabled || false,
-          amount: item.freeShippingThreshold.amount, // Amount in XOF
-        }
-      : undefined,
     createdAt: createdAt ? new Date(createdAt) : new Date(),
     updatedAt: updatedAt ? new Date(updatedAt) : new Date(),
   };
@@ -1203,7 +1248,7 @@ export async function getAllShippingOptions(): Promise<ShippingOption[]> {
           doc._updatedAt || ''
         )
       )
-      .sort((a, b) => a.sortOrder - b.sortOrder);
+      .sort((a, b) => a.estimatedDays.minDays - b.estimatedDays.minDays);
   } catch (error) {
     console.error('Error fetching shipping options from Sanity:', error);
     return [];
@@ -1211,17 +1256,48 @@ export async function getAllShippingOptions(): Promise<ShippingOption[]> {
 }
 
 /**
+ * Create a default shipping option from defaultShipping field
+ */
+function createDefaultShippingOption(
+  defaultShipping: SanityDefaultShipping,
+  documentId: string,
+  createdAt: string,
+  updatedAt: string
+): ShippingOption {
+  const minDays = defaultShipping.estimatedDays?.minDays || 5;
+  const maxDays = defaultShipping.estimatedDays?.maxDays || 7;
+  const estimatedDaysDisplay = minDays === maxDays
+    ? `${minDays} business day${minDays !== 1 ? 's' : ''}`
+    : `${minDays}-${maxDays} business days`;
+
+  return {
+    id: `${documentId}-default`,
+    name: 'Standard',
+    estimatedDays: {
+      minDays,
+      maxDays,
+    },
+    estimatedDaysDisplay,
+    price: defaultShipping.price || 1500, // Default to 1500 XOF if not set
+    isActive: true,
+    createdAt: createdAt ? new Date(createdAt) : new Date(),
+    updatedAt: updatedAt ? new Date(updatedAt) : new Date(),
+  };
+}
+
+/**
  * Get active shipping options from Sanity
+ * Returns default shipping option if no active options are available
  */
 export async function getActiveShippingOptions(): Promise<ShippingOption[]> {
   try {
     const doc = await sanityClient.fetch<SanityShippingAndTaxesDocument>(
       SHIPPING_AND_TAXES_QUERY
     );
-    if (!doc || !doc.shippingOptions) return [];
-
-    return doc.shippingOptions
-      .filter((item) => item.isActive !== false)
+    
+    // Get active shipping options
+    const activeOptions = doc?.shippingOptions
+      ?.filter((item) => item.isActive !== false)
       .map((item) =>
         transformSanityShippingOption(
           item,
@@ -1230,10 +1306,39 @@ export async function getActiveShippingOptions(): Promise<ShippingOption[]> {
           doc._updatedAt || ''
         )
       )
-      .sort((a, b) => a.sortOrder - b.sortOrder);
+      .sort((a, b) => a.estimatedDays.minDays - b.estimatedDays.minDays) || [];
+
+    // If no active options, return default shipping option
+    if (activeOptions.length === 0 && doc?.defaultShipping) {
+      return [
+        createDefaultShippingOption(
+          doc.defaultShipping,
+          doc._id || 'default',
+          doc._createdAt || '',
+          doc._updatedAt || ''
+        ),
+      ];
+    }
+
+    return activeOptions;
   } catch (error) {
     console.error('Error fetching active shipping options from Sanity:', error);
-    return [];
+    // Return a fallback default option if there's an error
+    return [
+      {
+        id: 'default-fallback',
+        name: 'Standard',
+        estimatedDays: {
+          minDays: 5,
+          maxDays: 7,
+        },
+        estimatedDaysDisplay: '5-7 business days',
+        price: 1500, // Default to 1500 XOF
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ];
   }
 }
 
@@ -1301,6 +1406,7 @@ export async function getShippingOptionByName(
 // Tax settings are now part of the shippingAndTaxes document
 
 export interface TaxRate {
+  name: string;
   type: 'percentage' | 'fixed';
   rate: number; // Rate in XOF (for fixed) or percentage decimal (for percentage, e.g., 0.1 for 10%)
 }
@@ -1309,7 +1415,6 @@ export interface TaxSettings {
   id: string;
   isActive: boolean;
   taxRates: TaxRate[];
-  displayMessage?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -1329,10 +1434,10 @@ function transformSanityTaxSettings(
     id: documentId || '',
     isActive: taxSettings.isActive !== false,
     taxRates: (taxSettings.taxRates || []).map((rate) => ({
+      name: rate.name || 'Tax',
       type: (rate.type || 'percentage') as 'percentage' | 'fixed',
       rate: rate.rate || 0, // Rate in XOF (for fixed) or percentage decimal (for percentage)
     })),
-    displayMessage: taxSettings.displayMessage || 'Taxes included in price',
     createdAt: createdAt ? new Date(createdAt) : new Date(),
     updatedAt: updatedAt ? new Date(updatedAt) : new Date(),
   };

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -20,6 +20,7 @@ import { ProductCategory } from '@/lib/types';
 
 interface HeaderProps {
   categories?: ProductCategory[];
+  onVisibilityChange?: (isVisible: boolean) => void;
 }
 
 interface NavLink {
@@ -36,19 +37,43 @@ function hasBadge(
   return !!(link.badgeText && link.badgeColor);
 }
 
-export function Header({ categories = [] }: HeaderProps) {
+export function Header({ categories = [], onVisibilityChange }: HeaderProps) {
   const t = useTranslations('header');
   const pathname = usePathname();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const cartItemCount = useCartStore((state) => state.cart.itemCount);
+  const headerRef = useRef<HTMLElement>(null);
 
   // Check if we're on checkout page
   const isCheckoutPage = pathname === '/checkout';
 
   // Check if we're on mobile
   const isMobile = useIsMobile();
+
+  // Track header visibility using IntersectionObserver
+  useEffect(() => {
+    if (!headerRef.current || !onVisibilityChange) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        onVisibilityChange(entry.isIntersecting);
+      },
+      {
+        rootMargin: '-10px 0px 0px 0px', // Trigger slightly before header leaves viewport
+        threshold: 0,
+      }
+    );
+
+    observer.observe(headerRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [onVisibilityChange]);
 
   // Combine static links with dynamic categories
   // We'll add categories under a "Shop" dropdown or just list them if few?
@@ -70,7 +95,10 @@ export function Header({ categories = [] }: HeaderProps) {
   ];
 
   return (
-    <header className="w-full border-b mx-auto max-w-[1245px] border-border bg-background">
+    <header
+      ref={headerRef}
+      className="w-full border-b mx-auto max-w-[1245px] border-border bg-background"
+    >
       <div className="mx-auto max-w-[1245px]">
         <div className="flex items-center justify-between py-4">
           {/* Logo */}
@@ -120,8 +148,11 @@ export function Header({ categories = [] }: HeaderProps) {
                   <ShoppingCart className="h-5 w-5 sm:h-5 sm:w-5" />
                   {cartItemCount > 0 && (
                     <Badge
-                      variant="destructive"
-                      className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[10px]"
+                      className={`absolute -top-1 -right-1 ${
+                        isMobile
+                          ? 'h-4 w-4 text-[9px] font-semibold'
+                          : 'h-4 w-4 text-[10px]'
+                      } p-0 flex items-center justify-center bg-[#22c55e] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.1)] border-0`}
                     >
                       {cartItemCount}
                     </Badge>

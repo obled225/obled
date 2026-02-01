@@ -26,8 +26,69 @@ export default defineType({
           options: {
             controls: false,
           },
-          description: 'Cart subtotal amount needed for free shipping in F CFA (e.g., 100000 for 100,000 XOF). When an order exceeds this amount, all shipping options become free.',
+          description: 'Cart subtotal amount needed for free shipping in F CFA (e.g., 100000 for 100,000 F CFA). When an order exceeds this amount, all shipping options become free.',
           validation: (Rule) => Rule.required().min(0),
+        },
+      ],
+    }),
+
+    defineField({
+      name: 'defaultShipping',
+      title: 'Default shipping option',
+      type: 'object',
+      description: 'This shipping option is used when no active shipping options are configured. It appears only when no shipping options are available.',
+      fields: [
+        {
+          name: 'price',
+          title: 'Price',
+          type: 'number',
+          options: {
+            controls: false,
+          },
+          description: 'Default shipping cost in F CFA (West African CFA Franc). Used when no shipping options are configured.',
+          initialValue: 1500,
+          validation: (Rule) => Rule.required().min(0),
+        },
+        {
+          name: 'estimatedDays',
+          title: 'Estimated Delivery Days',
+          type: 'object',
+          description: 'Delivery time range in days (e.g., min: 5, max: 7 for "5-7 business days")',
+          fields: [
+            {
+              name: 'minDays',
+              title: 'Minimum Days',
+              type: 'number',
+              description: 'Minimum delivery days (e.g., 5)',
+              initialValue: 5,
+              validation: (Rule) => Rule.required().integer().min(1),
+            },
+            {
+              name: 'maxDays',
+              title: 'Maximum Days',
+              type: 'number',
+              description: 'Maximum delivery days (e.g., 7)',
+              initialValue: 7,
+              validation: (Rule) =>
+                Rule.required()
+                  .integer()
+                  .min(1)
+                  .custom((maxDays, context) => {
+                    const minDays = (context.parent as {minDays?: number})?.minDays;
+                    if (
+                      typeof minDays === 'number' &&
+                      minDays > 0 &&
+                      typeof maxDays === 'number' &&
+                      maxDays > 0 &&
+                      maxDays < minDays
+                    ) {
+                      return 'Maximum days must be greater than or equal to minimum days';
+                    }
+                    return true;
+                  }),
+            },
+          ],
+          validation: (Rule) => Rule.required(),
         },
       ],
     }),
@@ -38,6 +99,35 @@ export default defineType({
       title: 'Shipping options',
       type: 'array',
       description: 'Configure up to 3 shipping options',
+      initialValue: [
+        {
+          name: 'Standard',
+          estimatedDays: {
+            minDays: 5,
+            maxDays: 7,
+          },
+          price: 2500,
+          isActive: true,
+        },
+        {
+          name: 'Express',
+          estimatedDays: {
+            minDays: 2,
+            maxDays: 5,
+          },
+          price: 5000,
+          isActive: true,
+        },
+        {
+          name: 'International',
+          estimatedDays: {
+            minDays: 12,
+            maxDays: 25,
+          },
+          price: 20000,
+          isActive: true,
+        },
+      ],
       validation: (Rule) => Rule.max(3).error('Maximum 3 shipping options allowed'),
       of: [
         {
@@ -51,31 +141,42 @@ export default defineType({
               validation: (Rule) => Rule.required(),
             },
             {
-              name: 'type',
-              title: 'Shipping type',
-              type: 'string',
-              options: {
-                list: [
-                  {title: 'Standard', value: 'standard'},
-                  {title: 'Express', value: 'express'},
-                  {title: 'Overnight', value: 'overnight'},
-                  {title: 'International', value: 'international'},
-                ],
-              },
-              validation: (Rule) => Rule.required(),
-            },
-            {
-              name: 'description',
-              title: 'Description',
-              type: 'text',
-              description: 'Brief description of the shipping option (e.g., "Delivered in 5-7 business days")',
-              validation: (Rule) => Rule.required(),
-            },
-            {
               name: 'estimatedDays',
               title: 'Estimated Delivery Days',
-              type: 'string',
-              description: 'e.g., "5-7 business days" or "2-3 business days"',
+              type: 'object',
+              description: 'Delivery time range in days (e.g., min: 5, max: 7 for "5-7 business days")',
+              fields: [
+                {
+                  name: 'minDays',
+                  title: 'Minimum Days',
+                  type: 'number',
+                  description: 'Minimum delivery days (e.g., 5)',
+                  validation: (Rule) => Rule.required().integer().min(1),
+                },
+                {
+                  name: 'maxDays',
+                  title: 'Maximum Days',
+                  type: 'number',
+                  description: 'Maximum delivery days (e.g., 7)',
+                  validation: (Rule) =>
+                    Rule.required()
+                      .integer()
+                      .min(1)
+                      .custom((maxDays, context) => {
+                        const minDays = (context.parent as {minDays?: number})?.minDays;
+                        if (
+                          typeof minDays === 'number' &&
+                          minDays > 0 &&
+                          typeof maxDays === 'number' &&
+                          maxDays > 0 &&
+                          maxDays < minDays
+                        ) {
+                          return 'Maximum days must be greater than or equal to minimum days';
+                        }
+                        return true;
+                      }),
+                },
+              ],
               validation: (Rule) => Rule.required(),
             },
             {
@@ -95,54 +196,20 @@ export default defineType({
               description: 'Whether this shipping option is currently available',
               initialValue: true,
             },
-            {
-              name: 'sortOrder',
-              title: 'Sort Order',
-              type: 'number',
-              description: 'Lower numbers appear first. Used to control the display order of shipping options.',
-              initialValue: 0,
-              validation: (Rule) => Rule.integer().min(0),
-            },
-            {
-              name: 'freeShippingThreshold',
-              title: 'Free Shipping Threshold (Optional)',
-              type: 'object',
-              description: 'If set, this shipping option becomes free when cart subtotal reaches the threshold',
-              fields: [
-                {
-                  name: 'enabled',
-                  title: 'Enable Free Shipping Threshold',
-                  type: 'boolean',
-                  initialValue: false,
-                },
-                {
-                  name: 'amount',
-                  title: 'Threshold amount',
-                  type: 'number',
-                  hidden: ({parent}) => !parent?.enabled,
-                  options: {
-                    controls: false,
-                  },
-                  description: 'Cart subtotal amount needed for free shipping in F CFA.',
-                  validation: (Rule) => Rule.required().min(0),
-                },
-              ],
-            },
           ],
           preview: {
             select: {
               title: 'name',
-              type: 'type',
               price: 'price',
               isActive: 'isActive',
             },
-            prepare({title, type, price, isActive}) {
+            prepare({title, price, isActive}) {
               const priceDisplay = price !== undefined
                 ? `${price} F CFA`
                 : 'No price set';
               return {
                 title: title || 'Untitled Shipping Option',
-                subtitle: `${type || 'standard'} • ${priceDisplay}${isActive ? '' : ' (Inactive)'}`,
+                subtitle: `${priceDisplay}${isActive ? '' : ' (Inactive)'}`,
               };
             },
           },
@@ -165,62 +232,63 @@ export default defineType({
         },
         {
           name: 'taxRates',
-          title: 'Tax Rates',
+          title: 'Tax rates',
           type: 'array',
           description: 'Configure up to 2 tax rates. Can be percentage-based or fixed amount. All rates are in F CFA - currency conversion is handled automatically.',
           validation: (Rule) => Rule.max(2).error('Maximum 2 tax rates allowed'),
           of: [
-            {
-              type: 'object',
-              fields: [
-                {
-                  name: 'type',
-                  title: 'Tax Type',
-                  type: 'string',
-                  options: {
-                    list: [
-                      {title: 'Percentage', value: 'percentage'},
-                      {title: 'Fixed Amount', value: 'fixed'},
-                    ],
+              {
+                type: 'object',
+                fields: [
+                  {
+                    name: 'name',
+                    title: 'Tax name',
+                    type: 'string',
+                    description: 'Name of the tax (e.g., VAT, Sales Tax, Service Tax)',
+                    validation: (Rule) => Rule.required(),
                   },
-                  validation: (Rule) => Rule.required(),
-                },
-                {
-                  name: 'rate',
-                  title: 'Tax rate',
-                  type: 'number',
-                  options: {
-                    controls: false,
+                  {
+                    name: 'type',
+                    title: 'Tax type',
+                    type: 'string',
+                    options: {
+                      list: [
+                        {title: 'Percentage', value: 'percentage'},
+                        {title: 'Fixed Amount', value: 'fixed'},
+                      ],
+                    },
+                    validation: (Rule) => Rule.required(),
                   },
-                  description: 'For percentage: enter as decimal (e.g., 0.1 for 10%). For fixed: enter the amount in F CFA.',
-                  validation: (Rule) => Rule.required().min(0),
+                  {
+                    name: 'rate',
+                    title: 'Tax rate',
+                    type: 'number',
+                    options: {
+                      controls: false,
+                    },
+                    description: 'For percentage: enter as decimal (e.g., 0.1 for 10%). For fixed: enter the amount in F CFA.',
+                    validation: (Rule) => Rule.required().min(0),
+                  },
+                ],
+                preview: {
+                  select: {
+                    name: 'name',
+                    type: 'type',
+                    rate: 'rate',
+                  },
+                  prepare({name, type, rate}) {
+                    const displayRate =
+                      type === 'percentage'
+                        ? `${(rate * 100).toFixed(1)}%`
+                        : `${rate} F CFA`;
+                    return {
+                      title: name || 'Untitled Tax',
+                      subtitle: `${displayRate} • ${type === 'percentage' ? 'Percentage' : 'Fixed Amount'}`,
+                    };
+                  },
                 },
-              ],
-              preview: {
-                select: {
-                  type: 'type',
-                  rate: 'rate',
-                },
-                prepare({type, rate}) {
-                  const displayRate =
-                    type === 'percentage'
-                      ? `${(rate * 100).toFixed(1)}%`
-                      : `${rate} F CFA`;
-                  return {
-                    title: displayRate,
-                    subtitle: type === 'percentage' ? 'Percentage' : 'Fixed Amount',
-                  };
-                },
-              },
             },
           ],
-        },
-        {
-          name: 'displayMessage',
-          title: 'Display Message (Optional)',
-          type: 'string',
-          description: 'Custom message to display when tax is 0 or included (e.g., "Taxes included in price")',
-          initialValue: 'Taxes included in price',
         },
       ],
     }),

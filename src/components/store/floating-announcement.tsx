@@ -134,13 +134,11 @@ export function FloatingAnnouncement({
   return (
     <div
       ref={containerRef}
-      className={`fixed top-4 right-4 z-50 transition-all duration-500 ease-out ${
-        isDragging ? 'transition-none' : ''
-      } ${
-        isVisible
+      className={`fixed top-4 right-4 z-50 transition-all duration-500 ease-out ${isDragging ? 'transition-none' : ''
+        } ${isVisible
           ? 'translate-y-0 opacity-100 scale-100'
           : '-translate-y-2 opacity-0 scale-95 pointer-events-none'
-      }`}
+        }`}
       style={{
         transform: isDragging
           ? `translate(${dragOffset.x}px, ${dragOffset.y}px)`
@@ -152,8 +150,8 @@ export function FloatingAnnouncement({
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
     >
-      <div className="bg-[#56A5F9] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.1)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] dark:bg-sky-100 dark:text-sky-600 rounded-md px-4 py-3 max-w-sm select-none">
-        <p className="text-sm font-semibold leading-tight text-center">
+      <div className="bg-[#56A5F9] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.1)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] dark:bg-sky-100 dark:text-sky-600 rounded-md px-4 py-3 max-w-xs select-none">
+        <p className="text-sm font-semibold leading-tight text-start">
           {message}
         </p>
       </div>

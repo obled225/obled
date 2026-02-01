@@ -27,6 +27,10 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import RelatedProducts from '@/components/products/related';
 import { normalizeColorName } from '@/lib/utils/color';
+import {
+  getTaxSettings,
+  type TaxSettings,
+} from '@/lib/sanity/queries';
 
 // Helper function to capitalize first letter of color name for display
 const capitalizeColorName = (name: string): string => {
@@ -79,13 +83,23 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isFullscreenGalleryOpen, setIsFullscreenGalleryOpen] = useState(false);
+  const [taxSettings, setTaxSettings] = useState<TaxSettings | null>(null);
+
+  // Fetch tax settings
+  useEffect(() => {
+    async function fetchTaxSettings() {
+      const settings = await getTaxSettings();
+      setTaxSettings(settings);
+    }
+    fetchTaxSettings();
+  }, []);
 
   // All prices are in XOF, convert to selected currency
   const basePriceXOF = product.price || 0;
 
   // Get pack price for selected currency
   const getPackPrice = (
-    pack: NonNullable<Product['businessPacks']>[number]
+    pack: { quantity: number; label?: string; price?: number; originalPrice?: number }
   ) => {
     const packPriceXOF = pack.price || basePriceXOF * pack.quantity;
     return convertPrice(packPriceXOF, currency);
@@ -93,7 +107,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
   // Get pack original price for selected currency (if available)
   const getPackOriginalPrice = (
-    pack: NonNullable<Product['businessPacks']>[number]
+    pack: { quantity: number; label?: string; price?: number; originalPrice?: number }
   ) => {
     const originalPriceXOF = pack.originalPrice;
     return originalPriceXOF
@@ -113,8 +127,8 @@ export function ProductDetail({ product }: ProductDetailProps) {
   // Base price (before quantity multiplication)
   const basePrice = packDisplayPrice;
   const baseOriginalPriceXOF = packOriginalPrice
-    ? selectedPack?.originalPrice
-      ? selectedPack.originalPrice
+    ? (selectedPack as { quantity: number; label?: string; price?: number; originalPrice?: number } | null)?.originalPrice
+      ? (selectedPack as { quantity: number; label?: string; price?: number; originalPrice?: number }).originalPrice
       : product.originalPrice
     : product.originalPrice;
   const baseOriginalPrice = baseOriginalPriceXOF
@@ -192,7 +206,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
       ) {
         // All prices are in XOF
         const packPriceXOF =
-          selectedPack.price || basePriceXOF * selectedPack.quantity;
+          (selectedPack as { quantity: number; label?: string; price?: number; originalPrice?: number }).price || basePriceXOF * selectedPack.quantity;
 
         // Calculate price modifier: pack price minus base unit price (in XOF)
         // The cart calculates: (basePrice + modifier) * quantity
@@ -233,7 +247,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
       ) {
         // All prices are in XOF
         const packPriceXOF =
-          selectedPack.price || basePriceXOF * selectedPack.quantity;
+          (selectedPack as { quantity: number; label?: string; price?: number; originalPrice?: number }).price || basePriceXOF * selectedPack.quantity;
 
         // Calculate price modifier: pack price minus base unit price (in XOF)
         // The cart calculates: (basePrice + modifier) * quantity
@@ -400,13 +414,16 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 </span>
               )}
             </div>
-            <p className="text-xs text-gray-500">
-              {t('productDetail.taxesIncluded')}
-            </p>
+            {/* Only show "All taxes included" when tax is NOT enabled */}
+            {(!taxSettings || !taxSettings.isActive || taxSettings.taxRates.length === 0) && (
+              <p className="text-xs text-gray-500">
+                {t('productDetail.taxesIncluded')}
+              </p>
+            )}
           </div>
 
           {/* Color Selector */}
-          {product.colors && product.colors.length > 0 && (
+          {product.colors && product.colors.length > 1 && (
             <div className="mb-6">
               <div className="flex gap-2 mb-3">
                 {product.colors.map((color, index) => {

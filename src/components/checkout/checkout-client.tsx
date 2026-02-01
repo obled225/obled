@@ -37,20 +37,17 @@ export function CheckoutClient() {
   }, []);
 
   // Calculate tax when subtotal or currency changes (using useMemo instead of useEffect)
+  // Tax should be calculated on the discounted subtotal, not the full subtotal
   const taxAmount = useMemo(() => {
     if (!taxSettings) return 0;
 
-    const subtotal = cart.items.reduce((total, item) => {
-      // All prices are in XOF, convert to selected currency
-      const basePriceXOF = item.product.price || 0;
-      const variantPriceXOF = item.selectedVariant?.priceModifier || 0;
-      const totalPriceXOF = basePriceXOF + variantPriceXOF;
-      const convertedPrice = convertPrice(totalPriceXOF, currency);
-      return total + convertedPrice * item.quantity;
-    }, 0);
+    // First, calculate the subtotal and discount
+    const tempSummary = getCartSummary(currency, 0, 0);
+    const discountedSubtotal = tempSummary.subtotal - tempSummary.discount;
 
-    return calculateTax(subtotal, currency, taxSettings);
-  }, [taxSettings, currency, cart.items, convertPrice]);
+    // Calculate tax on the discounted subtotal
+    return calculateTax(discountedSubtotal, currency, taxSettings);
+  }, [taxSettings, currency, getCartSummary]);
 
   const cartSummary = getCartSummary(currency, taxAmount, shippingCost);
 

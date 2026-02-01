@@ -35,15 +35,15 @@ export default defineType({
     }),
     defineField({
       name: 'badgeText',
-      title: 'Badge Text',
+      title: 'Badge text',
       type: 'string',
-      description: 'Optional: Text to display on badge (e.g., "HOT", "EXCLUSIVE")',
+      description: 'Optional text to display on badge (e.g., "HOT", "EXCLUSIVE")',
     }),
     defineField({
       name: 'badgeColor',
-      title: 'Badge Color',
+      title: 'Badge color',
       type: 'string',
-      description: 'Optional: CSS color name for the badge (e.g., "red", "blue", "green", "orange"). The color name automatically determines the badge color display.',
+      description: 'CSS color name for the badge (e.g., "red", "blue", "green", "orange").',
     }),
   ],
   preview: {

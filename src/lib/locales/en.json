@@ -24,10 +24,9 @@
       "checkout": "Checkout",
       "taxesIncluded": "All taxes included",
       "summary": "Cart summary and checkout",
-      "pack": "/pack",
+      "pack": "per pack",
       "tax": "Tax",
       "noImage": "No image",
-      "each": "each",
       "decreaseQuantity": "Decrease quantity",
       "increaseQuantity": "Increase quantity",
       "removeItem": "Remove item",
@@ -535,7 +534,10 @@
     "free": "FREE",
     "estimatedDelivery": "Estimated delivery",
     "freeShippingActive": "Free shipping",
-    "freeShippingActiveDescription": "Your order qualifies for free shipping."
+    "freeShippingActiveDescription": "Your order qualifies for free shipping.",
+    "shippingInfo": "Shipping in Abidjan is handled by our partner Yango Delivery. We use DHL and UPS for international shipments.",
+    "shippingInfoContact": "We will reach out to you as soon as possible to confirm shipping details with you if needed.",
+    "shippingInfoPromoCode": "You will be able to add a promo code directly at checkout time."
   },
   "checkout": {
     "title": "Checkout",

@@ -23,16 +23,16 @@ export default defineType({
     }),
     defineField({
       name: 'isBusinessProduct',
-      title: 'Is this a business offer product?',
+      title: 'Is this a business product?',
       type: 'boolean',
       description: 'Business products appear on /business page, regular products appear on /shop',
       initialValue: false,
     }),
     defineField({
-      name: 'price',
-      title: 'Price',
+      name: 'currentPrice',
+      title: 'Current price',
       type: 'number',
-      description: 'Product price in F CFA (West African CFA Franc). Currency conversion is handled automatically.',
+      description: 'Current selling price in F CFA (West African CFA Franc). This is the price customers pay. Currency conversion is handled automatically.',
       hidden: ({document}) => Boolean(document?.isBusinessProduct),
       validation: (Rule) => Rule.custom((value, context) => {
         const isBusiness = (context.document as { isBusinessProduct?: boolean })?.isBusinessProduct;
@@ -40,19 +40,19 @@ export default defineType({
           return true; // Not required for business products
         }
         if (value === undefined || value === null) {
-          return 'Price is required';
+          return 'Current price is required';
         }
         if (value < 0) {
-          return 'Price must be greater than or equal to 0';
+          return 'Current price must be greater than or equal to 0';
         }
         return true;
       }),
     }),
     defineField({
-      name: 'originalPrice',
-      title: 'Original price',
+      name: 'basePrice',
+      title: 'Base price',
       type: 'number',
-      description: 'The original price before discount in F CFA. This number should be BIGGER than the base price.',
+      description: 'Base price in F CFA (shown with strikethrough). This number should be BIGGER than the current price.',
       hidden: ({document}) => Boolean(document?.isBusinessProduct),
       validation: (Rule) => Rule.min(0),
     }),
@@ -228,20 +228,20 @@ export default defineType({
               description: 'e.g., Pack 5',
             },
             {
-              name: 'price',
-              title: 'Pack price',
+              name: 'currentPrice',
+              title: 'Current pack price',
               type: 'number',
-              description: 'Price for this pack in F CFA. Currency conversion is handled automatically.',
+              description: 'Current selling price for this pack in F CFA. This is the price customers pay. Currency conversion is handled automatically.',
               validation: (Rule) => Rule.required().min(0),
               options: {
                 controls: false,
               },
             },
             {
-              name: 'originalPrice',
-              title: 'Original pack price',
+              name: 'basePrice',
+              title: 'Base pack price',
               type: 'number',
-              description: 'The original price before discount in F CFA. This number should be BIGGER than the base price.',
+              description: 'Base price for this pack in F CFA (shown with strikethrough). This number should be BIGGER than the current price.',
               validation: (Rule) => Rule.min(0),
               options: {
                 controls: false,
@@ -252,14 +252,14 @@ export default defineType({
             select: {
               quantity: 'quantity',
               label: 'label',
-              price: 'price',
-              originalPrice: 'originalPrice',
+              currentPrice: 'currentPrice',
+              basePrice: 'basePrice',
             },
-            prepare({quantity, label, price, originalPrice}) {
-              const priceDisplay = originalPrice && originalPrice > price
-                ? `${originalPrice} → ${price} F CFA`
-                : price !== undefined
-                ? `${price} F CFA`
+            prepare({quantity, label, currentPrice, basePrice}) {
+              const priceDisplay = basePrice && basePrice > currentPrice
+                ? `${basePrice} → ${currentPrice} F CFA`
+                : currentPrice !== undefined
+                ? `${currentPrice} F CFA`
                 : 'No price set';
               return {
                 title: label || `Pack of ${quantity}`,
@@ -326,28 +326,28 @@ export default defineType({
     select: {
       title: 'name',
       media: 'images.0',
-      price: 'price',
-      originalPrice: 'originalPrice',
+      currentPrice: 'currentPrice',
+      basePrice: 'basePrice',
       businessPacks: 'businessPacks',
       isBusinessProduct: 'isBusinessProduct',
       inStock: 'inStock',
     },
-    prepare({title, media, price, originalPrice, businessPacks, isBusinessProduct, inStock}) {
+    prepare({title, media, currentPrice, basePrice, businessPacks, isBusinessProduct, inStock}) {
       let priceDisplay = 'No price';
       
       if (isBusinessProduct && businessPacks && businessPacks.length > 0) {
         // For business products, get price from first pack
         const firstPack = businessPacks[0];
-        const packPrice = firstPack?.price;
+        const packPrice = firstPack?.currentPrice;
         if (packPrice !== undefined) {
           priceDisplay = `${packPrice} F CFA`;
         }
-      } else if (price !== undefined) {
+      } else if (currentPrice !== undefined) {
         // For regular products, get price
-        if (originalPrice && originalPrice > price) {
-          priceDisplay = `${originalPrice} → ${price} F CFA`;
+        if (basePrice && basePrice > currentPrice) {
+          priceDisplay = `${basePrice} → ${currentPrice} F CFA`;
         } else {
-          priceDisplay = `${price} F CFA`;
+          priceDisplay = `${currentPrice} F CFA`;
         }
       }
       
