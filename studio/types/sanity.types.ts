@@ -38,14 +38,6 @@ export type Category = {
   title?: string
   slug?: Slug
   description?: string
-  image?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    _type: 'image'
-  }
-  parent?: CategoryReference
 }
 
 export type SanityImageCrop = {

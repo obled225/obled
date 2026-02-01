@@ -443,5 +443,11 @@
     "title": "Page not found",
     "description": "Sorry, we couldn't find the page you're looking for. It may have been moved or doesn't exist.",
     "goHome": "Go back home"
+  },
+  "announcements": {
+    "fallback": {
+      "manufacturer": "KYS FACTORY manufacturer & supplier of blank t-shirts",
+      "businessOffers": "Offers for brands and businesses"
+    }
   }
 }

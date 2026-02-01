@@ -34,25 +34,30 @@ export default defineType({
       type: 'text',
     }),
     defineField({
-      name: 'image',
-      title: 'Category image',
-      type: 'image',
-      options: {
-        hotspot: true,
-      },
+      name: 'badgeText',
+      title: 'Badge Text',
+      type: 'string',
+      description: 'Optional: Text to display on badge (e.g., "HOT", "EXCLUSIVE")',
     }),
     defineField({
-      name: 'parent',
-      title: 'Parent category',
-      type: 'reference',
-      to: [{type: 'categories'}],
-      description: 'Optional: Select a parent category for hierarchical structure',
+      name: 'badgeColor',
+      title: 'Badge Color',
+      type: 'string',
+      description: 'Optional: Hex color code for the badge (e.g., "#EF4444")',
+      validation: (Rule) =>
+        Rule.custom((value) => {
+          if (!value) return true; // Optional field
+          // Validate hex color format
+          const hexColorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+          return hexColorRegex.test(value)
+            ? true
+            : 'Please enter a valid hex color code (e.g., #EF4444)';
+        }),
     }),
   ],
   preview: {
     select: {
       title: 'title',
-      media: 'image',
     },
   },
 })

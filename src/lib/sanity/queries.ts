@@ -91,9 +91,6 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
         id: doc.categories[0]._id || doc.categories[0].slug?.current || '',
         name: doc.categories[0].title || '',
         description: doc.categories[0].description,
-        image: doc.categories[0].image?.asset
-          ? getSanityImageUrl(doc.categories[0].image.asset) || undefined
-          : undefined,
       }
     : {
         id: 'uncategorized',
@@ -174,8 +171,7 @@ const ALL_PRODUCTS_QUERY = `*[_type == "products" && !(_id in path("drafts.**"))
     _id,
     "slug": slug.current,
     title,
-    description,
-    "image": image.asset->
+    description
   },
   colors[] {
     name,
@@ -223,8 +219,7 @@ const PRODUCT_BY_SLUG_QUERY = `*[_type == "products" && slug.current == $slug &&
     _id,
     "slug": slug.current,
     title,
-    description,
-    "image": image.asset->
+    description
   },
   colors[] {
     name,
@@ -266,8 +261,7 @@ const PRODUCTS_BY_CATEGORY_QUERY = `*[_type == "products" && $categoryId in cate
     _id,
     "slug": slug.current,
     title,
-    description,
-    "image": image.asset->
+    description
   },
   colors[] {
     name,
@@ -309,8 +303,7 @@ const FEATURED_PRODUCTS_QUERY = `*[_type == "products" && featured == true && !(
     _id,
     "slug": slug.current,
     title,
-    description,
-    "image": image.asset->
+    description
   },
   colors[] {
     name,
@@ -693,8 +686,9 @@ export async function getHeaderCategories(): Promise<ProductCategory[]> {
       _id,
       title,
       description,
-      "image": image.asset->,
-      "slug": slug.current
+      "slug": slug.current,
+      badgeText,
+      badgeColor
     }`;
     const docs = await sanityClient.fetch(query);
     return docs.map(
@@ -703,14 +697,14 @@ export async function getHeaderCategories(): Promise<ProductCategory[]> {
         _id: string;
         title: string;
         description: string;
-        image: { _id: string; url: string };
+        badgeText?: string;
+        badgeColor?: string;
       }) => ({
         id: doc.slug || doc._id,
         name: doc.title,
         description: doc.description,
-        image: doc.image
-          ? getSanityImageUrl(doc.image) || undefined
-          : undefined,
+        badgeText: doc.badgeText,
+        badgeColor: doc.badgeColor,
       })
     );
   } catch (error) {

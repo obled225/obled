@@ -27,12 +27,6 @@ export interface SanityProductExpanded extends Omit<
       current?: string;
     };
     description?: string;
-    image?: {
-      asset?: {
-        _ref: string;
-        _type: 'reference';
-      };
-    };
   }>;
   prices?: Array<{
     currency: 'XOF' | 'USD' | 'EUR';
@@ -206,9 +200,9 @@ export interface ProductCategory {
   id: string;
   name: string;
   description?: string;
-  image?: string;
-  parentId?: string;
   subcategories?: ProductCategory[];
+  badgeText?: string;
+  badgeColor?: string;
 }
 
 export interface ProductFilters {

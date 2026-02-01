@@ -20,6 +20,40 @@ interface HeaderProps {
   categories?: ProductCategory[];
 }
 
+interface NavLink {
+  href: string;
+  label: string;
+  badgeText?: string;
+  badgeColor?: string;
+}
+
+// Helper function to lighten a hex color for border effect
+function lightenColor(hex: string, percent: number = 20): string {
+  // Remove # if present
+  hex = hex.replace('#', '');
+  
+  // Parse RGB values
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+  
+  // Lighten each component
+  const newR = Math.min(255, Math.round(r + (255 - r) * (percent / 100)));
+  const newG = Math.min(255, Math.round(g + (255 - g) * (percent / 100)));
+  const newB = Math.min(255, Math.round(b + (255 - b) * (percent / 100)));
+  
+  // Convert back to hex
+  return `#${[newR, newG, newB].map(x => {
+    const hex = x.toString(16);
+    return hex.length === 1 ? '0' + hex : hex;
+  }).join('')}`;
+}
+
+// Type guard to check if a nav link has badge properties
+function hasBadge(link: NavLink): link is NavLink & { badgeText: string; badgeColor: string } {
+  return !!(link.badgeText && link.badgeColor);
+}
+
 export function Header({ categories = [] }: HeaderProps) {
   const t = useTranslations('header');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -35,7 +69,7 @@ export function Header({ categories = [] }: HeaderProps) {
   // User asked: "create a new in the exact current ui a elemmnt in @[src/components/layout/header.tsx] to access directly the relevant category"
   // I will add them to the main nav
 
-  const navLinks = [
+  const navLinks: NavLink[] = [
     { href: '/', label: t('nav.home') },
     { href: '/shop', label: t('nav.store') },
     { href: '/business', label: t('nav.business') },
@@ -43,6 +77,8 @@ export function Header({ categories = [] }: HeaderProps) {
     ...(categories?.map((c) => ({
       href: `/shop?category=${c.id}`,
       label: c.name,
+      badgeText: c.badgeText,
+      badgeColor: c.badgeColor,
     })) || []),
     { href: '/about', label: t('nav.about') },
     { href: '/faq', label: t('nav.faq') },
@@ -126,12 +162,33 @@ export function Header({ categories = [] }: HeaderProps) {
           <ul className="flex items-center gap-8">
             {navLinks.map((link) => (
               <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className="text-xs sm:text-sm font-medium text-foreground/70 hover:text-black hover:underline transition-colors"
-                >
-                  {link.label}
-                </Link>
+                {hasBadge(link) ? (
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href={link.href}
+                      className="text-xs sm:text-sm font-medium text-foreground/70 hover:text-black hover:underline transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                    <Badge
+                      variant="destructive"
+                      className="text-white text-[10px] px-1.5 py-0.5 h-auto font-bold shadow-sm border"
+                      style={{
+                        backgroundColor: link.badgeColor,
+                        borderColor: lightenColor(link.badgeColor, 15),
+                      }}
+                    >
+                      {link.badgeText}
+                    </Badge>
+                  </div>
+                ) : (
+                  <Link
+                    href={link.href}
+                    className="text-xs sm:text-sm font-medium text-foreground/70 hover:text-black hover:underline transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                )}
               </li>
             ))}
           </ul>
@@ -170,14 +227,37 @@ export function Header({ categories = [] }: HeaderProps) {
         <div className="p-6 pb-8">
           <nav className="flex flex-col gap-2">
             {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-base font-medium text-foreground/70 hover:text-black hover:underline transition-colors py-3 px-2 rounded-md hover:bg-gray-50"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {link.label}
-              </Link>
+              <div key={link.href}>
+                {hasBadge(link) ? (
+                  <div className="flex items-center justify-between py-3 px-2 rounded-md hover:bg-gray-50">
+                    <Link
+                      href={link.href}
+                      className="text-base font-medium text-foreground/70 hover:text-black hover:underline transition-colors"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {link.label}
+                    </Link>
+                    <Badge
+                      variant="destructive"
+                      className="text-white text-[10px] px-1.5 py-0.5 h-auto font-bold shadow-sm border"
+                      style={{
+                        backgroundColor: link.badgeColor,
+                        borderColor: lightenColor(link.badgeColor, 15),
+                      }}
+                    >
+                      {link.badgeText}
+                    </Badge>
+                  </div>
+                ) : (
+                  <Link
+                    href={link.href}
+                    className="text-base font-medium text-foreground/70 hover:text-black hover:underline transition-colors py-3 px-2 rounded-md hover:bg-gray-50"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                )}
+              </div>
             ))}
           </nav>
           {/* Currency selector in mobile menu */}

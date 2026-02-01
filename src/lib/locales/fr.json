@@ -446,5 +446,11 @@
     "title": "Page introuvable",
     "description": "Désolé, nous n'avons pas pu trouver la page que vous recherchez. Elle a peut-être été déplacée ou n'existe pas.",
     "goHome": "Retour à l'accueil"
+  },
+  "announcements": {
+    "fallback": {
+      "manufacturer": "KYS FACTORY fabricant & fournisseur de t-shirts vierges",
+      "businessOffers": "Offres marques et entreprises"
+    }
   }
 }

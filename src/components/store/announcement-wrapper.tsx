@@ -1,21 +1,23 @@
 import { getAnnouncements } from '@/lib/sanity/queries';
 import { AnnouncementClient } from './announcement-client';
-
-const fallbackAnnouncements = [
-  {
-    text: 'KYS FACTORY fabricant & fournisseur de t-shirts vierges',
-    href: '/about',
-  },
-  {
-    text: 'Offres marques et entreprises',
-    href: '/business',
-  },
-];
+import { getTranslations } from 'next-intl/server';
 
 export async function AnnouncementWrapper() {
+  const t = await getTranslations('announcements.fallback');
   const announcementData = await getAnnouncements();
 
-  // Use announcements from Sanity if available, otherwise use fallback
+  // Use announcements from Sanity if available, otherwise use translated fallback
+  const fallbackAnnouncements = [
+    {
+      text: t('manufacturer'),
+      href: '/about',
+    },
+    {
+      text: t('businessOffers'),
+      href: '/business',
+    },
+  ];
+
   const announcements =
     announcementData?.announcements || fallbackAnnouncements;
 
