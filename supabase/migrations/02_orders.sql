@@ -58,7 +58,8 @@ BEGIN
     year_prefix := TO_CHAR(NOW(), 'YYYY');
     
     -- Get the next sequence number for this year
-    SELECT COALESCE(MAX(CAST(SUBSTRING(order_number FROM 9) AS INTEGER)), 0) + 1
+    -- Extract the sequence number (last part after the second dash)
+    SELECT COALESCE(MAX(CAST(SPLIT_PART(order_number, '-', 3) AS INTEGER)), 0) + 1
     INTO sequence_num
     FROM public.orders
     WHERE order_number LIKE 'KYS-' || year_prefix || '-%';
