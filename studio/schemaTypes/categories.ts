@@ -7,13 +7,13 @@ export default defineType({
   fields: [
     defineField({
       name: 'title',
-      title: 'Category Name',
+      title: 'Category name',
       type: 'string',
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'showInHeader',
-      title: 'Show in Header',
+      title: 'Show in header',
       type: 'boolean',
       description: 'If true, this category will appear in the main navigation menu (max 3 allowed)',
       initialValue: false,
@@ -35,7 +35,7 @@ export default defineType({
     }),
     defineField({
       name: 'image',
-      title: 'Category Image',
+      title: 'Category image',
       type: 'image',
       options: {
         hotspot: true,
@@ -43,7 +43,7 @@ export default defineType({
     }),
     defineField({
       name: 'parent',
-      title: 'Parent Category',
+      title: 'Parent category',
       type: 'reference',
       to: [{type: 'categories'}],
       description: 'Optional: Select a parent category for hierarchical structure',

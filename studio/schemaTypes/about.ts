@@ -2,7 +2,7 @@ import {defineField, defineType} from 'sanity'
 
 export default defineType({
   name: 'about',
-  title: 'About page',
+  title: 'About (page)',
   type: 'document',
   fields: [
     defineField({
@@ -40,13 +40,13 @@ export default defineType({
             }),
             defineField({
               name: 'position',
-              title: 'Section Position',
+              title: 'Section position',
               type: 'string',
               description: 'Which section should this image appear in?',
               options: {
                 list: [
-                  {title: 'Who We Are', value: 'whoWeAre'},
-                  {title: 'B2B Solutions', value: 'b2b'},
+                  {title: 'Who are we?', value: 'whoWeAre'},
+                  {title: 'B2B solutions', value: 'b2b'},
                   {title: 'Production', value: 'production'},
                   {title: 'Responsiveness', value: 'responsiveness'},
                   {title: 'Support', value: 'support'},
@@ -88,7 +88,7 @@ export default defineType({
     },
     prepare() {
       return {
-        title: 'About Page',
+        title: 'About (page)',
         subtitle: 'Hero video and section images',
       }
     },

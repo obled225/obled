@@ -59,7 +59,7 @@ export default defineType({
     }),
     defineField({
       name: 'floatingAnnouncement',
-      title: 'Floating Announcement',
+      title: 'Floating announcement',
       type: 'object',
       description: 'A dismissible floating announcement that appears in the top-right corner of the page. Perfect for limited-time promotions, special offers, or important notifications.',
       fields: [
@@ -67,7 +67,7 @@ export default defineType({
           name: 'text',
           title: 'Announcement text',
           type: 'array',
-          description: 'The text to display in the floating announcement. Highlight promo codes to make them bold. This announcement appears above the content in the top-right corner and can be dismissed by dragging or clicking.',
+          description: 'The text to display in the floating announcement. Highlight promo codes to make them bold.',
           of: [
             {
               type: 'block',

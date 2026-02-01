@@ -7,7 +7,7 @@ export default defineType({
   fields: [
     defineField({
       name: 'name',
-      title: 'Product Name',
+      title: 'Product name',
       type: 'string',
       validation: (Rule) => Rule.required(),
     }),
@@ -46,13 +46,13 @@ export default defineType({
             },
             {
               name: 'basePrice',
-              title: 'Base Price',
+              title: 'Base price',
               type: 'number',
               validation: (Rule) => Rule.required().min(0),
             },
             {
               name: 'originalPrice',
-              title: 'Original Price',
+              title: 'Original price',
               type: 'number',
               description: 'Original price before discount (optional)',
               validation: (Rule) => Rule.min(0),
@@ -123,13 +123,13 @@ export default defineType({
     }),
     defineField({
       name: 'inStock',
-      title: 'In Stock',
+      title: 'In stock',
       type: 'boolean',
       initialValue: true,
     }),
     defineField({
       name: 'stockQuantity',
-      title: 'Stock Quantity',
+      title: 'Stock quantity',
       type: 'number',
       initialValue: 0,
       validation: (Rule) => Rule.min(0),
@@ -138,13 +138,13 @@ export default defineType({
       name: 'sku',
       title: 'SKU',
       type: 'string',
-      description: 'Stock Keeping Unit',
+      description: 'Stock Keeping Unit (SKU) is a unique identifier for a product',
     }),
     defineField({
-      name: 'lomiProductId',
-      title: 'lomi. Product ID',
+      name: 'lomiPriceId',
+      title: 'lomi. Price ID',
       type: 'string',
-      description: 'Optional: The product ID from lomi. payment processor',
+      description: 'Specific price ID for this product from lomi.',
     }),
     defineField({
       name: 'colors',
@@ -157,21 +157,21 @@ export default defineType({
           fields: [
             {
               name: 'name',
-              title: 'Color Name',
+              title: 'Color name',
               type: 'string',
               description: 'e.g., Red, Blue, Noir, Blanc',
               validation: (Rule) => Rule.required(),
             },
             {
               name: 'value',
-              title: 'Color Value',
+              title: 'Color value',
               type: 'string',
               description: 'Hex color code (e.g., #FF0000) or color identifier',
               validation: (Rule) => Rule.required(),
             },
             {
               name: 'image',
-              title: 'Color Image',
+              title: 'Color image',
               type: 'image',
               description: 'Image to show when this color is selected',
               options: {
@@ -204,7 +204,7 @@ export default defineType({
     }),
     defineField({
       name: 'sizes',
-      title: 'Available Sizes',
+      title: 'Available sizes',
       type: 'object',
       description: 'Check the sizes available for this product',
       options: {
@@ -257,7 +257,7 @@ export default defineType({
     }),
     defineField({
       name: 'productType',
-      title: 'Product Type',
+      title: 'Product type',
       type: 'string',
       description: 'Determines where this product appears: Business products go to /business, Normal and Collab products go to /shop',
       options: {
@@ -273,7 +273,7 @@ export default defineType({
     }),
     defineField({
       name: 'businessPacks',
-      title: 'Business Packs',
+      title: 'Business packs',
       type: 'array',
       description: 'Pack sizes and pricing for business offers',
       hidden: ({document}) => document?.productType !== 'business',
@@ -331,7 +331,7 @@ export default defineType({
     }),
     defineField({
       name: 'featured',
-      title: 'Featured Product',
+      title: 'Featured product',
       type: 'boolean',
       initialValue: false,
       description: 'Show this product in featured sections',
@@ -370,7 +370,7 @@ export default defineType({
     }),
     defineField({
       name: 'variant',
-      title: 'Variant Product',
+      title: 'Variant product',
       type: 'reference',
       to: [{type: 'products'}],
       description: 'Link to a related product variant (e.g., if this is short sleeves, link to the long sleeves variant)',
