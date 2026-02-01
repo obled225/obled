@@ -42,13 +42,14 @@ export function FaqClient() {
             </p>
           )}
           <ul className="list-disc pl-6 mb-6">
-            {(item.key === 'howToOrder' ? answerItems.slice(1) : answerItems).map(
-              (item: string, index: number) => (
-                <li key={index} className="leading-relaxed mb-2">
-                  {item}
-                </li>
-              )
-            )}
+            {(item.key === 'howToOrder'
+              ? answerItems.slice(1)
+              : answerItems
+            ).map((item: string, index: number) => (
+              <li key={index} className="leading-relaxed mb-2">
+                {item}
+              </li>
+            ))}
           </ul>
         </div>
       );

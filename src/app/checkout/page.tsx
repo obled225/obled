@@ -3,18 +3,21 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/lib/store/cart-store';
-import { supabase } from '@/lib/supabase/supabase';
+import { useCurrencyStore } from '@/lib/store/currency-store';
+import { supabase } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/Input';
 import { CartSummary } from '@/components/cart/cart-summary';
 import { CartItem } from '@/components/cart/cart-item';
 import { useToast } from '@/lib/hooks/use-toast';
+import { getProductPrice } from '@/lib/types';
 
 export default function CheckoutPage() {
   const router = useRouter();
   const { error: showError } = useToast();
   const { cart, getCartSummary } = useCartStore();
-  const cartSummary = getCartSummary();
+  const { currency } = useCurrencyStore();
+  const cartSummary = getCartSummary(currency);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Form state
@@ -51,18 +54,16 @@ export default function CheckoutPage() {
 
       // Prepare cart items for the edge function
       const cartItems = cart.items.map((item) => {
-        // Find price for the selected currency
-        const defaultCurrency = 'XOF'; // Default to XOF if no currency set
-        const selectedCurrency = item.product.currency || defaultCurrency;
+        // Find price for the selected currency from the currency store
+        const priceObj = getProductPrice(item.product, currency);
 
-        // Find specific price object from product.prices
-        const priceObj =
-          item.product.prices?.find((p) => p.currency === selectedCurrency) ||
-          item.product.prices?.[0];
+        // Fallback to first available price if selected currency not found
+        const effectivePrice = priceObj || item.product.prices?.[0];
+        const basePrice = effectivePrice?.basePrice || item.product.price;
+        const baseLomiId = effectivePrice?.lomiPriceId;
 
         // Determine price ID and quantity
         const variantLomiId = item.selectedVariant?.lomiPriceId;
-        const baseLomiId = priceObj?.lomiPriceId;
 
         // If variant has a lomi ID (e.g. Pack Price), use it. Otherwise use base ID.
         const effectiveLomiId = variantLomiId || baseLomiId;
@@ -84,8 +85,7 @@ export default function CheckoutPage() {
             ? `${item.selectedVariant.name} - ${item.selectedVariant.value}`
             : undefined,
           quantity: quantityToSend,
-          price:
-            item.product.price + (item.selectedVariant?.priceModifier || 0),
+          price: basePrice + (item.selectedVariant?.priceModifier || 0),
           productImageUrl: item.product.image,
           lomiPriceId: effectiveLomiId,
         };
@@ -98,7 +98,7 @@ export default function CheckoutPage() {
       const { data, error } = await supabase.functions.invoke('checkout', {
         body: {
           cartItems,
-          currencyCode: cart.items[0]?.product.currency || 'XOF',
+          currencyCode: currency, // Use the selected currency from the store
           userName: formData.userName,
           userEmail: formData.userEmail,
           userPhone: formData.userPhone || undefined,
@@ -158,9 +158,7 @@ export default function CheckoutPage() {
           <p className="text-gray-600 mb-8">
             Add some items to your cart before checking out.
           </p>
-          <Button onClick={() => router.push('/products')}>
-            Continue Shopping
-          </Button>
+          <Button onClick={() => router.push('/')}>Continue Shopping</Button>
         </div>
       </div>
     );

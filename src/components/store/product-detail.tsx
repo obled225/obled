@@ -70,8 +70,17 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
   // Calculate display price based on Pack selection
   const baseDisplayPrice = currentPrice?.basePrice || product.price;
+
+  // Get pack price for selected currency
+  const getPackPrice = (
+    pack: NonNullable<Product['businessPacks']>[number]
+  ) => {
+    const packPriceObj = pack.prices?.find((p) => p.currency === currency);
+    return packPriceObj?.price || baseDisplayPrice * pack.quantity;
+  };
+
   const packDisplayPrice = selectedPack
-    ? selectedPack.price || baseDisplayPrice * selectedPack.quantity
+    ? getPackPrice(selectedPack)
     : baseDisplayPrice;
 
   const displayPrice = packDisplayPrice;
@@ -97,10 +106,19 @@ export function ProductDetail({ product }: ProductDetailProps) {
     try {
       if (selectedPack) {
         const base = currentPrice?.basePrice || product.price;
+
+        // Get pack price for selected currency
+        const packPriceObj = selectedPack.prices?.find(
+          (p) => p.currency === currency
+        );
+        const packPrice = packPriceObj?.price || base * selectedPack.quantity;
+
         // Calculate effective unit price in the pack
-        const packPrice = selectedPack.price || base * selectedPack.quantity;
         const unitPriceInPack = packPrice / selectedPack.quantity;
         const priceModifier = unitPriceInPack - base;
+
+        // Get lomi price ID for selected currency
+        const packLomiId = packPriceObj?.lomiPriceId;
 
         const variant = {
           id: `pack-${selectedPack.quantity}`,
@@ -108,8 +126,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
           value: String(selectedPack.quantity),
           priceModifier: priceModifier,
           stockQuantity: product.stockQuantity,
-          sku: `${product.sku}-PACK-${selectedPack.quantity}`,
-          lomiPriceId: selectedPack.lomiPriceId,
+          lomiPriceId: packLomiId,
           packSize: selectedPack.quantity,
         };
 
@@ -130,9 +147,18 @@ export function ProductDetail({ product }: ProductDetailProps) {
     try {
       if (selectedPack) {
         const base = currentPrice?.basePrice || product.price;
-        const packPrice = selectedPack.price || base * selectedPack.quantity;
+
+        // Get pack price for selected currency
+        const packPriceObj = selectedPack.prices?.find(
+          (p) => p.currency === currency
+        );
+        const packPrice = packPriceObj?.price || base * selectedPack.quantity;
+
         const unitPriceInPack = packPrice / selectedPack.quantity;
         const priceModifier = unitPriceInPack - base;
+
+        // Get lomi price ID for selected currency
+        const packLomiId = packPriceObj?.lomiPriceId;
 
         const variant = {
           id: `pack-${selectedPack.quantity}`,
@@ -140,8 +166,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
           value: String(selectedPack.quantity),
           priceModifier: priceModifier,
           stockQuantity: product.stockQuantity,
-          sku: `${product.sku}-PACK-${selectedPack.quantity}`,
-          lomiPriceId: selectedPack.lomiPriceId,
+          lomiPriceId: packLomiId,
           packSize: selectedPack.quantity,
         };
         addItem(product, quantity * selectedPack.quantity, variant);
@@ -232,7 +257,10 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 href={`/products/${product.variant.slug}`}
                 className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
               >
-                <span>{t('productDetail.viewVariant') || 'View'} {product.variant.name}</span>
+                <span>
+                  {t('productDetail.viewVariant') || 'View'}{' '}
+                  {product.variant.name}
+                </span>
                 <span className="text-gray-500">→</span>
               </Link>
             </div>
@@ -264,9 +292,9 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 {t('productDetail.color')}: {selectedColor}
               </p>
               <div className="flex gap-2">
-                {product.colors.map((color) => (
+                {product.colors.map((color, index) => (
                   <button
-                    key={color.name}
+                    key={`${color.name}-${index}`}
                     onClick={() => handleColorChange(color.name)}
                     disabled={!color.available}
                     className={cn(
@@ -300,21 +328,26 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 {t('productDetail.size')}
               </p>
               <div className="flex flex-wrap gap-2">
-                {product.sizes.map((size) => (
+                {product.sizes.map((size, index) => (
                   <button
-                    key={size.name}
+                    key={`${size.name}-${index}`}
                     onClick={() => size.available && setSelectedSize(size.name)}
                     disabled={!size.available}
                     className={cn(
-                      'flex h-10 min-w-[48px] items-center justify-center rounded-md border px-4 text-sm font-medium transition-colors',
+                      'relative flex h-10 min-w-[48px] items-center justify-center rounded-md border px-4 text-sm font-medium transition-colors',
                       selectedSize === size.name
                         ? 'border-gray-900 bg-gray-900 text-white'
                         : 'border-gray-200 bg-white text-gray-900 hover:border-gray-900',
                       !size.available &&
-                        'cursor-not-allowed border-gray-200 text-gray-400 line-through opacity-50'
+                        'cursor-not-allowed border-gray-200 text-gray-400 opacity-50'
                     )}
                   >
                     {size.name}
+                    {!size.available && (
+                      <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <span className="h-px w-full rotate-45 bg-gray-500" />
+                      </span>
+                    )}
                   </button>
                 ))}
               </div>
@@ -407,7 +440,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 {t('productDetail.buyNow')}
               </Button>
             )}
-            
+
             {/* Business Pack Link */}
             {product.businessPackProduct && !product.isBusinessProduct && (
               <Link href={`/products/${product.businessPackProduct.slug}`}>
@@ -506,7 +539,10 @@ export function ProductDetail({ product }: ProductDetailProps) {
           <RelatedProducts
             products={product.relatedProducts}
             title={t('productDetail.relatedProducts') || 'Related Products'}
-            description={t('productDetail.relatedProductsDescription') || 'You might also like these products'}
+            description={
+              t('productDetail.relatedProductsDescription') ||
+              'You might also like these products'
+            }
           />
         </div>
       )}

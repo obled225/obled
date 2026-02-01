@@ -32,7 +32,7 @@ export interface SanityProductExpanded extends Omit<
     currency: 'XOF' | 'USD' | 'EUR';
     basePrice: number;
     originalPrice?: number;
-    lomiPriceId: string;
+    lomiPriceId?: string; // Optional - can use ad-hoc pricing if not provided
   }>;
   colors?: Array<{
     name: string;
@@ -45,31 +45,29 @@ export interface SanityProductExpanded extends Omit<
       };
     };
   }>;
-  sizes?: {
-    xxs?: boolean;
-    xs?: boolean;
-    s?: boolean;
-    m?: boolean;
-    l?: boolean;
-    xl?: boolean;
-    xxl?: boolean;
-    twoXl?: boolean;
-  };
+  sizes?: Array<{
+    name: string;
+    available?: boolean;
+  }>;
   variant?: {
     _id: string;
     name?: string;
-    slug?: {
-      current?: string;
-    } | string;
+    slug?:
+      | {
+          current?: string;
+        }
+      | string;
   };
   relatedProducts?: Array<{
     _id: string;
     _createdAt?: string;
     _updatedAt?: string;
     name?: string;
-    slug?: {
-      current?: string;
-    } | string;
+    slug?:
+      | {
+          current?: string;
+        }
+      | string;
     prices?: Array<{
       currency: 'XOF' | 'USD' | 'EUR';
       basePrice: number;
@@ -104,9 +102,12 @@ export interface SanityProductExpanded extends Omit<
   lomiProductId?: string;
   businessPacks?: Array<{
     quantity: number;
-    price?: number;
-    lomiPriceId?: string;
     label?: string;
+    prices?: Array<{
+      currency: 'XOF' | 'USD' | 'EUR';
+      price: number;
+      lomiPriceId?: string;
+    }>;
   }>;
   featured?: boolean;
   bestSeller?: boolean;
@@ -147,7 +148,7 @@ export interface ProductPrice {
   currency: 'XOF' | 'USD' | 'EUR';
   basePrice: number;
   originalPrice?: number;
-  lomiPriceId: string;
+  lomiPriceId?: string; // Optional - can use ad-hoc pricing if not provided
 }
 
 /**
@@ -202,7 +203,6 @@ export interface Product {
   category: ProductCategory;
   inStock: boolean;
   stockQuantity: number;
-  sku: string;
   dimensions?: {
     length?: number;
     width?: number;
@@ -224,9 +224,12 @@ export interface Product {
   lomiProductId?: string;
   businessPacks?: Array<{
     quantity: number;
-    price?: number;
-    lomiPriceId?: string;
     label?: string;
+    prices?: Array<{
+      currency: 'XOF' | 'USD' | 'EUR';
+      price: number;
+      lomiPriceId?: string;
+    }>;
   }>;
   featured?: boolean;
   bestSeller?: boolean;
@@ -240,7 +243,6 @@ export interface ProductVariant {
   value: string;
   priceModifier: number;
   stockQuantity: number;
-  sku: string;
   lomiPriceId?: string;
   packSize?: number;
 }

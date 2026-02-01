@@ -1,7 +1,8 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { Cart, CartItem, CartSummary } from '@/lib/types';
-import { Product, ProductVariant } from '@/lib/types';
+import { Product, ProductVariant, getProductPrice } from '@/lib/types';
+import type { Currency } from './currency-store';
 
 interface CartStore {
   cart: Cart;
@@ -13,14 +14,21 @@ interface CartStore {
   removeItem: (itemId: string) => void;
   updateQuantity: (itemId: string, quantity: number) => void;
   clearCart: () => void;
-  getCartSummary: () => CartSummary;
+  getCartSummary: (currency?: Currency) => CartSummary;
   getItemCount: () => number;
+  getCartTotal: (currency?: Currency) => number;
 }
 
-const calculateCartTotal = (items: CartItem[]): number => {
+const calculateCartTotal = (
+  items: CartItem[],
+  currency: Currency = 'XOF'
+): number => {
   return items.reduce((total, item) => {
+    // Get price for the current currency
+    const priceObj = getProductPrice(item.product, currency);
+    const basePrice = priceObj?.basePrice || item.product.price;
     const variantPrice = item.selectedVariant?.priceModifier || 0;
-    return total + (item.product.price + variantPrice) * item.quantity;
+    return total + (basePrice + variantPrice) * item.quantity;
   }, 0);
 };
 
@@ -71,6 +79,7 @@ const createCartStore = () =>
               newItems = [...state.cart.items, newItem];
             }
 
+            // Note: total is stored as XOF by default, will be recalculated on render with correct currency
             const total = calculateCartTotal(newItems);
             const itemCount = calculateItemCount(newItems);
 
@@ -143,9 +152,14 @@ const createCartStore = () =>
           }));
         },
 
-        getCartSummary: (): CartSummary => {
+        getCartTotal: (currency: Currency = 'XOF'): number => {
           const { cart } = get();
-          const subtotal = cart.total;
+          return calculateCartTotal(cart.items, currency);
+        },
+
+        getCartSummary: (currency: Currency = 'XOF'): CartSummary => {
+          const { cart } = get();
+          const subtotal = calculateCartTotal(cart.items, currency);
           const tax = subtotal * 0.1; // 10% tax
           const shipping = subtotal > 50 ? 0 : 9.99; // Free shipping over $50
           const discount = 0; // Could be implemented with coupons

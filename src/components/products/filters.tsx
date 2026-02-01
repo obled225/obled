@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
-import { Product } from '@/lib/types';
+import { Product, ProductCategory } from '@/lib/types';
 import Modal from '@/components/ui/modal';
 import { useIsMobile } from '@/lib/hooks/use-is-mobile';
 
@@ -26,11 +26,17 @@ export interface FilterState {
 interface ProductFiltersProps {
   products: Product[];
   onFilterChange: (filteredProducts: Product[]) => void;
+  categories?: ProductCategory[];
+  initialCategory?: string;
+  hideCategoryFilter?: boolean;
 }
 
 export function ProductFilters({
   products,
   onFilterChange,
+  categories = [],
+  initialCategory,
+  hideCategoryFilter = false,
 }: ProductFiltersProps) {
   const t = useTranslations('products.filters');
   const [filters, setFilters] = useState<FilterState>({
@@ -38,7 +44,7 @@ export function ProductFilters({
       inStock: false,
       outOfStock: false,
     },
-    category: undefined,
+    category: initialCategory,
     sortBy: 'featured',
   });
 
@@ -160,9 +166,13 @@ export function ProductFilters({
             className="flex items-center gap-2 text-foreground hover:text-foreground/80 transition-colors"
           >
             <span>{t('filtersButton')}</span>
-            {(selectedAvailabilityCount > 0 || filters.category) && (
+            {(selectedAvailabilityCount > 0 ||
+              (!hideCategoryFilter && filters.category)) && (
               <span className="text-xs text-muted-foreground">
-                ({(selectedAvailabilityCount > 0 ? 1 : 0) + (filters.category ? 1 : 0)})
+                (
+                {(selectedAvailabilityCount > 0 ? 1 : 0) +
+                  (!hideCategoryFilter && filters.category ? 1 : 0)}
+                )
               </span>
             )}
             <svg
@@ -230,42 +240,62 @@ export function ProductFilters({
 
             <div className="space-y-6">
               {/* Category Filter */}
-              <div>
-                <h4 className="text-sm font-medium text-foreground mb-3">{t('category')}</h4>
-                <div className="space-y-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setFilters((prev) => ({ ...prev, category: undefined }));
-                    }}
-                    className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors ${
-                      !filters.category ? 'bg-accent font-medium' : 'hover:bg-accent/50'
-                    }`}
-                  >
-                    {t('allCategories')}
-                  </button>
-                  {Array.from(
-                    new Set(products.map((p) => p.category?.name).filter(Boolean))
-                  ).map((cat) => (
+              {!hideCategoryFilter && (
+                <div>
+                  <h4 className="text-sm font-medium text-foreground mb-3">
+                    {t('category')}
+                  </h4>
+                  <div className="space-y-2">
                     <button
-                      key={cat}
                       type="button"
                       onClick={() => {
-                        setFilters((prev) => ({ ...prev, category: cat }));
+                        setFilters((prev) => ({
+                          ...prev,
+                          category: undefined,
+                        }));
                       }}
                       className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors ${
-                        filters.category === cat ? 'bg-accent font-medium' : 'hover:bg-accent/50'
+                        !filters.category
+                          ? 'bg-accent font-medium'
+                          : 'hover:bg-accent/50'
                       }`}
                     >
-                      {cat}
+                      {t('allCategories')}
                     </button>
-                  ))}
+                    {(categories.length > 0
+                      ? categories.map((cat) => cat.name)
+                      : Array.from(
+                          new Set(
+                            products
+                              .map((p) => p.category?.name)
+                              .filter(Boolean)
+                          )
+                        )
+                    ).map((cat) => (
+                      <button
+                        key={cat}
+                        type="button"
+                        onClick={() => {
+                          setFilters((prev) => ({ ...prev, category: cat }));
+                        }}
+                        className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors ${
+                          filters.category === cat
+                            ? 'bg-accent font-medium'
+                            : 'hover:bg-accent/50'
+                        }`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Availability Filter */}
               <div>
-                <h4 className="text-sm font-medium text-foreground mb-3">{t('availability.title')}</h4>
+                <h4 className="text-sm font-medium text-foreground mb-3">
+                  {t('availability.title')}
+                </h4>
                 <div className="space-y-3">
                   <label className="flex items-center gap-3 cursor-pointer group">
                     <input
@@ -335,7 +365,9 @@ export function ProductFilters({
                     setIsMobileSortOpen(false);
                   }}
                   className={`w-full text-left px-3 py-3 text-sm rounded-md transition-colors ${
-                    filters.sortBy === option ? 'bg-accent font-medium' : 'hover:bg-accent/50'
+                    filters.sortBy === option
+                      ? 'bg-accent font-medium'
+                      : 'hover:bg-accent/50'
                   }`}
                 >
                   {t(`sort.options.${option}`)}
@@ -428,68 +460,75 @@ export function ProductFilters({
         </div>
 
         {/* Category Dropdown */}
-        <div className="relative">
-          <button
-            type="button"
-            onClick={() => setIsCategoryOpen(!isCategoryOpen)}
-            className="flex items-center gap-2 text-foreground hover:text-foreground/80 transition-colors"
-          >
-            <span>{filters.category || t('allCategories')}</span>
-            <svg
-              className={`w-3 h-3 transition-transform ${isCategoryOpen ? 'rotate-180' : ''}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+        {!hideCategoryFilter && (
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+              className="flex items-center gap-2 text-foreground hover:text-foreground/80 transition-colors"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </button>
+              <span>{filters.category || t('allCategories')}</span>
+              <svg
+                className={`w-3 h-3 transition-transform ${isCategoryOpen ? 'rotate-180' : ''}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
 
-          {isCategoryOpen && (
-            <>
-              <div
-                className="fixed inset-0 z-10"
-                onClick={() => setIsCategoryOpen(false)}
-              />
-              <div className="absolute top-full left-0 mt-2 w-56 bg-background border border-border rounded-md shadow-lg z-20 py-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setFilters((prev) => ({ ...prev, category: undefined }));
-                    setIsCategoryOpen(false);
-                  }}
-                  className={`w-full text-left px-4 py-2 text-sm hover:bg-accent transition-colors ${
-                    !filters.category ? 'bg-accent font-medium' : ''
-                  }`}
-                >
-                  {t('allCategories')}
-                </button>
-                {Array.from(
-                  new Set(products.map((p) => p.category?.name).filter(Boolean))
-                ).map((cat) => (
+            {isCategoryOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setIsCategoryOpen(false)}
+                />
+                <div className="absolute top-full left-0 mt-2 w-56 bg-background border border-border rounded-md shadow-lg z-20 py-2">
                   <button
-                    key={cat}
                     type="button"
                     onClick={() => {
-                      setFilters((prev) => ({ ...prev, category: cat }));
+                      setFilters((prev) => ({ ...prev, category: undefined }));
                       setIsCategoryOpen(false);
                     }}
                     className={`w-full text-left px-4 py-2 text-sm hover:bg-accent transition-colors ${
-                      filters.category === cat ? 'bg-accent font-medium' : ''
+                      !filters.category ? 'bg-accent font-medium' : ''
                     }`}
                   >
-                    {cat}
+                    {t('allCategories')}
                   </button>
-                ))}
-              </div>
-            </>
-          )}
-        </div>
+                  {(categories.length > 0
+                    ? categories.map((cat) => cat.name)
+                    : Array.from(
+                        new Set(
+                          products.map((p) => p.category?.name).filter(Boolean)
+                        )
+                      )
+                  ).map((cat) => (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => {
+                        setFilters((prev) => ({ ...prev, category: cat }));
+                        setIsCategoryOpen(false);
+                      }}
+                      className={`w-full text-left px-4 py-2 text-sm hover:bg-accent transition-colors ${
+                        filters.category === cat ? 'bg-accent font-medium' : ''
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Right Side - Sort & Count */}

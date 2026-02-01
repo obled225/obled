@@ -3,7 +3,7 @@ import { getLocale } from 'next-intl/server';
 import { AboutClient } from '@/components/about/about-client';
 import { siteUrl } from '@/lib/utils/config';
 import { getAboutPage } from '@/lib/sanity/queries';
-import { getSanityImageUrl } from '@/lib/sanity/sanity';
+import { getSanityImageUrl } from '@/lib/sanity/client';
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();

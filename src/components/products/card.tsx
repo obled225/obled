@@ -160,7 +160,10 @@ export function ProductCard({ product }: ProductCardProps) {
             </span>
           )}
           <span className="text-sm font-medium text-gray-900">
-            {displayOriginalPrice && displayOriginalPrice > displayPrice
+            {/* Only show "From" for business products with packs (multiple items) */}
+            {product.isBusinessProduct &&
+            product.businessPacks &&
+            product.businessPacks.length > 0
               ? `${t('from')} ${formatPrice(displayPrice, displayCurrency)}`
               : formatPrice(displayPrice, displayCurrency)}
           </span>

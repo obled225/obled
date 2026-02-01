@@ -21,9 +21,9 @@ export function CartSummary({
   showShippingCalculator = false,
   className = '',
 }: CartSummaryProps) {
-  const { cart } = useCartStore();
+  const { cart, getCartSummary } = useCartStore();
   const { currency } = useCurrencyStore();
-  const cartSummary = useCartStore().getCartSummary();
+  const cartSummary = getCartSummary(currency);
   const [selectedShipping, setSelectedShipping] = useState('standard');
   const [shippingCost, setShippingCost] = useState(0);
 
@@ -114,7 +114,7 @@ export function CartSummary({
         )}
 
         {showContinueShopping && (
-          <Link href="/products">
+          <Link href="/">
             <Button variant="outline" className="w-full h-11 sm:h-12">
               Continue Shopping
             </Button>

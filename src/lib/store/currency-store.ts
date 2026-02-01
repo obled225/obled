@@ -5,14 +5,20 @@ export type Currency = 'XOF' | 'EUR' | 'USD';
 
 interface CurrencyStore {
   currency: Currency;
+  _hasHydrated: boolean;
   setCurrency: (currency: Currency) => void;
   toggleCurrency: () => void;
+  setHasHydrated: (state: boolean) => void;
 }
 
 export const useCurrencyStore = create<CurrencyStore>()(
   persist(
     (set, get) => ({
       currency: 'XOF',
+      _hasHydrated: false,
+      setHasHydrated: (state: boolean) => {
+        set({ _hasHydrated: state });
+      },
       setCurrency: (currency: Currency) => set({ currency }),
       toggleCurrency: () => {
         const current = get().currency;
@@ -42,7 +48,9 @@ export const useCurrencyStore = create<CurrencyStore>()(
           removeItem: () => null,
         };
       }),
-      skipHydration: true,
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     }
   )
 );

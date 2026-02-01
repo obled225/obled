@@ -68,7 +68,7 @@ export default function PaymentSuccessPage() {
           receive another email once your order has been shipped.
         </p>
         <div className="space-y-4">
-          <Link href="/products" className="w-full">
+          <Link href="/" className="w-full">
             <Button className="w-full">Continue Shopping</Button>
           </Link>
           <Link href="/" className="w-full">

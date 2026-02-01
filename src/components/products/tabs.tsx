@@ -45,10 +45,6 @@ const ProductInfoTab = ({ product }: ProductTabsProps) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
         <div className="flex flex-col gap-y-4">
           <div>
-            <span className="font-semibold">SKU</span>
-            <p className="text-gray-700">{product.sku || '-'}</p>
-          </div>
-          <div>
             <span className="font-semibold">Category</span>
             <p className="text-gray-700">{product.category.name || '-'}</p>
           </div>

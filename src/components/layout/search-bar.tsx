@@ -55,7 +55,7 @@ export function SearchBar({ className }: SearchBarProps) {
 
   const handleSearch = (searchQuery: string) => {
     if (searchQuery.trim()) {
-      router.push(`/products?q=${encodeURIComponent(searchQuery.trim())}`);
+      router.push(`/?q=${encodeURIComponent(searchQuery.trim())}`);
       setIsOpen(false);
       setQuery('');
     }

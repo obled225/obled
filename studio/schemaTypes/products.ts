@@ -26,6 +26,12 @@ export default defineType({
       title: 'Prices',
       type: 'array',
       description: 'Product prices in different currencies with lomi. price IDs',
+      initialValue: () => [
+        {
+          currency: 'XOF',
+          basePrice: 0,
+        },
+      ],
       validation: (Rule) => Rule.required().min(1).error('At least one price is required'),
       of: [
         {
@@ -69,11 +75,18 @@ export default defineType({
               type: 'string',
               description: 'The price ID from lomi. payment processor for this currency (optional)',
               validation: (Rule) => 
-      Rule.regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i, {
-          name: 'UUID', // Error message is "Does not match UUID pattern"
-          invert: false, // Don't allow non-matches
-        })
-        .error('lomi. price ID must be a valid UUID'),
+                Rule.custom((value: string | undefined) => {
+                  // If no value provided, it's valid (optional field)
+                  if (!value || value.trim() === '') return true;
+                  
+                  // If value provided, validate UUID format
+                  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+                  if (!uuidRegex.test(value)) {
+                    return 'lomi. price ID must be a valid UUID format';
+                  }
+                  
+                  return true;
+                }),
             },
           ],
           preview: {
@@ -147,16 +160,14 @@ export default defineType({
       validation: (Rule) => Rule.min(0),
     }),
     defineField({
-      name: 'sku',
-      title: 'SKU',
-      type: 'string',
-      description: 'Stock Keeping Unit (SKU) is a unique identifier for a product',
-    }),
-    defineField({
       name: 'colors',
       title: 'Colors',
       type: 'array',
       description: 'Available colors for this product',
+      initialValue: () => [
+        {name: 'Noir', value: '#000000', available: true},
+        {name: 'Blanc', value: '#FFFFFF', available: true},
+      ],
       of: [
         {
           type: 'object',
@@ -210,68 +221,65 @@ export default defineType({
     }),
     defineField({
       name: 'sizes',
-      title: 'Available sizes',
-      type: 'object',
-      description: 'Check the sizes available for this product',
-      options: {
-        columns: 2,
-      },
-      fields: [
+      title: 'Product sizes',
+      type: 'array',
+      description: 'Select sizes for this product. Mark as available if in stock, or uncheck to mark as out of stock (rupture). Sizes not listed are not available.',
+      initialValue: () => [
+        {name: 'S', available: true},
+        {name: 'M', available: true},
+        {name: 'L', available: true},
+        {name: 'XL', available: true},
+      ],
+      of: [
         {
-          name: 'xxs',
-          title: 'XXS',
-          type: 'boolean',
-          initialValue: false,
+          type: 'object',
+          fields: [
+            {
+              name: 'name',
+              title: 'Size name',
+              type: 'string',
+              options: {
+                list: [
+                  {title: 'XXS', value: 'XXS'},
+                  {title: 'XS', value: 'XS'},
+                  {title: 'S', value: 'S'},
+                  {title: 'M', value: 'M'},
+                  {title: 'L', value: 'L'},
+                  {title: 'XL', value: 'XL'},
+                  {title: 'XXL', value: 'XXL'},
+                  {title: '2XL', value: '2XL'},
+                ],
+              },
+              validation: (Rule) => Rule.required(),
+            },
+            {
+              name: 'available',
+              title: 'Available (in stock)',
+              type: 'boolean',
+              description: 'Check if this size is in stock. Uncheck to mark as out of stock (rupture de stock) - it will appear with a vertical slash.',
+              initialValue: true,
+            },
+          ],
+          preview: {
+            select: {
+              name: 'name',
+              available: 'available',
+            },
+            prepare({name, available}) {
+              return {
+                title: name || 'Unnamed Size',
+                subtitle: available ? 'In stock' : 'Out of stock (rupture)',
+              };
+            },
+          },
         },
-        {
-          name: 'xs',
-          title: 'XS',
-          type: 'boolean',
-          initialValue: false,
-        },
-        {
-          name: 's',
-          title: 'S',
-          type: 'boolean',
-          initialValue: false,
-        },
-        {
-          name: 'm',
-          title: 'M',
-          type: 'boolean',
-          initialValue: false,
-        },
-        {
-          name: 'l',
-          title: 'L',
-          type: 'boolean',
-          initialValue: false,
-        },
-        {
-          name: 'xl',
-          title: 'XL',
-          type: 'boolean',
-          initialValue: false,
-        },
-        {
-          name: 'xxl',
-          title: 'XXL',
-          type: 'boolean',
-          initialValue: false,
-        },
-        {
-          name: 'twoXl',
-          title: '2XL',
-          type: 'boolean',
-          initialValue: false,
-        }
       ],
     }),
     defineField({
       name: 'businessPacks',
       title: 'Business packs',
       type: 'array',
-      description: 'Pack sizes and pricing for business offers',
+      description: 'Pack sizes and pricing for business offers. Each pack can have prices in different currencies.',
       hidden: ({document}) => !document?.isBusinessProduct,
       of: [
         {
@@ -284,37 +292,91 @@ export default defineType({
               validation: (Rule) => Rule.required().min(2),
             },
             {
-              name: 'price',
-              title: 'Price',
-              type: 'number',
-              options: {
-                controls: false,
-              },
-              description: 'Total price for the pack (leave empty to use base price * quantity)',
-            },
-            {
-              name: 'lomiPriceId',
-              title: 'lomi. price ID',
-              type: 'string',
-              description: 'Optional: Specific price ID for this pack from lomi.',
-            },
-            {
               name: 'label',
               title: 'Label',
               type: 'string',
               description: 'e.g., Pack 5',
             },
+            {
+              name: 'prices',
+              title: 'Pack prices by currency',
+              type: 'array',
+              description: 'Prices for this pack in different currencies',
+              of: [
+                {
+                  type: 'object',
+                  fields: [
+                    {
+                      name: 'currency',
+                      title: 'Currency',
+                      type: 'string',
+                      options: {
+                        list: [
+                          {title: 'West African CFA Franc (XOF)', value: 'XOF'},
+                          {title: 'US Dollar (USD)', value: 'USD'},
+                          {title: 'Euro (EUR)', value: 'EUR'},
+                        ],
+                      },
+                      validation: (Rule) => Rule.required(),
+                    },
+                    {
+                      name: 'price',
+                      title: 'Pack price',
+                      type: 'number',
+                      options: {
+                        controls: false,
+                      },
+                      description: 'Total price for the pack in this currency',
+                      validation: (Rule) => Rule.required().min(0),
+                    },
+                    {
+                      name: 'lomiPriceId',
+                      title: 'lomi. price ID',
+                      type: 'string',
+                      description: 'The price ID from lomi. for this pack in this currency (optional)',
+                      validation: (Rule) => 
+                        Rule.custom((value: string | undefined) => {
+                          // If no value provided, it's valid (optional field)
+                          if (!value || value.trim() === '') return true;
+                          
+                          // If value provided, validate UUID format
+                          const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+                          if (!uuidRegex.test(value)) {
+                            return 'lomi. price ID must be a valid UUID format';
+                          }
+                          
+                          return true;
+                        }),
+                    },
+                  ],
+                  preview: {
+                    select: {
+                      currency: 'currency',
+                      price: 'price',
+                    },
+                    prepare({currency, price}) {
+                      return {
+                        title: `${currency}: ${price}`,
+                      };
+                    },
+                  },
+                },
+              ],
+            },
           ],
           preview: {
             select: {
               quantity: 'quantity',
-              price: 'price',
               label: 'label',
+              prices: 'prices',
             },
-            prepare({quantity, price, label}) {
+            prepare({quantity, label, prices}) {
+              const priceDisplay = prices && prices.length > 0
+                ? `${prices[0].currency} ${prices[0].price}${prices.length > 1 ? ` (+${prices.length - 1} more)` : ''}`
+                : 'No prices set';
               return {
                 title: label || `Pack of ${quantity}`,
-                subtitle: price ? `${price}` : 'Base price x Quantity',
+                subtitle: priceDisplay,
               };
             },
           },

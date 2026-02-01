@@ -5,32 +5,34 @@ import { ProductGrid } from '@/components/products/grid';
 import { ProductFilters } from '@/components/products/filters';
 import { Product, ProductCategory } from '@/lib/types';
 
-interface BusinessClientProps {
+interface CategoryClientProps {
   products: Product[];
   categories?: ProductCategory[];
+  initialCategory?: string;
 }
 
-export default function BusinessClient({
+export default function CategoryClient({
   products,
   categories = [],
-}: BusinessClientProps) {
+  initialCategory,
+}: CategoryClientProps) {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
 
   return (
     <main className="grow">
-      {/* Pack Products */}
-      <section className="mx-auto max-w-7xl px-4 py-6  border-border">
+      <section className="mx-auto max-w-7xl px-4 py-6 border-border">
         {products.length > 0 && (
           <ProductFilters
             products={products}
             onFilterChange={setFilteredProducts}
             categories={categories}
+            initialCategory={initialCategory}
             hideCategoryFilter={true}
           />
         )}
         <ProductGrid
           products={filteredProducts}
-          emptyStateKey="emptyBusiness"
+          emptyStateKey="emptyCategory"
         />
       </section>
     </main>

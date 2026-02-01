@@ -19,7 +19,7 @@ const CartDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { cart, removeItem, getCartSummary } = useCartStore();
   const { currency } = useCurrencyStore();
-  const cartSummary = getCartSummary();
+  const cartSummary = getCartSummary(currency);
 
   const open = () => setIsOpen(true);
   const close = () => setIsOpen(false);
@@ -157,7 +157,7 @@ const CartDropdown = () => {
                   <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">
                     Your cart is empty
                   </p>
-                  <Link href="/products">
+                  <Link href="/">
                     <button className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors text-sm sm:text-base h-10 sm:h-11">
                       Continue Shopping
                     </button>

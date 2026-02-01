@@ -1,7 +1,7 @@
 {
   "header": {
     "nav": {
-      "home": "Home",
+      "home": "Store",
       "business": "For businesses (B2B)",
       "about": "About",
       "faq": "FAQ"
@@ -32,6 +32,10 @@
     "emptyBusiness": {
       "title": "No packs available at the moment",
       "description": "We're currently preparing our offers."
+    },
+    "emptyCategory": {
+      "title": "No products in this category",
+      "description": "We don't have any products in this category yet, but check back soon!"
     },
     "outOfStock": "Out of stock",
     "from": "From",

@@ -3,15 +3,7 @@ import { locales, defaultLocale } from '@/lib/translations/i18n';
 import { siteUrl } from '@/lib/utils/config';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseRoutes = [
-    '',
-    '/about',
-    '/products',
-    '/business',
-    '/faq',
-    '/terms',
-    '/cart',
-  ];
+  const baseRoutes = ['', '/about', '/business', '/faq', '/terms', '/cart'];
 
   // Generate sitemap entries for all locales
   const routes: MetadataRoute.Sitemap = [];
@@ -27,14 +19,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
       routes.push({
         url,
         lastModified: new Date(),
-        changeFrequency:
-          route === '' ? 'daily' : route === '/products' ? 'daily' : 'weekly',
-        priority:
-          route === ''
-            ? 1
-            : route === '/about'
-              ? 0.9
-              : 0.8,
+        changeFrequency: route === '' ? 'daily' : 'weekly',
+        priority: route === '' ? 1 : route === '/about' ? 0.9 : 0.8,
         alternates: {
           languages: Object.fromEntries(
             locales.map((loc) => [

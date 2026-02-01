@@ -36,6 +36,5 @@ export const revalidateCategories = () =>
   triggerRevalidation({ tags: ['categories'] });
 export const revalidateHomepage = () =>
   triggerRevalidation({ tags: ['homepage'] });
-export const revalidateShop = () =>
-  triggerRevalidation({ paths: ['/', '/products'] });
+export const revalidateShop = () => triggerRevalidation({ paths: ['/'] });
 export const revalidateAll = () => triggerRevalidation();

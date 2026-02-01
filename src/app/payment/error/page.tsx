@@ -41,7 +41,7 @@ export default function PaymentErrorPage() {
               Back to Cart
             </Button>
           </Link>
-          <Link href="/products" className="w-full">
+          <Link href="/" className="w-full">
             <Button variant="outline" className="w-full">
               Continue Shopping
             </Button>

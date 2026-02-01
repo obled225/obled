@@ -60,9 +60,7 @@ export function ShareContent({ url, title, onClose }: ShareContentProps) {
       {/* URL Display */}
       <div className="pb-4 border-b border-gray-200">
         <div className="relative bg-gray-50 p-3 rounded-md">
-          <p className="text-sm text-gray-900 break-all pr-8">
-            {url}
-          </p>
+          <p className="text-sm text-gray-900 break-all pr-8">{url}</p>
           <button
             onClick={handleCopyUrl}
             className="absolute top-2 right-2 flex items-center justify-center w-6 h-6 rounded hover:bg-gray-200 transition-colors"

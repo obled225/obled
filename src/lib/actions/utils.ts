@@ -44,7 +44,10 @@ export function getPercentageDiff(
 export function isSimpleProduct(product: Product): boolean {
   // A product is "simple" if it has no variant and no related products
   // (variants or related products indicate complex product relationships)
-  return !product.variant && (!product.relatedProducts || product.relatedProducts.length === 0);
+  return (
+    !product.variant &&
+    (!product.relatedProducts || product.relatedProducts.length === 0)
+  );
 }
 
 export function sortProducts(products: Product[], sortBy: string): Product[] {

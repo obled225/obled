@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { getLocale } from 'next-intl/server';
+import { redirect } from 'next/navigation';
 import { siteUrl } from '@/lib/utils/config';
-import { getShopProducts } from '@/lib/sanity/queries';
+import { getShopProducts, getAllCategories } from '@/lib/sanity/queries';
 import HomeClient from './home-client';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -22,7 +23,20 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function Home() {
+interface HomeProps {
+  searchParams: Promise<{ category?: string }>;
+}
+
+export default async function Home({ searchParams }: HomeProps) {
+  const { category } = await searchParams;
+
+  // If category query param exists, redirect to /c/[slug]
+  if (category) {
+    redirect(`/c/${category}`);
+  }
+
   const products = await getShopProducts();
-  return <HomeClient products={products} />;
+  const categories = await getAllCategories();
+
+  return <HomeClient products={products} categories={categories} />;
 }

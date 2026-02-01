@@ -97,7 +97,6 @@ export function AboutClient({
                 className="w-full h-[500px] md:h-[1000px] object-cover"
                 controls={!isMobile}
                 preload="metadata"
-                muted
                 playsInline
                 aria-label="About KYS Factory video"
                 onEnded={handleVideoEnd}
@@ -302,16 +301,16 @@ export function AboutClient({
             <h2 className="text-xl sm:text-2xl font-medium mb-6">
               {tContact('title')}
             </h2>
-            
+
             {/* Contact Form */}
             <ContactForm />
-            
+
             <p className="text-sm sm:text-lg leading-relaxed mb-6 text-foreground/80">
               {tContact('description')}
             </p>
             <div className="bg-background border border-border rounded-lg overflow-hidden">
               <div className="p-6">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-4 md:grid-cols-2">
                   {[
                     {
                       key: 'whatsapp',
@@ -333,7 +332,7 @@ export function AboutClient({
                       key: 'instagram',
                       href: 'https://instagram.com/kysfactoryciv',
                       icon: InstagramIcon,
-                      bgColor: '#e56969',
+                      bgColor: '#E4405F',
                       label: 'Instagram',
                       value: '@kysfactoryciv',
                     },
@@ -363,19 +362,19 @@ export function AboutClient({
                             ? 'noopener noreferrer'
                             : undefined
                         }
-                        className="flex items-center gap-4 rounded-lg p-6 hover:bg-muted/50 transition-colors group"
+                        className="flex items-center gap-2 rounded-lg p-2.5 hover:bg-muted/50 transition-colors group"
                       >
                         <div
-                          className="flex h-12 w-12 items-center justify-center rounded-md text-white group-hover:scale-110 transition-transform"
+                          className="flex h-8 w-8 items-center justify-center rounded-md text-white group-hover:scale-110 transition-transform shrink-0"
                           style={{ backgroundColor: method.bgColor }}
                         >
-                          <IconComponent className="h-6 w-6" />
+                          <IconComponent className="h-4 w-4" />
                         </div>
-                        <div>
-                          <h3 className="font-medium text-foreground group-hover:text-foreground/90 transition-colors">
+                        <div className="min-w-0">
+                          <h3 className="font-medium text-sm text-foreground group-hover:text-foreground/90 transition-colors leading-tight">
                             {tContact(`methods.${method.key}.title`)}
                           </h3>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-xs text-muted-foreground leading-tight">
                             {tContact(`methods.${method.key}.value`)}
                           </p>
                         </div>

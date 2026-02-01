@@ -1,11 +1,11 @@
-import { sanityClient } from './sanity';
+import { sanityClient } from './client';
 import {
   Product,
   ProductCategory,
   ProductPrice,
   PortableTextBlock,
 } from '@/lib/types/sanity';
-import { getSanityImageUrl } from './sanity';
+import { getSanityImageUrl } from './client';
 import type { SanityProductExpanded } from '@/lib/types/sanity';
 
 // Helper to transform Sanity product to Product type
@@ -54,28 +54,44 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
       : undefined,
   }));
 
-  // Transform sizes from boolean object to array format
+  // Transform sizes from array format
+  // Handle both old format (object with booleans) and new format (array of objects)
   const sizesArray: Array<{ name: string; available: boolean }> = [];
-  if (doc.sizes && typeof doc.sizes === 'object') {
-    const sizeMap: Record<string, string> = {
-      xxs: 'XXS',
-      xs: 'XS',
-      s: 'S',
-      m: 'M',
-      l: 'L',
-      xl: 'XL',
-      xxl: 'XXL',
-      twoXl: '2XL',
-    };
-    Object.entries(doc.sizes).forEach(([key, value]) => {
-      if (typeof value === 'boolean' && value && sizeMap[key]) {
-        sizesArray.push({
-          name: sizeMap[key],
-          available: true,
-        });
-      }
-    });
+
+  if (doc.sizes) {
+    if (Array.isArray(doc.sizes)) {
+      // New format: array of objects with name and available
+      doc.sizes.forEach((size) => {
+        if (size && typeof size === 'object' && size.name) {
+          sizesArray.push({
+            name: size.name,
+            available: size.available !== false, // Default to true if not specified
+          });
+        }
+      });
+    } else if (typeof doc.sizes === 'object') {
+      // Legacy format: object with boolean fields (for backward compatibility)
+      const sizeMap: Record<string, string> = {
+        xxs: 'XXS',
+        xs: 'XS',
+        s: 'S',
+        m: 'M',
+        l: 'L',
+        xl: 'XL',
+        xxl: 'XXL',
+        twoXl: '2XL',
+      };
+      Object.entries(doc.sizes).forEach(([key, value]) => {
+        if (typeof value === 'boolean' && value && sizeMap[key]) {
+          sizesArray.push({
+            name: sizeMap[key],
+            available: true,
+          });
+        }
+      });
+    }
   }
+
   const sizes = sizesArray.length > 0 ? sizesArray : undefined;
 
   // Handle variant reference (single product reference for variants like short/long sleeves)
@@ -94,7 +110,10 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
   // Transform related products into full Product objects
   const relatedProducts = doc.relatedProducts
     ? doc.relatedProducts
-        .filter((ref): ref is NonNullable<typeof ref> => ref !== null && ref !== undefined && !!ref._id)
+        .filter(
+          (ref): ref is NonNullable<typeof ref> =>
+            ref !== null && ref !== undefined && !!ref._id
+        )
         .map((relatedDoc) => {
           // Transform related product using the same logic
           const relatedImages =
@@ -110,12 +129,14 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
               })
               .filter((url): url is string => url !== null && url !== '') || [];
 
-          const relatedPrices: ProductPrice[] = (relatedDoc.prices || []).map((price) => ({
-            currency: (price.currency || 'XOF') as 'XOF' | 'USD' | 'EUR',
-            basePrice: price.basePrice || 0,
-            originalPrice: price.originalPrice,
-            lomiPriceId: price.lomiPriceId || '',
-          }));
+          const relatedPrices: ProductPrice[] = (relatedDoc.prices || []).map(
+            (price) => ({
+              currency: (price.currency || 'XOF') as 'XOF' | 'USD' | 'EUR',
+              basePrice: price.basePrice || 0,
+              originalPrice: price.originalPrice,
+              lomiPriceId: price.lomiPriceId || '',
+            })
+          );
 
           const defaultRelatedPrice = relatedPrices[0] || {
             currency: 'XOF' as const,
@@ -125,7 +146,10 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
 
           const relatedCategory = relatedDoc.categories?.[0]
             ? {
-                id: relatedDoc.categories[0]._id || relatedDoc.categories[0].slug?.current || '',
+                id:
+                  relatedDoc.categories[0]._id ||
+                  relatedDoc.categories[0].slug?.current ||
+                  '',
                 name: relatedDoc.categories[0].title || '',
                 description: relatedDoc.categories[0].description,
               }
@@ -147,16 +171,20 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
             currency: defaultRelatedPrice.currency,
             image: relatedImages[0] || '',
             images: relatedImages.length > 0 ? relatedImages : undefined,
-            soldOut: !relatedDoc.inStock || (relatedDoc.stockQuantity || 0) === 0,
+            soldOut:
+              !relatedDoc.inStock || (relatedDoc.stockQuantity || 0) === 0,
             inStock: relatedDoc.inStock || false,
             stockQuantity: relatedDoc.stockQuantity || 0,
             category: relatedCategory,
-            sku: relatedDoc._id || '',
             isBusinessProduct: false,
             featured: false,
             bestSeller: false,
-            createdAt: relatedDoc._createdAt ? new Date(relatedDoc._createdAt) : new Date(),
-            updatedAt: relatedDoc._updatedAt ? new Date(relatedDoc._updatedAt) : new Date(),
+            createdAt: relatedDoc._createdAt
+              ? new Date(relatedDoc._createdAt)
+              : new Date(),
+            updatedAt: relatedDoc._updatedAt
+              ? new Date(relatedDoc._updatedAt)
+              : new Date(),
           } as Product;
         })
     : undefined;
@@ -206,7 +234,6 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
     sizes: sizes && sizes.length > 0 ? sizes : undefined,
     description: doc.description as PortableTextBlock[] | undefined,
     category,
-    sku: doc.sku || doc._id,
     dimensions: doc.dimensions
       ? {
           length: doc.dimensions.length,
@@ -240,9 +267,12 @@ const ALL_PRODUCTS_QUERY = `*[_type == "products" && !(_id in path("drafts.**"))
 
   businessPacks[] {
     quantity,
-    price,
-    lomiPriceId,
-    label
+    label,
+    prices[] {
+      currency,
+      price,
+      lomiPriceId
+    }
   },
   featured,
   bestSeller,
@@ -255,7 +285,6 @@ const ALL_PRODUCTS_QUERY = `*[_type == "products" && !(_id in path("drafts.**"))
   description,
   inStock,
   stockQuantity,
-  sku,
   dimensions,
   "images": images[].asset->,
   "categories": categories[]->{
@@ -316,9 +345,12 @@ const PRODUCT_BY_SLUG_QUERY = `*[_type == "products" && slug.current == $slug &&
   lomiProductId,
   businessPacks[] {
     quantity,
-    price,
-    lomiPriceId,
-    label
+    label,
+    prices[] {
+      currency,
+      price,
+      lomiPriceId
+    }
   },
   featured,
   bestSeller,
@@ -331,7 +363,6 @@ const PRODUCT_BY_SLUG_QUERY = `*[_type == "products" && slug.current == $slug &&
   description,
   inStock,
   stockQuantity,
-  sku,
   dimensions,
   "images": images[].asset->,
   "categories": categories[]->{
@@ -401,7 +432,6 @@ const PRODUCTS_BY_CATEGORY_QUERY = `*[_type == "products" && $categoryId in cate
   description,
   inStock,
   stockQuantity,
-  sku,
   dimensions,
   "images": images[].asset->,
   "categories": categories[]->{
@@ -471,7 +501,6 @@ const FEATURED_PRODUCTS_QUERY = `*[_type == "products" && featured == true && !(
   description,
   inStock,
   stockQuantity,
-  sku,
   dimensions,
   "images": images[].asset->,
   "categories": categories[]->{
@@ -559,7 +588,6 @@ export async function getShopProducts(): Promise<Product[]> {
       description,
       inStock,
       stockQuantity,
-      sku,
       dimensions,
       "images": images[].asset->,
       "categories": categories[]->{
@@ -637,7 +665,6 @@ export async function getBusinessProducts(): Promise<Product[]> {
       description,
       inStock,
       stockQuantity,
-      sku,
       dimensions,
       "images": images[].asset->,
       "categories": categories[]->{
@@ -770,7 +797,6 @@ export async function getProductById(id: string): Promise<Product | null> {
       description,
       inStock,
       stockQuantity,
-      sku,
       dimensions,
       "images": images[].asset->,
       "categories": categories[]->{
@@ -950,11 +976,11 @@ export async function getFloatingAnnouncement(): Promise<FloatingAnnouncementDat
 }
 
 /**
- * Get categories for the header (max 3, showInHeader=true)
+ * Get all categories from Sanity
  */
-export async function getHeaderCategories(): Promise<ProductCategory[]> {
+export async function getAllCategories(): Promise<ProductCategory[]> {
   try {
-    const query = `*[_type == "categories" && showInHeader == true && !(_id in path("drafts.**"))] | order(title asc)[0..2] {
+    const query = `*[_type == "categories" && !(_id in path("drafts.**"))] | order(title asc) {
       _id,
       title,
       description,
@@ -980,7 +1006,189 @@ export async function getHeaderCategories(): Promise<ProductCategory[]> {
       })
     );
   } catch (error) {
+    console.error('Error fetching all categories from Sanity:', error);
+    return [];
+  }
+}
+
+/**
+ * Get categories for the header (max 3, showInHeader=true, only categories with products)
+ */
+export async function getHeaderCategories(): Promise<ProductCategory[]> {
+  try {
+    // First get all header categories
+    const categoriesQuery = `*[_type == "categories" && showInHeader == true && !(_id in path("drafts.**"))] | order(title asc) {
+      _id,
+      title,
+      description,
+      "slug": slug.current,
+      badgeText,
+      badgeColor
+    }`;
+    const categories = await sanityClient.fetch(categoriesQuery);
+
+    // Filter categories that have at least one non-business product
+    const categoriesWithProducts = await Promise.all(
+      categories.map(
+        async (cat: {
+          slug: string;
+          _id: string;
+          title: string;
+          description: string;
+          badgeText?: string;
+          badgeColor?: string;
+        }) => {
+          // Check if this category has any products (excluding business products)
+          const productCountQuery = `count(*[_type == "products" && $categoryId in categories[]._ref && isBusinessProduct != true && !(_id in path("drafts.**"))])`;
+          const count = await sanityClient.fetch(productCountQuery, {
+            categoryId: cat._id,
+          });
+
+          return count > 0
+            ? {
+                id: cat.slug || cat._id,
+                name: cat.title,
+                description: cat.description,
+                badgeText: cat.badgeText,
+                badgeColor: cat.badgeColor,
+              }
+            : null;
+        }
+      )
+    );
+
+    // Filter out null values and limit to 3
+    return categoriesWithProducts
+      .filter((cat): cat is ProductCategory => cat !== null)
+      .slice(0, 3);
+  } catch (error) {
     console.error('Error fetching header categories from Sanity:', error);
+    return [];
+  }
+}
+
+/**
+ * Get a category by slug
+ */
+export async function getCategoryBySlug(
+  slug: string
+): Promise<ProductCategory | null> {
+  try {
+    const query = `*[_type == "categories" && slug.current == $slug && !(_id in path("drafts.**"))][0] {
+      _id,
+      title,
+      description,
+      "slug": slug.current,
+      badgeText,
+      badgeColor
+    }`;
+    const doc = await sanityClient.fetch(query, { slug });
+    if (!doc) return null;
+    return {
+      id: doc.slug || doc._id,
+      name: doc.title,
+      description: doc.description,
+      badgeText: doc.badgeText,
+      badgeColor: doc.badgeColor,
+    };
+  } catch (error) {
+    console.error(
+      `Error fetching category by slug "${slug}" from Sanity:`,
+      error
+    );
+    return null;
+  }
+}
+
+/**
+ * Get products by category slug (excluding business products)
+ */
+export async function getProductsByCategorySlug(
+  slug: string
+): Promise<Product[]> {
+  try {
+    // Find the category document _id by matching slug
+    const categoryQuery = `*[_type == "categories" && slug.current == $slug && !(_id in path("drafts.**"))][0]._id`;
+    const categoryId = await sanityClient.fetch(categoryQuery, { slug });
+
+    if (!categoryId) return [];
+
+    // Get products by category _id, excluding business products (consistent with shop page)
+    const query = `*[_type == "products" && $categoryId in categories[]._ref && isBusinessProduct != true && !(_id in path("drafts.**"))] | order(_createdAt desc) {
+      _id,
+      _createdAt,
+      _updatedAt,
+      name,
+      "slug": slug.current,
+      isBusinessProduct,
+      lomiProductId,
+      featured,
+      bestSeller,
+      prices[] {
+        currency,
+        basePrice,
+        originalPrice,
+        lomiPriceId
+      },
+      description,
+      inStock,
+      stockQuantity,
+      dimensions,
+      "images": images[].asset->,
+      "categories": categories[]->{
+        _id,
+        "slug": slug.current,
+        title,
+        description,
+        "image": image.asset->
+      },
+      colors[] {
+        name,
+        value,
+        available,
+        "image": image.asset->
+      },
+      sizes,
+      "variant": variant->{
+        _id,
+        name,
+        "slug": slug.current
+      },
+      "relatedProducts": relatedProducts[]->{
+        _id,
+        _createdAt,
+        _updatedAt,
+        name,
+        "slug": slug.current,
+        prices[] {
+          currency,
+          basePrice,
+          originalPrice,
+          lomiPriceId
+        },
+        inStock,
+        stockQuantity,
+        "images": images[].asset->,
+        "categories": categories[]->{
+          _id,
+          "slug": slug.current,
+          title,
+          description
+        }
+      },
+      "businessPackProduct": businessPackProduct->{
+        _id,
+        name,
+        "slug": slug.current
+      }
+    }`;
+    const docs = await sanityClient.fetch(query, { categoryId });
+    return docs.map(transformSanityProduct);
+  } catch (error) {
+    console.error(
+      `Error fetching products by category slug "${slug}" from Sanity:`,
+      error
+    );
     return [];
   }
 }

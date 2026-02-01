@@ -31,26 +31,30 @@ interface NavLink {
 function lightenColor(hex: string, percent: number = 20): string {
   // Remove # if present
   hex = hex.replace('#', '');
-  
+
   // Parse RGB values
   const r = parseInt(hex.substring(0, 2), 16);
   const g = parseInt(hex.substring(2, 4), 16);
   const b = parseInt(hex.substring(4, 6), 16);
-  
+
   // Lighten each component
   const newR = Math.min(255, Math.round(r + (255 - r) * (percent / 100)));
   const newG = Math.min(255, Math.round(g + (255 - g) * (percent / 100)));
   const newB = Math.min(255, Math.round(b + (255 - b) * (percent / 100)));
-  
+
   // Convert back to hex
-  return `#${[newR, newG, newB].map(x => {
-    const hex = x.toString(16);
-    return hex.length === 1 ? '0' + hex : hex;
-  }).join('')}`;
+  return `#${[newR, newG, newB]
+    .map((x) => {
+      const hex = x.toString(16);
+      return hex.length === 1 ? '0' + hex : hex;
+    })
+    .join('')}`;
 }
 
 // Type guard to check if a nav link has badge properties
-function hasBadge(link: NavLink): link is NavLink & { badgeText: string; badgeColor: string } {
+function hasBadge(
+  link: NavLink
+): link is NavLink & { badgeText: string; badgeColor: string } {
   return !!(link.badgeText && link.badgeColor);
 }
 
@@ -74,7 +78,7 @@ export function Header({ categories = [] }: HeaderProps) {
     { href: '/business', label: t('nav.business') },
     // Dynamic Categories inserted here
     ...(categories?.map((c) => ({
-      href: `/?category=${c.id}`,
+      href: `/c/${c.id}`,
       label: c.name,
       badgeText: c.badgeText,
       badgeColor: c.badgeColor,

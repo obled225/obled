@@ -1,7 +1,7 @@
 {
   "header": {
     "nav": {
-      "home": "Accueil",
+      "home": "Boutique",
       "business": "Offres Pro (B2B)",
       "about": "À propos",
       "faq": "FAQ"
@@ -32,6 +32,10 @@
     "emptyBusiness": {
       "title": "Aucun pack disponible pour le moment",
       "description": "Nous préparons actuellement nos offres professionnelles."
+    },
+    "emptyCategory": {
+      "title": "Aucun produit dans cette catégorie",
+      "description": "Nous n'avons pas encore de produits dans cette catégorie, mais revenez bientôt !"
     },
     "outOfStock": "Rupture de stock",
     "from": "À partir de",
