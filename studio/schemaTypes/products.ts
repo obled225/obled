@@ -376,10 +376,22 @@ export default defineType({
     }),
     defineField({
       name: 'variant',
-      title: 'Variant product',
+      title: 'Variant Product',
       type: 'reference',
       to: [{type: 'products'}],
-      description: 'Link to a related product variant (e.g., if this is short sleeves, link to the long sleeves variant)',
+      description: 'Link to the main variant of this product (e.g., if this is short sleeves, link to the long sleeves version, or vice versa). Use for products that are essentially the same but with different attributes.',
+    }),
+    defineField({
+      name: 'relatedProducts',
+      title: 'Related Products',
+      type: 'array',
+      description: 'Link to other related products (similar products, complementary items, etc.). These will appear in a "You might also like" section.',
+      of: [
+        {
+          type: 'reference',
+          to: [{type: 'products'}],
+        },
+      ],
     }),
     defineField({
       name: 'businessPackProduct',

@@ -2,7 +2,6 @@
   "header": {
     "nav": {
       "home": "Home",
-      "store": "Store",
       "business": "For businesses (B2B)",
       "about": "About",
       "faq": "FAQ"
@@ -52,7 +51,10 @@
       "sizeGuide": "Size guide",
       "share": "Share",
       "viewBusinessPack": "View business pack",
-      "businessPackAvailable": "Bulk orders available"
+      "businessPackAvailable": "Bulk orders available",
+      "viewVariant": "View",
+      "relatedProducts": "Related Products",
+      "relatedProductsDescription": "You might also like these products"
     },
     "share": {
       "title": "Share",
@@ -324,7 +326,7 @@
   },
   "contact": {
     "title": "Contact",
-    "description": "Or contact us directly via :",
+    "description": "Or directly via :",
     "methods": {
       "whatsapp": {
         "title": "WhatsApp",
@@ -365,12 +367,12 @@
     }
   },
   "faq": {
-    "title": "Frequently Asked Questions",
-    "subtitle": "Find answers to frequently asked questions about our products and services.",
+    "title": "Frequently asked questions",
+    "subtitle": "Find answers to your questions about our products and services.",
     "howToOrder": {
-      "title": "HOW TO ORDER?",
-      "content": "Simple, easy and effective:",
-      "steps": [
+      "question": "How to order?",
+      "answer": [
+        "Simple, easy and effective:",
         "Choose your pack",
         "Add to cart and proceed to checkout",
         "Our team contacts you if needed",

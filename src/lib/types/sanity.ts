@@ -58,8 +58,41 @@ export interface SanityProductExpanded extends Omit<
   variant?: {
     _id: string;
     name?: string;
-    slug?: string;
+    slug?: {
+      current?: string;
+    } | string;
   };
+  relatedProducts?: Array<{
+    _id: string;
+    _createdAt?: string;
+    _updatedAt?: string;
+    name?: string;
+    slug?: {
+      current?: string;
+    } | string;
+    prices?: Array<{
+      currency: 'XOF' | 'USD' | 'EUR';
+      basePrice: number;
+      originalPrice?: number;
+      lomiPriceId?: string;
+    }>;
+    inStock?: boolean;
+    stockQuantity?: number;
+    images?: Array<{
+      asset?: {
+        _ref: string;
+        _type: 'reference';
+      };
+    }>;
+    categories?: Array<{
+      _id: string;
+      slug?: {
+        current?: string;
+      };
+      title?: string;
+      description?: string;
+    }>;
+  }>;
   businessPackProduct?: {
     _id: string;
     name?: string;
@@ -181,6 +214,7 @@ export interface Product {
     name: string;
     slug: string;
   };
+  relatedProducts?: Product[];
   businessPackProduct?: {
     id: string;
     name: string;

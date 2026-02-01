@@ -71,11 +71,10 @@ export function Header({ categories = [] }: HeaderProps) {
 
   const navLinks: NavLink[] = [
     { href: '/', label: t('nav.home') },
-    { href: '/shop', label: t('nav.store') },
     { href: '/business', label: t('nav.business') },
     // Dynamic Categories inserted here
     ...(categories?.map((c) => ({
-      href: `/shop?category=${c.id}`,
+      href: `/?category=${c.id}`,
       label: c.name,
       badgeText: c.badgeText,
       badgeColor: c.badgeColor,

@@ -11,6 +11,7 @@ export function FaqClient() {
   // Define FAQ items with their keys and content
   const faqItems = [
     { key: 'whoWeAre', hasList: false },
+    { key: 'howToOrder', hasList: true },
     { key: 'location', hasList: false },
     { key: 'products', hasList: false },
     { key: 'productionTime', hasList: false },
@@ -32,14 +33,24 @@ export function FaqClient() {
 
   const renderAnswer = (item: { key: string; hasList: boolean }) => {
     if (item.hasList) {
+      const answerItems = t.raw(`${item.key}.answer`);
       return (
-        <ul className="list-disc pl-6 mb-6">
-          {t.raw(`${item.key}.answer`).map((service: string, index: number) => (
-            <li key={index} className="leading-relaxed mb-2">
-              {service}
-            </li>
-          ))}
-        </ul>
+        <div>
+          {item.key === 'howToOrder' && answerItems.length > 0 && (
+            <p className="text-foreground/80 text-sm leading-relaxed mb-3">
+              {answerItems[0]}
+            </p>
+          )}
+          <ul className="list-disc pl-6 mb-6">
+            {(item.key === 'howToOrder' ? answerItems.slice(1) : answerItems).map(
+              (item: string, index: number) => (
+                <li key={index} className="leading-relaxed mb-2">
+                  {item}
+                </li>
+              )
+            )}
+          </ul>
+        </div>
       );
     }
 
@@ -77,28 +88,6 @@ export function FaqClient() {
           <p className="text-muted-foreground text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
             {t('subtitle')}
           </p>
-        </div>
-
-        {/* How to Order Section */}
-        <div className="bg-background border border-border rounded-lg overflow-hidden mb-8">
-          <div className="p-6">
-            <h2 className="text-xl sm:text-2xl font-medium mb-4">
-              {t('howToOrder.title')}
-            </h2>
-            <p className="text-sm sm:text-lg leading-relaxed mb-4">
-              {t('howToOrder.content')}
-            </p>
-            <ul className="list-disc pl-6 space-y-2">
-              {t.raw('howToOrder.steps').map((step: string, index: number) => (
-                <li
-                  key={index}
-                  className="leading-relaxed text-sm sm:text-base"
-                >
-                  {step}
-                </li>
-              ))}
-            </ul>
-          </div>
         </div>
 
         {/* FAQ Accordion */}

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { getLocale } from 'next-intl/server';
 import { siteUrl } from '@/lib/utils/config';
-import { getAllProducts } from '@/lib/sanity/queries';
+import { getShopProducts } from '@/lib/sanity/queries';
 import HomeClient from './home-client';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -23,6 +23,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const products = await getAllProducts();
+  const products = await getShopProducts();
   return <HomeClient products={products} />;
 }

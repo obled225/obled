@@ -6,7 +6,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const baseRoutes = [
     '',
     '/about',
-    '/shop',
     '/products',
     '/business',
     '/faq',
@@ -33,7 +32,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         priority:
           route === ''
             ? 1
-            : route === '/about' || route === '/shop'
+            : route === '/about'
               ? 0.9
               : 0.8,
         alternates: {

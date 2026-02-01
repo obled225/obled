@@ -18,6 +18,7 @@ import { useIsMobile } from '@/lib/hooks/use-is-mobile';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import RelatedProducts from '@/components/products/related';
 
 interface ProductDetailProps {
   product: Product;
@@ -223,6 +224,19 @@ export function ProductDetail({ product }: ProductDetailProps) {
           <h1 className="text-2xl sm:text-3xl font-normal text-gray-900 leading-tight mb-3 sm:mb-4">
             {product.name}
           </h1>
+
+          {/* Variant Toggle */}
+          {product.variant && (
+            <div className="mb-4">
+              <Link
+                href={`/products/${product.variant.slug}`}
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+              >
+                <span>{t('productDetail.viewVariant') || 'View'} {product.variant.name}</span>
+                <span className="text-gray-500">→</span>
+              </Link>
+            </div>
+          )}
 
           {/* Price */}
           <div className="flex items-center gap-3 mb-6">
@@ -485,6 +499,17 @@ export function ProductDetail({ product }: ProductDetailProps) {
         isOpen={isFullscreenGalleryOpen}
         onClose={() => setIsFullscreenGalleryOpen(false)}
       />
+
+      {/* Related Products */}
+      {product.relatedProducts && product.relatedProducts.length > 0 && (
+        <div className="mt-16 pt-16 border-t border-gray-200">
+          <RelatedProducts
+            products={product.relatedProducts}
+            title={t('productDetail.relatedProducts') || 'Related Products'}
+            description={t('productDetail.relatedProductsDescription') || 'You might also like these products'}
+          />
+        </div>
+      )}
     </div>
   );
 }

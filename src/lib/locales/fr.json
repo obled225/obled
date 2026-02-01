@@ -2,7 +2,6 @@
   "header": {
     "nav": {
       "home": "Accueil",
-      "store": "Boutique",
       "business": "Offres Pro (B2B)",
       "about": "À propos",
       "faq": "FAQ"
@@ -52,7 +51,10 @@
       "sizeGuide": "Guide des tailles",
       "share": "Partager",
       "viewBusinessPack": "Voir le pack professionnel",
-      "businessPackAvailable": "Commandes en gros disponibles"
+      "businessPackAvailable": "Commandes en gros disponibles",
+      "viewVariant": "Voir",
+      "relatedProducts": "Produits associés",
+      "relatedProductsDescription": "Vous pourriez également aimer ces produits"
     },
     "share": {
       "title": "Partager",
@@ -327,7 +329,7 @@
   },
   "contact": {
     "title": "Contact",
-    "description": "Ou contactez-nous directement via :",
+    "description": "Ou directement via :",
     "methods": {
       "whatsapp": {
         "title": "WhatsApp",
@@ -369,11 +371,11 @@
   },
   "faq": {
     "title": "Questions fréquentes",
-    "subtitle": "Trouvez des réponses aux questions fréquemment posées sur nos produits et services.",
+    "subtitle": "Trouvez des réponses à vos questions sur nos produits et services.",
     "howToOrder": {
-      "title": "COMMENT COMMANDER ?",
-      "content": "Simple, facile et efficace :",
-      "steps": [
+      "question": "Comment commander ?",
+      "answer": [
+        "Simple, facile et efficace :",
         "Choisissez votre pack",
         "Ajoutez au panier et procédez au paiement",
         "Notre équipe vous contacte en cas de besoin",

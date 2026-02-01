@@ -27,7 +27,6 @@ export async function POST(request: NextRequest) {
       revalidateTag('categories', 'max');
       revalidateTag('homepage', 'max');
       revalidatePath('/');
-      revalidatePath('/shop');
       revalidatePath('/products');
       console.log('Revalidated all common content');
     }

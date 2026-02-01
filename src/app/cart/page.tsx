@@ -25,7 +25,7 @@ export default function CartPage() {
               Looks like you haven&apos;t added anything to your cart yet.
               Discover our products and find something you love.
             </p>
-            <Link href="/shop">
+            <Link href="/">
               <Button size="lg" className="h-12 px-8">
                 Start Shopping
               </Button>
@@ -60,7 +60,7 @@ export default function CartPage() {
             ))}
 
             <div className="flex justify-between items-center pt-4">
-              <Link href="/shop">
+              <Link href="/">
                 <Button
                   variant="ghost"
                   className="pl-0 hover:pl-2 transition-all"

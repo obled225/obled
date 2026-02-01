@@ -78,13 +78,87 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
   }
   const sizes = sizesArray.length > 0 ? sizesArray : undefined;
 
-  // Handle variant reference (single product reference)
+  // Handle variant reference (single product reference for variants like short/long sleeves)
   const variant = doc.variant
     ? {
         id: doc.variant._id || '',
         name: doc.variant.name || '',
-        slug: doc.variant.slug || '',
+        slug:
+          typeof doc.variant.slug === 'string'
+            ? doc.variant.slug
+            : doc.variant.slug?.current || '',
       }
+    : undefined;
+
+  // Handle relatedProducts array (multiple product references)
+  // Transform related products into full Product objects
+  const relatedProducts = doc.relatedProducts
+    ? doc.relatedProducts
+        .filter((ref): ref is NonNullable<typeof ref> => ref !== null && ref !== undefined && !!ref._id)
+        .map((relatedDoc) => {
+          // Transform related product using the same logic
+          const relatedImages =
+            relatedDoc.images
+              ?.map((img) => {
+                const asset = img?.asset || img;
+                if (!asset) return null;
+                try {
+                  return getSanityImageUrl(asset, 800, 600);
+                } catch {
+                  return null;
+                }
+              })
+              .filter((url): url is string => url !== null && url !== '') || [];
+
+          const relatedPrices: ProductPrice[] = (relatedDoc.prices || []).map((price) => ({
+            currency: (price.currency || 'XOF') as 'XOF' | 'USD' | 'EUR',
+            basePrice: price.basePrice || 0,
+            originalPrice: price.originalPrice,
+            lomiPriceId: price.lomiPriceId || '',
+          }));
+
+          const defaultRelatedPrice = relatedPrices[0] || {
+            currency: 'XOF' as const,
+            basePrice: 0,
+            lomiPriceId: '',
+          };
+
+          const relatedCategory = relatedDoc.categories?.[0]
+            ? {
+                id: relatedDoc.categories[0]._id || relatedDoc.categories[0].slug?.current || '',
+                name: relatedDoc.categories[0].title || '',
+                description: relatedDoc.categories[0].description,
+              }
+            : {
+                id: 'uncategorized',
+                name: 'Uncategorized',
+              };
+
+          return {
+            id: relatedDoc._id || '',
+            slug:
+              typeof relatedDoc.slug === 'string'
+                ? relatedDoc.slug
+                : relatedDoc.slug?.current || relatedDoc._id || '',
+            name: relatedDoc.name || '',
+            prices: relatedPrices,
+            price: defaultRelatedPrice.basePrice,
+            originalPrice: defaultRelatedPrice.originalPrice,
+            currency: defaultRelatedPrice.currency,
+            image: relatedImages[0] || '',
+            images: relatedImages.length > 0 ? relatedImages : undefined,
+            soldOut: !relatedDoc.inStock || (relatedDoc.stockQuantity || 0) === 0,
+            inStock: relatedDoc.inStock || false,
+            stockQuantity: relatedDoc.stockQuantity || 0,
+            category: relatedCategory,
+            sku: relatedDoc._id || '',
+            isBusinessProduct: false,
+            featured: false,
+            bestSeller: false,
+            createdAt: relatedDoc._createdAt ? new Date(relatedDoc._createdAt) : new Date(),
+            updatedAt: relatedDoc._updatedAt ? new Date(relatedDoc._updatedAt) : new Date(),
+          } as Product;
+        })
     : undefined;
 
   // Handle businessPackProduct reference (link to business pack version)
@@ -142,6 +216,7 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
         }
       : undefined,
     variant,
+    relatedProducts,
     businessPackProduct,
     isBusinessProduct: doc.isBusinessProduct || false,
     lomiProductId: doc.lomiProductId,
@@ -201,6 +276,28 @@ const ALL_PRODUCTS_QUERY = `*[_type == "products" && !(_id in path("drafts.**"))
     name,
     "slug": slug.current
   },
+  "relatedProducts": relatedProducts[]->{
+    _id,
+    _createdAt,
+    _updatedAt,
+    name,
+    "slug": slug.current,
+    prices[] {
+      currency,
+      basePrice,
+      originalPrice,
+      lomiPriceId
+    },
+    inStock,
+    stockQuantity,
+    "images": images[].asset->,
+    "categories": categories[]->{
+      _id,
+      "slug": slug.current,
+      title,
+      description
+    }
+  },
   "businessPackProduct": businessPackProduct->{
     _id,
     name,
@@ -255,6 +352,28 @@ const PRODUCT_BY_SLUG_QUERY = `*[_type == "products" && slug.current == $slug &&
     name,
     "slug": slug.current
   },
+  "relatedProducts": relatedProducts[]->{
+    _id,
+    _createdAt,
+    _updatedAt,
+    name,
+    "slug": slug.current,
+    prices[] {
+      currency,
+      basePrice,
+      originalPrice,
+      lomiPriceId
+    },
+    inStock,
+    stockQuantity,
+    "images": images[].asset->,
+    "categories": categories[]->{
+      _id,
+      "slug": slug.current,
+      title,
+      description
+    }
+  },
   "businessPackProduct": businessPackProduct->{
     _id,
     name,
@@ -303,6 +422,28 @@ const PRODUCTS_BY_CATEGORY_QUERY = `*[_type == "products" && $categoryId in cate
     name,
     "slug": slug.current
   },
+  "relatedProducts": relatedProducts[]->{
+    _id,
+    _createdAt,
+    _updatedAt,
+    name,
+    "slug": slug.current,
+    prices[] {
+      currency,
+      basePrice,
+      originalPrice,
+      lomiPriceId
+    },
+    inStock,
+    stockQuantity,
+    "images": images[].asset->,
+    "categories": categories[]->{
+      _id,
+      "slug": slug.current,
+      title,
+      description
+    }
+  },
   "businessPackProduct": businessPackProduct->{
     _id,
     name,
@@ -350,6 +491,28 @@ const FEATURED_PRODUCTS_QUERY = `*[_type == "products" && featured == true && !(
     _id,
     name,
     "slug": slug.current
+  },
+  "relatedProducts": relatedProducts[]->{
+    _id,
+    _createdAt,
+    _updatedAt,
+    name,
+    "slug": slug.current,
+    prices[] {
+      currency,
+      basePrice,
+      originalPrice,
+      lomiPriceId
+    },
+    inStock,
+    stockQuantity,
+    "images": images[].asset->,
+    "categories": categories[]->{
+      _id,
+      "slug": slug.current,
+      title,
+      description
+    }
   },
   "businessPackProduct": businessPackProduct->{
     _id,
@@ -413,7 +576,29 @@ export async function getShopProducts(): Promise<Product[]> {
         "image": image.asset->
       },
       sizes,
-      "variant": variant->{
+      "relatedProducts": relatedProducts[]->{
+        _id,
+        _createdAt,
+        _updatedAt,
+        name,
+        "slug": slug.current,
+        prices[] {
+          currency,
+          basePrice,
+          originalPrice,
+          lomiPriceId
+        },
+        inStock,
+        stockQuantity,
+        "images": images[].asset->,
+        "categories": categories[]->{
+          _id,
+          "slug": slug.current,
+          title,
+          description
+        }
+      },
+      "businessPackProduct": businessPackProduct->{
         _id,
         name,
         "slug": slug.current
@@ -469,7 +654,29 @@ export async function getBusinessProducts(): Promise<Product[]> {
         "image": image.asset->
       },
       sizes,
-      "variant": variant->{
+      "relatedProducts": relatedProducts[]->{
+        _id,
+        _createdAt,
+        _updatedAt,
+        name,
+        "slug": slug.current,
+        prices[] {
+          currency,
+          basePrice,
+          originalPrice,
+          lomiPriceId
+        },
+        inStock,
+        stockQuantity,
+        "images": images[].asset->,
+        "categories": categories[]->{
+          _id,
+          "slug": slug.current,
+          title,
+          description
+        }
+      },
+      "businessPackProduct": businessPackProduct->{
         _id,
         name,
         "slug": slug.current
@@ -580,7 +787,29 @@ export async function getProductById(id: string): Promise<Product | null> {
         "image": image.asset->
       },
       sizes,
-      "variant": variant->{
+      "relatedProducts": relatedProducts[]->{
+        _id,
+        _createdAt,
+        _updatedAt,
+        name,
+        "slug": slug.current,
+        prices[] {
+          currency,
+          basePrice,
+          originalPrice,
+          lomiPriceId
+        },
+        inStock,
+        stockQuantity,
+        "images": images[].asset->,
+        "categories": categories[]->{
+          _id,
+          "slug": slug.current,
+          title,
+          description
+        }
+      },
+      "businessPackProduct": businessPackProduct->{
         _id,
         name,
         "slug": slug.current

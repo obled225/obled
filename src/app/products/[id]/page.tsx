@@ -57,7 +57,7 @@ function ProductNotFound() {
               {t('productNotFound.description')}
             </p>
             <Link
-              href="/shop"
+              href="/"
               className="inline-block px-6 py-3 bg-foreground text-background rounded-md hover:bg-foreground/90 transition-colors"
             >
               {t('productNotFound.browseProducts')}
