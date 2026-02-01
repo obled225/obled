@@ -87,6 +87,18 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
       }
     : undefined;
 
+  // Handle businessPackProduct reference (link to business pack version)
+  const businessPackProduct = doc.businessPackProduct
+    ? {
+        id: doc.businessPackProduct._id || '',
+        name: doc.businessPackProduct.name || '',
+        slug:
+          typeof doc.businessPackProduct.slug === 'string'
+            ? doc.businessPackProduct.slug
+            : doc.businessPackProduct.slug?.current || '',
+      }
+    : undefined;
+
   const category: ProductCategory = doc.categories?.[0]
     ? {
         id: doc.categories[0]._id || doc.categories[0].slug?.current || '',
@@ -130,6 +142,7 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
         }
       : undefined,
     variant,
+    businessPackProduct,
     isBusinessProduct: doc.isBusinessProduct || false,
     lomiProductId: doc.lomiProductId,
     featured: doc.featured || false,
@@ -187,6 +200,11 @@ const ALL_PRODUCTS_QUERY = `*[_type == "products" && !(_id in path("drafts.**"))
     _id,
     name,
     "slug": slug.current
+  },
+  "businessPackProduct": businessPackProduct->{
+    _id,
+    name,
+    "slug": slug.current
   }
 }`;
 
@@ -236,6 +254,11 @@ const PRODUCT_BY_SLUG_QUERY = `*[_type == "products" && slug.current == $slug &&
     _id,
     name,
     "slug": slug.current
+  },
+  "businessPackProduct": businessPackProduct->{
+    _id,
+    name,
+    "slug": slug.current
   }
 }`;
 
@@ -279,6 +302,11 @@ const PRODUCTS_BY_CATEGORY_QUERY = `*[_type == "products" && $categoryId in cate
     _id,
     name,
     "slug": slug.current
+  },
+  "businessPackProduct": businessPackProduct->{
+    _id,
+    name,
+    "slug": slug.current
   }
 }`;
 
@@ -319,6 +347,11 @@ const FEATURED_PRODUCTS_QUERY = `*[_type == "products" && featured == true && !(
   },
   sizes,
   "variant": variant->{
+    _id,
+    name,
+    "slug": slug.current
+  },
+  "businessPackProduct": businessPackProduct->{
     _id,
     name,
     "slug": slug.current

@@ -50,7 +50,9 @@
       "addToCart": "Add to cart",
       "buyNow": "Buy now",
       "sizeGuide": "Size guide",
-      "share": "Share"
+      "share": "Share",
+      "viewBusinessPack": "View business pack",
+      "businessPackAvailable": "Bulk orders available"
     },
     "share": {
       "title": "Share",

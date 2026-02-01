@@ -50,7 +50,9 @@
       "addToCart": "Ajouter au panier",
       "buyNow": "Acheter maintenant",
       "sizeGuide": "Guide des tailles",
-      "share": "Partager"
+      "share": "Partager",
+      "viewBusinessPack": "Voir le pack professionnel",
+      "businessPackAvailable": "Commandes en gros disponibles"
     },
     "share": {
       "title": "Partager",

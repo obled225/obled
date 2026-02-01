@@ -60,6 +60,13 @@ export interface SanityProductExpanded extends Omit<
     name?: string;
     slug?: string;
   };
+  businessPackProduct?: {
+    _id: string;
+    name?: string;
+    slug?: {
+      current?: string;
+    };
+  };
   isBusinessProduct?: boolean;
   lomiProductId?: string;
   businessPacks?: Array<{
@@ -170,6 +177,11 @@ export interface Product {
     weight?: number;
   };
   variant?: {
+    id: string;
+    name: string;
+    slug: string;
+  };
+  businessPackProduct?: {
     id: string;
     name: string;
     slug: string;

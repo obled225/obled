@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Minus, Plus, Share2, ZoomIn, Ruler } from 'lucide-react';
+import { Minus, Plus, Share2, ZoomIn, Ruler, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Product, formatPrice, getProductPrice } from '@/lib/types';
 import { useCartStore } from '@/lib/store/cart-store';
@@ -17,6 +17,7 @@ import { FullscreenGallery } from '@/components/products/fullscreen-gallery';
 import { useIsMobile } from '@/lib/hooks/use-is-mobile';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface ProductDetailProps {
   product: Product;
@@ -391,6 +392,19 @@ export function ProductDetail({ product }: ProductDetailProps) {
               >
                 {t('productDetail.buyNow')}
               </Button>
+            )}
+            
+            {/* Business Pack Link */}
+            {product.businessPackProduct && !product.isBusinessProduct && (
+              <Link href={`/products/${product.businessPackProduct.slug}`}>
+                <Button
+                  variant="outline"
+                  className="w-full h-11 sm:h-12 text-sm font-medium border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors touch-target"
+                >
+                  <Package className="h-4 w-4 mr-2" />
+                  {t('productDetail.viewBusinessPack')}
+                </Button>
+              </Link>
             )}
           </div>
 

@@ -48,18 +48,24 @@ export default defineType({
               name: 'basePrice',
               title: 'Base price',
               type: 'number',
+              options: {
+                controls: false,
+              },
               validation: (Rule) => Rule.required().min(0),
             },
             {
               name: 'originalPrice',
               title: 'Original price',
               type: 'number',
+              options: {
+                controls: false,
+              },
               description: 'Original price before discount (optional)',
               validation: (Rule) => Rule.min(0),
             },
             {
               name: 'lomiPriceId',
-              title: 'lomi. Price ID',
+              title: 'lomi. price ID',
               type: 'string',
               description: 'The price ID from lomi. payment processor for this currency (optional)',
               validation: (Rule) => 
@@ -67,7 +73,7 @@ export default defineType({
           name: 'UUID', // Error message is "Does not match UUID pattern"
           invert: false, // Don't allow non-matches
         })
-        .error('lomi. Price ID must be a valid UUID'),
+        .error('lomi. price ID must be a valid UUID'),
             },
           ],
           preview: {
@@ -119,6 +125,13 @@ export default defineType({
       type: 'array',
       of: [{type: 'image', options: {hotspot: true}}],
       validation: (Rule) => Rule.min(1).error('At least one image is required'),
+    }),
+    defineField({
+      name: 'isBusinessProduct',
+      title: 'Is this a business offer product?',
+      type: 'boolean',
+      description: 'Business products appear on /business page, regular products appear on /shop',
+      initialValue: false,
     }),
     defineField({
       name: 'inStock',
@@ -255,13 +268,6 @@ export default defineType({
       ],
     }),
     defineField({
-      name: 'isBusinessProduct',
-      title: 'Is this a business offer product?',
-      type: 'boolean',
-      description: 'Business products appear on /business page, regular products appear on /shop',
-      initialValue: false,
-    }),
-    defineField({
       name: 'businessPacks',
       title: 'Business packs',
       type: 'array',
@@ -281,11 +287,14 @@ export default defineType({
               name: 'price',
               title: 'Price',
               type: 'number',
+              options: {
+                controls: false,
+              },
               description: 'Total price for the pack (leave empty to use base price * quantity)',
             },
             {
               name: 'lomiPriceId',
-              title: 'lomi. Price ID',
+              title: 'lomi. price ID',
               type: 'string',
               description: 'Optional: Specific price ID for this pack from lomi.',
             },
@@ -371,6 +380,16 @@ export default defineType({
       type: 'reference',
       to: [{type: 'products'}],
       description: 'Link to a related product variant (e.g., if this is short sleeves, link to the long sleeves variant)',
+    }),
+    defineField({
+      name: 'businessPackProduct',
+      title: 'Business pack product',
+      type: 'reference',
+      to: [{type: 'products'}],
+      description: 'Link to the business pack version of this product (e.g., if this is a single blank t-shirt, link to the pack of blank t-shirts). Only link to products marked as business offers.',
+      options: {
+        filter: 'isBusinessProduct == true',
+      },
     }),
   ],
   preview: {
