@@ -92,7 +92,7 @@ export function FaqClient() {
         </div>
 
         {/* FAQ Accordion */}
-        <div className="bg-background border border-border rounded-lg overflow-hidden">
+        <div className="bg-background border border-border rounded-md overflow-hidden">
           <AccordionPrimitive.Root
             type="multiple"
             defaultValue={defaultOpenItems}

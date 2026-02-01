@@ -1,45 +1,10 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { Truck, MapPin, Clock } from 'lucide-react';
+import { useMemo, useEffect, useState } from 'react';
+import { Truck, Clock } from 'lucide-react';
 import { formatPrice } from '@/lib/utils/format';
 import { useCurrencyStore } from '@/lib/store/currency-store';
-
-interface ShippingOption {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  estimatedDays: string;
-  type: 'standard' | 'express' | 'overnight';
-}
-
-const shippingOptions: ShippingOption[] = [
-  {
-    id: 'standard',
-    name: 'Standard Shipping',
-    description: 'Delivered in 5-7 business days',
-    price: 0, // Free shipping over $50
-    estimatedDays: '5-7 business days',
-    type: 'standard',
-  },
-  {
-    id: 'express',
-    name: 'Express Shipping',
-    description: 'Delivered in 2-3 business days',
-    price: 12.99,
-    estimatedDays: '2-3 business days',
-    type: 'express',
-  },
-  {
-    id: 'overnight',
-    name: 'Overnight Shipping',
-    description: 'Delivered tomorrow',
-    price: 24.99,
-    estimatedDays: 'Next business day',
-    type: 'overnight',
-  },
-];
+import { getActiveShippingOptions, type ShippingOption } from '@/lib/sanity/queries';
 
 interface ShippingCalculatorProps {
   subtotal: number;
@@ -50,27 +15,103 @@ interface ShippingCalculatorProps {
 
 export function ShippingCalculator({
   subtotal,
-  selectedShipping = 'standard',
+  selectedShipping,
   onShippingChange,
   showFreeShippingThreshold = true,
 }: ShippingCalculatorProps) {
   const { currency } = useCurrencyStore();
-  const [zipCode, setZipCode] = useState('');
-  const [isCalculating, setIsCalculating] = useState(false);
+  const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Calculate free shipping threshold
-  const freeShippingThreshold = 50;
-  const amountForFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
-  const qualifiesForFreeShipping = subtotal >= freeShippingThreshold;
+  // Helper function to get price for current currency
+  const getPriceForCurrency = (
+    option: ShippingOption,
+    curr: string
+  ): number => {
+    const priceObj = option.prices.find((p) => p.currency === curr);
+    return priceObj?.price || option.prices[0]?.price || 0;
+  };
 
-  // Get available shipping options based on subtotal
+  // Fetch shipping options from Sanity
+  useEffect(() => {
+    async function fetchShippingOptions() {
+      try {
+        const options = await getActiveShippingOptions();
+        setShippingOptions(options);
+        // Auto-select first option if none selected
+        if (!selectedShipping && options.length > 0 && onShippingChange) {
+          const firstOption = options[0];
+          const price = getPriceForCurrency(firstOption, currency);
+          onShippingChange(firstOption.id, price);
+        }
+      } catch (error) {
+        console.error('Error fetching shipping options:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchShippingOptions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Get free shipping threshold for current currency
+  const freeShippingThreshold = useMemo(() => {
+    // Find the first option with free shipping threshold enabled
+    const optionWithThreshold = shippingOptions.find(
+      (opt) =>
+        opt.freeShippingThreshold?.enabled &&
+        opt.freeShippingThreshold?.thresholds?.length
+    );
+    if (!optionWithThreshold?.freeShippingThreshold?.thresholds) {
+      return null;
+    }
+    const threshold = optionWithThreshold.freeShippingThreshold.thresholds.find(
+      (t) => t.currency === currency
+    );
+    return threshold?.amount || null;
+  }, [shippingOptions, currency]);
+
+  const amountForFreeShipping = freeShippingThreshold
+    ? Math.max(0, freeShippingThreshold - subtotal)
+    : 0;
+  const qualifiesForFreeShipping = freeShippingThreshold
+    ? subtotal >= freeShippingThreshold
+    : false;
+
+  // Get available shipping options with prices for current currency
   const availableOptions = useMemo(() => {
-    return shippingOptions.map((option) => ({
-      ...option,
-      price:
-        option.id === 'standard' && qualifiesForFreeShipping ? 0 : option.price,
-    }));
-  }, [qualifiesForFreeShipping]);
+    return shippingOptions.map((option) => {
+      const basePrice = getPriceForCurrency(option, currency);
+      
+      // Check if this specific option has free shipping threshold enabled
+      const optionThreshold = option.freeShippingThreshold?.enabled
+        ? option.freeShippingThreshold.thresholds?.find(
+            (t) => t.currency === currency
+          )?.amount
+        : null;
+      
+      // Apply free shipping if this option's threshold is met
+      const isFreeShippingEligible =
+        optionThreshold !== null && optionThreshold !== undefined
+          ? subtotal >= optionThreshold
+          : false;
+
+      return {
+        ...option,
+        price: isFreeShippingEligible ? 0 : basePrice,
+      };
+    });
+  }, [shippingOptions, currency, subtotal]);
+
+  // Update shipping cost when currency or subtotal changes (if option is selected)
+  useEffect(() => {
+    if (selectedShipping && availableOptions.length > 0 && onShippingChange) {
+      const option = availableOptions.find((opt) => opt.id === selectedShipping);
+      if (option) {
+        onShippingChange(selectedShipping, option.price);
+      }
+    }
+  }, [currency, subtotal, selectedShipping, availableOptions, onShippingChange]);
 
   const selectedOption =
     availableOptions.find((option) => option.id === selectedShipping) ||
@@ -83,63 +124,57 @@ export function ShippingCalculator({
     }
   };
 
-  const handleCalculateShipping = async () => {
-    if (!zipCode.trim()) return;
-
-    setIsCalculating(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setIsCalculating(false);
-
-    // In a real app, this would call a shipping API
-    console.log(`Calculated shipping for ZIP: ${zipCode}`);
-  };
+  // Don't show anything if loading or no options available
+  if (loading || availableOptions.length === 0) {
+    return null;
+  }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-6">
+    <div className="bg-white border border-gray-200 rounded-md p-6">
       <div className="flex items-center mb-4">
         <Truck className="w-5 h-5 text-gray-600 mr-2" />
         <h3 className="text-lg font-semibold text-gray-900">
-          Shipping Options
+          Shipping options
         </h3>
       </div>
 
       {/* Free Shipping Progress */}
-      {showFreeShippingThreshold && !qualifiesForFreeShipping && (
-        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-blue-900">
-              Add {formatPrice(amountForFreeShipping, currency)} more for FREE
-              shipping!
-            </span>
+      {showFreeShippingThreshold &&
+        freeShippingThreshold &&
+        !qualifiesForFreeShipping && (
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-blue-900">
+                Add {formatPrice(amountForFreeShipping, currency)} more for FREE
+                shipping!
+              </span>
+            </div>
+            <div className="w-full bg-blue-200 rounded-md h-2">
+              <div
+                className="bg-blue-600 h-2 rounded-md transition-all duration-300"
+                style={{
+                  width: `${Math.min((subtotal / freeShippingThreshold) * 100, 100)}%`,
+                }}
+              />
+            </div>
+            <div className="flex justify-between text-xs text-blue-700 mt-1">
+              <span>{formatPrice(subtotal, currency)} spent</span>
+              <span>
+                {formatPrice(freeShippingThreshold, currency)} for free shipping
+              </span>
+            </div>
           </div>
-          <div className="w-full bg-blue-200 rounded-full h-2">
-            <div
-              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-              style={{
-                width: `${Math.min((subtotal / freeShippingThreshold) * 100, 100)}%`,
-              }}
-            />
-          </div>
-          <div className="flex justify-between text-xs text-blue-700 mt-1">
-            <span>{formatPrice(subtotal, currency)} spent</span>
-            <span>
-              {formatPrice(freeShippingThreshold, currency)} for free shipping
-            </span>
-          </div>
-        </div>
-      )}
+        )}
 
       {/* Shipping Options */}
       <div className="space-y-3 mb-6">
         {availableOptions.map((option) => (
           <label
             key={option.id}
-            className={`block p-4 border rounded-lg cursor-pointer transition-colors ${
-              selectedShipping === option.id
-                ? 'border-blue-500 bg-blue-50'
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
+            className={`block p-4 border rounded-md cursor-pointer transition-colors ${selectedShipping === option.id
+              ? 'border-blue-500 bg-blue-50'
+              : 'border-gray-200 hover:border-gray-300'
+              }`}
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center">
@@ -156,14 +191,10 @@ export function ShippingCalculator({
                     <span className="font-medium text-gray-900 mr-2">
                       {option.name}
                     </span>
-                    {option.type === 'express' && (
-                      <span className="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full">
-                        Express
-                      </span>
-                    )}
-                    {option.type === 'overnight' && (
-                      <span className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">
-                        Overnight
+                    {(option.type === 'express' ||
+                      option.type === 'overnight') && (
+                      <span className="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-md">
+                        {option.type === 'express' ? 'Fast' : 'Fastest'}
                       </span>
                     )}
                   </div>
@@ -197,38 +228,6 @@ export function ShippingCalculator({
             </p>
           </div>
         </div>
-      </div>
-
-      {/* ZIP Code Calculator (Optional) */}
-      <div className="border-t pt-4 mt-4">
-        <div className="flex items-center space-x-2 mb-3">
-          <MapPin className="w-4 h-4 text-gray-400" />
-          <span className="text-sm font-medium text-gray-700">
-            Calculate exact shipping
-          </span>
-        </div>
-        <div className="flex space-x-2">
-          <input
-            type="text"
-            placeholder="Enter ZIP code"
-            value={zipCode}
-            onChange={(e) =>
-              setZipCode(e.target.value.replace(/\D/g, '').slice(0, 5))
-            }
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            maxLength={5}
-          />
-          <button
-            onClick={handleCalculateShipping}
-            disabled={!zipCode || zipCode.length !== 5 || isCalculating}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isCalculating ? 'Calculating...' : 'Calculate'}
-          </button>
-        </div>
-        <p className="text-xs text-gray-500 mt-1">
-          Get accurate shipping rates for your location
-        </p>
       </div>
     </div>
   );

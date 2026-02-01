@@ -60,7 +60,7 @@ export function AboutClient({
             {sectionImagesForKey.map((image, index) => (
               <div
                 key={`${sectionKey}-${index}`}
-                className="rounded-lg overflow-hidden"
+                className="rounded-md overflow-hidden"
               >
                 {image.url && (
                   <Image
@@ -91,7 +91,7 @@ export function AboutClient({
         {/* Hero Section */}
         <div className="text-center mb-16">
           {heroVideoUrl && (
-            <div className="mb-6 rounded-lg overflow-hidden max-w-2xl mx-auto shadow-lg relative">
+            <div className="mb-6 rounded-md overflow-hidden max-w-2xl mx-auto shadow-lg relative">
               <video
                 ref={videoRef}
                 className="w-full h-[500px] md:h-[1000px] object-cover"
@@ -114,7 +114,7 @@ export function AboutClient({
                 <div className="absolute inset-0 flex items-center justify-center bg-black/20 md:hidden">
                   <button
                     onClick={handlePlayVideo}
-                    className="bg-white/90 hover:bg-white rounded-full p-4 shadow-lg transition-all duration-200 transform hover:scale-105"
+                    className="bg-white/90 hover:bg-white rounded-md p-4 shadow-lg transition-all duration-200 transform hover:scale-105"
                     aria-label="Play video"
                   >
                     <Play
@@ -157,7 +157,7 @@ export function AboutClient({
           {/* B2B Solutions Section */}
           {renderSectionWithImages(
             'b2b',
-            <div className="bg-background border border-border rounded-lg overflow-hidden">
+            <div className="bg-background border border-border rounded-md overflow-hidden">
               <div className="p-6">
                 <h2 className="text-xl sm:text-2xl font-medium mb-4">
                   {t('b2b.title')}
@@ -284,7 +284,7 @@ export function AboutClient({
           {/* Commitment Section */}
           {renderSectionWithImages(
             'commitment',
-            <div className="bg-background border border-border rounded-lg overflow-hidden">
+            <div className="bg-background border border-border rounded-md overflow-hidden">
               <div className="p-6">
                 <h2 className="text-xl sm:text-2xl font-medium mb-6">
                   {t('commitment.title')}
@@ -308,7 +308,7 @@ export function AboutClient({
             <p className="text-sm sm:text-lg leading-relaxed mb-6 text-foreground/80">
               {tContact('description')}
             </p>
-            <div className="bg-background border border-border rounded-lg overflow-hidden">
+            <div className="bg-background border border-border rounded-md overflow-hidden">
               <div className="p-6">
                 <div className="grid gap-4 md:grid-cols-2">
                   {[
@@ -352,17 +352,17 @@ export function AboutClient({
                         href={method.href}
                         target={
                           method.key === 'whatsapp' ||
-                          method.key === 'instagram'
+                            method.key === 'instagram'
                             ? '_blank'
                             : undefined
                         }
                         rel={
                           method.key === 'whatsapp' ||
-                          method.key === 'instagram'
+                            method.key === 'instagram'
                             ? 'noopener noreferrer'
                             : undefined
                         }
-                        className="flex items-center gap-2 rounded-lg p-2.5 hover:bg-muted/50 transition-colors group"
+                        className="flex items-center gap-2 rounded-md p-2.5 hover:bg-muted/50 transition-colors group"
                       >
                         <div
                           className="flex h-8 w-8 items-center justify-center rounded-md text-white group-hover:scale-110 transition-transform shrink-0"

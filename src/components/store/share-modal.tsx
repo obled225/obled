@@ -5,11 +5,64 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { WhatsAppIcon, InstagramIcon } from '@/components/ui/icons';
 import { useToast } from '@/lib/hooks/use-toast';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
+import { useIsMobile } from '@/lib/hooks/use-is-mobile';
+import { cn } from '@/lib/actions/utils';
 
 interface ShareContentProps {
   url: string;
   title: string;
   onClose?: () => void;
+}
+
+interface ShareModalWrapperProps {
+  isOpen: boolean;
+  onClose: () => void;
+  url: string;
+  title: string;
+}
+
+export function ShareModalWrapper({
+  isOpen,
+  onClose,
+  url,
+  title,
+}: ShareModalWrapperProps) {
+  // Always call hooks unconditionally at the top - this ensures consistent hook order
+  const isMobile = useIsMobile();
+  const t = useTranslations('products');
+
+  // Use Sheet for both mobile and desktop, but with different sides and styling
+  // This ensures consistent hook order across renders
+  return (
+    <Sheet open={isOpen} onOpenChange={onClose}>
+      <SheetContent
+        side={isMobile ? "bottom" : "right"}
+        floating={!isMobile}
+        hideCloseButton={isMobile}
+        className={cn(
+          "flex flex-col overflow-hidden p-0",
+          isMobile 
+            ? "w-full max-h-[90vh]" 
+            : "w-full sm:max-w-xl max-h-[90vh]"
+        )}
+      >
+        <SheetHeader className="px-6 pt-6 pb-4 border-b">
+          <SheetTitle className="text-lg sm:text-xl font-bold tracking-wider">
+            {t('share.title')}
+          </SheetTitle>
+        </SheetHeader>
+        <div className="flex-1 overflow-y-auto px-6 pb-6">
+          <ShareContent url={url} title={title} onClose={onClose} />
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
 }
 
 export function ShareContent({ url, title, onClose }: ShareContentProps) {
@@ -42,14 +95,15 @@ export function ShareContent({ url, title, onClose }: ShareContentProps) {
 
   return (
     <div className="w-full max-w-full space-y-6">
-      <div className="flex items-center justify-between">
+      {/* Title is now handled by SheetHeader on mobile, so hide it here on mobile */}
+      <div className="hidden md:flex items-center justify-between">
         <h2 className="text-lg sm:text-xl font-bold tracking-wider">
           {t('share.title')}
         </h2>
         {onClose && (
           <button
             onClick={onClose}
-            className="md:hidden p-1 hover:bg-gray-100 rounded touch-target"
+            className="p-1 hover:bg-gray-100 rounded touch-target"
             aria-label="Close share"
           >
             <X className="h-5 w-5" />

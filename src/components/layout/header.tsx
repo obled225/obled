@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { Search, ShoppingCart, Menu, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
@@ -37,10 +38,14 @@ function hasBadge(
 
 export function Header({ categories = [] }: HeaderProps) {
   const t = useTranslations('header');
+  const pathname = usePathname();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const cartItemCount = useCartStore((state) => state.cart.itemCount);
+
+  // Check if we're on checkout page
+  const isCheckoutPage = pathname === '/checkout';
 
   // Check if we're on mobile
   const isMobile = useIsMobile();
@@ -83,12 +88,14 @@ export function Header({ categories = [] }: HeaderProps) {
           {/* Right side actions */}
           <div className="flex items-center gap-2 sm:gap-2">
             {/* Currency Selector - hidden on very small screens, shown in mobile menu */}
-            <div className="hidden sm:block">
-              <CurrencySelector />
-            </div>
+            {!isCheckoutPage && (
+              <div className="hidden sm:block">
+                <CurrencySelector />
+              </div>
+            )}
 
-            {/* Search - hidden on mobile */}
-            {!isMobile && (
+            {/* Search - hidden on mobile and checkout page */}
+            {!isMobile && !isCheckoutPage && (
               <Button
                 variant="ghost"
                 size="icon"
@@ -100,29 +107,33 @@ export function Header({ categories = [] }: HeaderProps) {
               </Button>
             )}
 
-            {/* Cart */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="relative h-11 w-11 sm:h-10 sm:w-10"
-              aria-label={t('cart.ariaLabel')}
-              onClick={() => setIsCartOpen(true)}
-            >
-              <ShoppingCart className="h-5 w-5 sm:h-5 sm:w-5" />
-              {cartItemCount > 0 && (
-                <Badge
-                  variant="destructive"
-                  className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[10px]"
+            {/* Cart - hidden on checkout page */}
+            {!isCheckoutPage && (
+              <>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="relative h-11 w-11 sm:h-10 sm:w-10"
+                  aria-label={t('cart.ariaLabel')}
+                  onClick={() => setIsCartOpen(true)}
                 >
-                  {cartItemCount}
-                </Badge>
-              )}
-            </Button>
+                  <ShoppingCart className="h-5 w-5 sm:h-5 sm:w-5" />
+                  {cartItemCount > 0 && (
+                    <Badge
+                      variant="destructive"
+                      className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[10px]"
+                    >
+                      {cartItemCount}
+                    </Badge>
+                  )}
+                </Button>
 
-            <CartDrawer
-              isOpen={isCartOpen}
-              onClose={() => setIsCartOpen(false)}
-            />
+                <CartDrawer
+                  isOpen={isCartOpen}
+                  onClose={() => setIsCartOpen(false)}
+                />
+              </>
+            )}
 
             {/* Mobile menu */}
             <Button
@@ -174,8 +185,8 @@ export function Header({ categories = [] }: HeaderProps) {
           </ul>
         </nav>
 
-        {/* Search bar - only on desktop */}
-        {isSearchOpen && !isMobile && (
+        {/* Search bar - only on desktop and not on checkout */}
+        {isSearchOpen && !isMobile && !isCheckoutPage && (
           <div className="border-t border-border py-3 sm:py-4 px-4 sm:px-6 lg:px-8">
             <div className="relative">
               <input
@@ -240,12 +251,14 @@ export function Header({ categories = [] }: HeaderProps) {
               </div>
             ))}
           </nav>
-          {/* Currency selector in mobile menu */}
-          <div className="mt-6 pt-6 border-t border-border">
-            <div className="flex items-center justify-end py-2">
-              <CurrencySelector />
+          {/* Currency selector in mobile menu - hidden on checkout */}
+          {!isCheckoutPage && (
+            <div className="mt-6 pt-6 border-t border-border">
+              <div className="flex items-center justify-end py-2">
+                <CurrencySelector />
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </Modal>
     </header>

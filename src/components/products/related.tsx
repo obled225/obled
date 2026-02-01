@@ -48,7 +48,7 @@ export default function RelatedProducts({
           return (
             <div key={product.id} className="group">
               <Link href={`/products/${product.slug}`} className="block">
-                <div className="relative aspect-square overflow-hidden bg-gray-100 rounded-lg mb-4 group-hover:shadow-lg transition-shadow">
+                <div className="relative aspect-square overflow-hidden bg-gray-100 rounded-md mb-4 group-hover:shadow-lg transition-shadow">
                   {product.images && product.images[0] ? (
                     <Image
                       src={product.images[0]}

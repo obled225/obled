@@ -8,13 +8,11 @@ import { useCartStore } from '@/lib/store/cart-store';
 import { useCurrencyStore } from '@/lib/store/currency-store';
 import { useToast } from '@/lib/hooks/use-toast';
 import { cn } from '@/lib/actions/utils';
-import Modal from '@/components/ui/modal';
-import { SizeGuideContent } from './size-guide-modal';
-import { ShareContent } from './share-modal';
+import { SizeGuideModalWrapper } from './size-guide-modal';
+import { ShareModalWrapper } from './share-modal';
 import { PortableText } from '@/components/ui/portable-text';
 import { useTranslations } from 'next-intl';
 import { FullscreenGallery } from '@/components/products/fullscreen-gallery';
-import { useIsMobile } from '@/lib/hooks/use-is-mobile';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -36,7 +34,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const { addItem } = useCartStore();
   const { currency } = useCurrencyStore();
   const { success, error } = useToast();
-  const isMobile = useIsMobile();
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState(
     product.colors?.[0]?.name || ''
@@ -256,7 +253,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
         {/* Image Gallery */}
         <div className="space-y-4">
           {/* Main Image - adapts to image aspect ratio */}
-          <div 
+          <div
             className="relative w-full bg-transparent rounded-md cursor-pointer group"
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
@@ -279,7 +276,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 />
                 <button
                   onClick={() => setIsFullscreenGalleryOpen(true)}
-                  className="absolute left-4 top-4 rounded-full bg-white/80 p-2 backdrop-blur-sm hover:bg-white transition-colors z-10"
+                  className="absolute left-4 top-4 rounded-md bg-white/80 p-2 backdrop-blur-sm hover:bg-white transition-colors z-10"
                   aria-label="Zoom"
                 >
                   <ZoomIn className="h-4 w-4" />
@@ -406,7 +403,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                       onClick={() => handleColorChange(color.name)}
                       disabled={!color.available}
                       className={cn(
-                        'relative h-8 w-8 rounded-full border-2 transition-all overflow-hidden',
+                        'relative h-8 w-8 rounded-md border-2 transition-all overflow-hidden',
                         selectedColor === color.name
                           ? isWhite
                             ? 'border-gray-900'
@@ -605,35 +602,18 @@ export function ProductDetail({ product }: ProductDetailProps) {
       </div>
 
       {/* Size Guide Modal */}
-      <Modal
+      <SizeGuideModalWrapper
         isOpen={isSizeGuideOpen}
-        close={() => setIsSizeGuideOpen(false)}
-        size="medium"
-      >
-        <Modal.Body>
-          <div className="w-full max-w-full">
-            <SizeGuideContent onClose={() => setIsSizeGuideOpen(false)} />
-          </div>
-        </Modal.Body>
-      </Modal>
+        onClose={() => setIsSizeGuideOpen(false)}
+      />
 
       {/* Share Modal */}
-      <Modal
+      <ShareModalWrapper
         isOpen={isShareOpen}
-        close={() => setIsShareOpen(false)}
-        size="medium"
-        position={isMobile ? 'bottom' : 'center'}
-      >
-        <Modal.Body>
-          <div className="w-full max-w-full">
-            <ShareContent
-              url={productUrl}
-              title={product.name}
-              onClose={() => setIsShareOpen(false)}
-            />
-          </div>
-        </Modal.Body>
-      </Modal>
+        onClose={() => setIsShareOpen(false)}
+        url={productUrl}
+        title={product.name}
+      />
 
       {/* Fullscreen Image Gallery */}
       <FullscreenGallery

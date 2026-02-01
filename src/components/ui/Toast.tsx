@@ -24,7 +24,7 @@ export function Toast({ id, title, description, type, onRemove }: ToastProps) {
   };
 
   return (
-    <div className={`p-4 rounded-lg border shadow-lg ${getToastStyles()}`}>
+    <div className={`p-4 rounded-md border shadow-lg ${getToastStyles()}`}>
       <div className="flex items-start justify-between">
         <div className="flex-1">
           {title && <div className="font-medium">{title}</div>}

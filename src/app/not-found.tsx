@@ -11,7 +11,7 @@ export default function NotFound() {
   return (
     <main className="grow flex items-center justify-center min-h-[60vh]">
       <div className="flex justify-center items-center w-full px-4 py-12 sm:py-16 md:py-20">
-        <div className="bg-background border border-border rounded-lg overflow-hidden max-w-md w-full">
+        <div className="bg-background border border-border rounded-md overflow-hidden max-w-md w-full">
           <div className="p-4 sm:p-6 text-center">
             <h2 className="text-lg sm:text-xl md:text-2xl font-medium text-foreground mb-3 sm:mb-4">
               {t('title')}

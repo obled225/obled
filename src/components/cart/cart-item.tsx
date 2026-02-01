@@ -30,7 +30,7 @@ export function CartItem({ item, showControls = true }: CartItemProps) {
     (basePrice + (item.selectedVariant?.priceModifier || 0)) * item.quantity;
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 hover:shadow-sm transition-shadow">
+    <div className="bg-white border border-gray-200 rounded-md p-3 sm:p-4 hover:shadow-sm transition-shadow">
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
         <div className="flex items-start gap-3 sm:items-center sm:flex-1 sm:min-w-0">
           <div className="relative w-16 h-16 sm:w-16 sm:h-16 shrink-0 bg-gray-100 rounded-md overflow-hidden">
@@ -72,7 +72,7 @@ export function CartItem({ item, showControls = true }: CartItemProps) {
             <div className="flex items-center gap-2 mt-1">
               {(() => {
                 const packPrice = basePrice + (item.selectedVariant?.priceModifier || 0);
-                
+
                 // Find original price for pack if it exists
                 let originalPrice: number | undefined;
                 if (item.selectedVariant?.packSize && item.product.businessPacks) {
@@ -84,7 +84,7 @@ export function CartItem({ item, showControls = true }: CartItemProps) {
                 } else {
                   originalPrice = currentPrice?.originalPrice;
                 }
-                
+
                 return (
                   <>
                     {originalPrice && originalPrice > packPrice && (

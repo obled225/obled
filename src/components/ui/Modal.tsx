@@ -95,7 +95,7 @@ const Modal = ({
                   'max-w-xl': size === 'medium',
                   'max-w-3xl': size === 'large',
                   'bg-transparent shadow-none': search,
-                  'bg-white shadow-xl border rounded-lg': !search,
+                  'bg-white shadow-xl border rounded-md': !search,
                 }
               )}
             >
@@ -131,7 +131,7 @@ const Modal = ({
                       'max-w-xl': size === 'medium',
                       'max-w-3xl': size === 'large',
                       'bg-transparent shadow-none': search,
-                      'bg-white shadow-xl border rounded-lg': !search,
+                      'bg-white shadow-xl border rounded-md': !search,
                     }
                   )}
                 >

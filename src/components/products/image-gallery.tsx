@@ -12,7 +12,7 @@ const ImageGallery = ({ images, alt }: ImageGalleryProps) => {
 
   if (!images || images.length === 0) {
     return (
-      <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
+      <div className="aspect-square bg-gray-100 rounded-md flex items-center justify-center">
         <span className="text-gray-400">No images available</span>
       </div>
     );
@@ -29,7 +29,7 @@ const ImageGallery = ({ images, alt }: ImageGalleryProps) => {
   return (
     <div className="flex flex-col gap-4">
       {/* Main Image */}
-      <div className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden group">
+      <div className="relative aspect-square bg-gray-100 rounded-md overflow-hidden group">
         <Image
           src={images[selectedImage]}
           alt={`${alt} - Image ${selectedImage + 1}`}
@@ -43,14 +43,14 @@ const ImageGallery = ({ images, alt }: ImageGalleryProps) => {
             {/* Navigation Arrows */}
             <button
               onClick={prevImage}
-              className="absolute left-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-full p-2 shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute left-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-md p-2 shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
               aria-label="Previous image"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={nextImage}
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-full p-2 shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-md p-2 shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
               aria-label="Next image"
             >
               <ChevronRight className="w-4 h-4" />
@@ -71,11 +71,10 @@ const ImageGallery = ({ images, alt }: ImageGalleryProps) => {
             <button
               key={index}
               onClick={() => setSelectedImage(index)}
-              className={`relative shrink-0 w-16 h-16 rounded-md overflow-hidden border-2 transition-colors ${
-                selectedImage === index
-                  ? 'border-blue-500'
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}
+              className={`relative shrink-0 w-16 h-16 rounded-md overflow-hidden border-2 transition-colors ${selectedImage === index
+                ? 'border-blue-500'
+                : 'border-gray-200 hover:border-gray-300'
+                }`}
               aria-label={`View image ${index + 1}`}
             >
               <Image

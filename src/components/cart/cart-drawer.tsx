@@ -11,12 +11,18 @@ import { Button } from '@/components/ui/button';
 import { ShoppingCart, Plus, Minus, Trash2 } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cart-store';
 import { useCurrencyStore } from '@/lib/store/currency-store';
-import { formatPrice } from '@/lib/actions/utils';
+import { formatPrice, cn } from '@/lib/actions/utils';
 import { getProductPrice } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 import { useIsMobile } from '@/lib/hooks/use-is-mobile';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
+import { useState, useEffect, useMemo } from 'react';
+import {
+  getTaxSettings,
+  calculateTax,
+  type TaxSettings,
+} from '@/lib/sanity/queries';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -28,7 +34,32 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const t = useTranslations('header.cart');
   const { cart, updateQuantity, removeItem, getCartSummary } = useCartStore();
   const { currency } = useCurrencyStore();
-  const summary = getCartSummary(currency);
+  const [taxSettings, setTaxSettings] = useState<TaxSettings | null>(null);
+
+  // Fetch tax settings
+  useEffect(() => {
+    async function fetchTaxSettings() {
+      const settings = await getTaxSettings();
+      setTaxSettings(settings);
+    }
+    fetchTaxSettings();
+  }, []);
+
+  // Calculate tax when subtotal or currency changes (using useMemo instead of useEffect)
+  const taxAmount = useMemo(() => {
+    if (!taxSettings) return 0;
+    
+    const subtotal = cart.items.reduce((total, item) => {
+      const priceObj = item.product.prices?.find((p) => p.currency === currency) || item.product.prices?.[0];
+      const basePrice = priceObj?.basePrice || item.product.price;
+      const variantPrice = item.selectedVariant?.priceModifier || 0;
+      return total + (basePrice + variantPrice) * item.quantity;
+    }, 0);
+    
+    return calculateTax(subtotal, currency, taxSettings);
+  }, [taxSettings, currency, cart.items]);
+
+  const summary = getCartSummary(currency, taxAmount, 0);
   const isMobile = useIsMobile();
 
   const handleCheckout = () => {
@@ -41,9 +72,10 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
       <SheetContent
         side={isMobile ? "bottom" : "right"}
         floating={!isMobile}
+        hideCloseButton={isMobile}
         className="flex flex-col w-full sm:max-w-md max-h-[70vh] sm:max-h-[calc(100vh-2rem)] overflow-hidden p-4"
       >
-        <SheetHeader className="pb-1 space-y-0">
+        <SheetHeader className="pb-1 space-y-0 hidden sm:block">
           <SheetTitle className="mb-0 text-base">
             {t('title')}{cart.itemCount > 1 ? ` (${cart.itemCount})` : ''}
           </SheetTitle>
@@ -55,7 +87,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
         <div className="flex-1 overflow-y-auto pt-0 pb-4">
           {cart.items.length === 0 ? (
             <div className="flex flex-col items-center justify-center min-h-full space-y-4 text-center">
-              <div className="p-4 bg-muted/30 rounded-full">
+              <div className="p-4 bg-muted/30 rounded-md">
                 <ShoppingCart className="h-8 w-8 text-muted-foreground" />
               </div>
               <p className="text-muted-foreground">{t('empty')}</p>
@@ -64,13 +96,16 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               </Button>
             </div>
           ) : (
-            <div className="space-y-4">
-              {cart.items.map((item) => (
+            <div className="space-y-0">
+              {cart.items.map((item, index) => (
                 <div
                   key={item.id}
-                  className="flex gap-4 py-2 border-b border-border/50 last:border-0"
+                  className={cn(
+                    "flex gap-3 sm:gap-4 py-3 sm:py-2",
+                    index < cart.items.length - 1 && "border-b border-gray-200"
+                  )}
                 >
-                  <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-md border bg-muted">
+                  <div className="relative h-24 w-24 sm:h-20 sm:w-20 shrink-0 overflow-hidden rounded-md border bg-muted">
                     {item.product.image ? (
                       <Image
                         src={item.product.image}
@@ -80,13 +115,13 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center bg-gray-100 text-gray-400">
-                        <ShoppingCart className="h-6 w-6" />
+                        <ShoppingCart className="h-6 w-6 sm:h-6 sm:w-6" />
                       </div>
                     )}
                   </div>
-                  <div className="flex flex-1 flex-col justify-between">
+                  <div className="flex flex-1 flex-col justify-between gap-2 sm:gap-0">
                     <div className="grid gap-1">
-                      <h3 className="font-medium line-clamp-2 text-sm">
+                      <h3 className="font-medium line-clamp-2 text-base sm:text-sm">
                         {item.product.name}
                         {item.selectedVariant?.packSize && (
                           <span className="text-muted-foreground font-normal">
@@ -96,12 +131,12 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         )}
                       </h3>
                       {item.selectedVariant && !item.selectedVariant.packSize && (
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-sm sm:text-xs text-muted-foreground">
                           {`${item.selectedVariant.name}${item.selectedVariant.value ? `: ${item.selectedVariant.value}` : ''}`}
                         </p>
                       )}
                     </div>
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
                       <div className="flex flex-col gap-1">
                         {/* Get pack original price if it's a pack variant */}
                         {(() => {
@@ -125,16 +160,16 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
                           return (
                             <div className="flex flex-col gap-0.5">
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-2 flex-wrap">
                                 {originalPrice && originalPrice > packPrice && (
-                                  <span className="text-xs text-muted-foreground line-through">
+                                  <span className="text-sm sm:text-xs text-muted-foreground line-through">
                                     {formatPrice(originalPrice, displayCurrency)}
                                   </span>
                                 )}
-                                <span className="text-sm font-medium">
+                                <span className="text-base sm:text-sm font-semibold">
                                   {formatPrice(packPrice, displayCurrency)}
                                   {item.selectedVariant?.packSize && (
-                                    <span className="text-xs text-muted-foreground ml-1">
+                                    <span className="text-xs text-muted-foreground ml-1 font-normal">
                                       {t('pack')}
                                     </span>
                                   )}
@@ -144,11 +179,10 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                           );
                         })()}
                       </div>
-                      <div className="flex items-center gap-1">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-6 w-6"
+                      <div className="flex items-center gap-1.5 sm:gap-1 ml-auto sm:ml-0">
+                        <button
+                          type="button"
+                          className="h-7 w-7 sm:h-6 sm:w-6 flex items-center justify-center border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md transition-colors touch-target"
                           onClick={() => {
                             if (item.quantity === 1) {
                               removeItem(item.id);
@@ -158,24 +192,23 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                           }}
                         >
                           {item.quantity === 1 ? (
-                            <Trash2 className="h-3 w-3 text-red-500" />
+                            <Trash2 className="h-3.5 w-3.5 sm:h-3 sm:w-3 text-red-500" />
                           ) : (
-                            <Minus className="h-3 w-3" />
+                            <Minus className="h-3.5 w-3.5 sm:h-3 sm:w-3" />
                           )}
-                        </Button>
-                        <span className="w-6 text-center text-sm">
+                        </button>
+                        <span className="w-7 sm:w-6 text-center text-sm font-medium">
                           {item.quantity}
                         </span>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-6 w-6"
+                        <button
+                          type="button"
+                          className="h-7 w-7 sm:h-6 sm:w-6 flex items-center justify-center border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md transition-colors touch-target"
                           onClick={() =>
                             updateQuantity(item.id, item.quantity + 1)
                           }
                         >
-                          <Plus className="h-3 w-3" />
-                        </Button>
+                          <Plus className="h-3.5 w-3.5 sm:h-3 sm:w-3" />
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -207,12 +240,22 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 </span>
               </div>
             )}
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-600">{t('taxesIncluded')}</span>
-            </div>
+            {summary.tax > 0 ? (
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">Tax</span>
+                <span className="font-medium">
+                  {formatPrice(summary.tax, currency)}
+                </span>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">{t('taxesIncluded')}</span>
+                <span className="text-gray-500 text-xs">0</span>
+              </div>
+            )}
             <div className="flex items-center justify-between font-semibold pt-2 border-t">
               <span>{t('total')}</span>
-              <span>{formatPrice(summary.subtotal, currency)}</span>
+              <span>{formatPrice(summary.total, currency)}</span>
             </div>
             <Button className="w-full" size="lg" onClick={handleCheckout}>
               {t('checkout')}

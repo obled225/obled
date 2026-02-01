@@ -14,7 +14,11 @@ interface CartStore {
   removeItem: (itemId: string) => void;
   updateQuantity: (itemId: string, quantity: number) => void;
   clearCart: () => void;
-  getCartSummary: (currency?: Currency) => CartSummary;
+  getCartSummary: (
+    currency?: Currency,
+    taxAmount?: number,
+    shippingAmount?: number
+  ) => CartSummary;
   getItemCount: () => number;
   getCartTotal: (currency?: Currency) => number;
 }
@@ -186,21 +190,23 @@ const createCartStore = () =>
           return calculateCartTotal(cart.items, currency);
         },
 
-        getCartSummary: (currency: Currency = 'XOF'): CartSummary => {
+        getCartSummary: (
+          currency: Currency = 'XOF',
+          taxAmount: number = 0,
+          shippingAmount: number = 0
+        ): CartSummary => {
           const { cart } = get();
           const subtotal = calculateCartTotal(cart.items, currency);
           const originalSubtotal = calculateOriginalSubtotal(cart.items, currency);
           const discount = originalSubtotal > subtotal ? originalSubtotal - subtotal : 0;
-          const tax = subtotal * 0.1; // 10% tax
-          const shipping = subtotal > 50 ? 0 : 9.99; // Free shipping over $50
 
           return {
             subtotal,
             originalSubtotal: originalSubtotal > subtotal ? originalSubtotal : undefined,
-            tax,
-            shipping,
+            tax: taxAmount,
+            shipping: shippingAmount,
             discount,
-            total: subtotal + tax + shipping - discount,
+            total: subtotal + taxAmount + shippingAmount - discount,
           };
         },
 

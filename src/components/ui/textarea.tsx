@@ -4,7 +4,7 @@ import { Label } from './label';
 
 export type TextareaProps =
   React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
-    label?: string;
+    label?: string | React.ReactNode;
   };
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
@@ -14,7 +14,11 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
 
     return (
       <div className="space-y-2">
-        {label && <Label htmlFor={textareaId}>{label}</Label>}
+        {label && (
+          <Label htmlFor={textareaId}>
+            {typeof label === 'string' ? label : label}
+          </Label>
+        )}
         <textarea
           id={textareaId}
           className={cn(

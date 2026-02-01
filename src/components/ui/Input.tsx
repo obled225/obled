@@ -3,7 +3,7 @@ import { cn } from '@/lib/actions/utils';
 import { Label } from './label';
 
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
-  label?: string;
+  label?: string | React.ReactNode;
 };
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
@@ -13,7 +13,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
     return (
       <div className="space-y-2">
-        {label && <Label htmlFor={inputId}>{label}</Label>}
+        {label && (
+          <Label htmlFor={inputId}>
+            {typeof label === 'string' ? label : label}
+          </Label>
+        )}
         <input
           id={inputId}
           type={type}

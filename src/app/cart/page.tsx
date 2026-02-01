@@ -15,7 +15,7 @@ export default function CartPage() {
       <main className="grow bg-gray-50 min-h-[calc(100vh-4rem)]">
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
           <div className="text-center">
-            <div className="mx-auto h-24 w-24 bg-gray-200 rounded-full flex items-center justify-center mb-6">
+            <div className="mx-auto h-24 w-24 bg-gray-200 rounded-md flex items-center justify-center mb-6">
               <ShoppingBag className="h-12 w-12 text-gray-400" />
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
@@ -77,7 +77,7 @@ export default function CartPage() {
               <CartSummary
                 showCheckoutButton={true}
                 showContinueShopping={false}
-                className="bg-white shadow-sm rounded-lg"
+                className="bg-white shadow-sm rounded-md"
               />
 
               <div className="mt-6 text-center text-xs text-gray-500">

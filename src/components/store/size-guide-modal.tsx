@@ -6,6 +6,13 @@ import { sizeGuide } from '@/lib/types';
 import { cn } from '@/lib/actions/utils';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
+import { useIsMobile } from '@/lib/hooks/use-is-mobile';
 
 export function SizeGuideModal() {
   const t = useTranslations('products');
@@ -19,6 +26,47 @@ export function SizeGuideModal() {
   );
 }
 
+interface SizeGuideModalWrapperProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export function SizeGuideModalWrapper({
+  isOpen,
+  onClose,
+}: SizeGuideModalWrapperProps) {
+  // Always call hooks unconditionally at the top - this ensures consistent hook order
+  const isMobile = useIsMobile();
+  const t = useTranslations('products');
+
+  // Use Sheet for both mobile and desktop, but with different sides and styling
+  // This ensures consistent hook order across renders
+  return (
+    <Sheet open={isOpen} onOpenChange={onClose}>
+      <SheetContent
+        side={isMobile ? "bottom" : "right"}
+        floating={!isMobile}
+        hideCloseButton={isMobile}
+        className={cn(
+          "flex flex-col overflow-hidden p-0",
+          isMobile
+            ? "w-full max-h-[90vh]"
+            : "w-full sm:max-w-xl max-h-[90vh]"
+        )}
+      >
+        <SheetHeader className="px-6 pt-6 pb-4 border-b">
+          <SheetTitle className="text-lg sm:text-xl font-bold tracking-wider text-center">
+            {t('sizeGuide.title')}
+          </SheetTitle>
+        </SheetHeader>
+        <div className="flex-1 overflow-y-auto px-6 pb-6">
+          <SizeGuideContent onClose={onClose} />
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
 // Modal content component (can be used separately if needed)
 export function SizeGuideContent({ onClose }: { onClose?: () => void }) {
   const t = useTranslations('products');
@@ -28,14 +76,15 @@ export function SizeGuideContent({ onClose }: { onClose?: () => void }) {
 
   return (
     <div className="w-full max-w-full space-y-6">
-      <div className="flex items-center justify-center relative">
+      {/* Title is now handled by SheetHeader on mobile, so hide it here on mobile */}
+      <div className="flex items-center justify-center relative  md:flex">
         <h2 className="text-lg sm:text-xl font-bold tracking-wider text-center">
           {t('sizeGuide.title')}
         </h2>
         {onClose && (
           <button
             onClick={onClose}
-            className="md:hidden p-1 hover:bg-gray-100 rounded-md touch-target absolute right-0"
+            className="p-1 hover:bg-gray-100 rounded-md touch-target absolute right-0"
             aria-label="Close size guide"
           >
             <X className="h-5 w-5" />
@@ -45,11 +94,11 @@ export function SizeGuideContent({ onClose }: { onClose?: () => void }) {
 
       {/* Unit Toggle */}
       <div className="flex justify-center">
-        <div className="inline-flex rounded-full bg-gray-100 p-1">
+        <div className="inline-flex rounded-md bg-gray-100 p-1">
           <button
             onClick={() => setUnit('INCHES')}
             className={cn(
-              'rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
+              'rounded-md px-4 py-1.5 text-sm font-medium transition-colors',
               unit === 'INCHES'
                 ? 'bg-white text-gray-900 shadow-sm'
                 : 'text-gray-600 hover:text-gray-900'
@@ -60,7 +109,7 @@ export function SizeGuideContent({ onClose }: { onClose?: () => void }) {
           <button
             onClick={() => setUnit('CM')}
             className={cn(
-              'rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
+              'rounded-md px-4 py-1.5 text-sm font-medium transition-colors',
               unit === 'CM'
                 ? 'bg-white text-gray-900 shadow-sm'
                 : 'text-gray-600 hover:text-gray-900'

@@ -1182,3 +1182,320 @@ export async function getProductsByCategorySlug(
     return [];
   }
 }
+
+// GROQ query to get shipping and taxes document
+const SHIPPING_AND_TAXES_QUERY = `*[_type == "shippingAndTaxes" && !(_id in path("drafts.**"))][0] {
+  _id,
+  _createdAt,
+  _updatedAt,
+  shippingOptions[] {
+    name,
+    type,
+    description,
+    estimatedDays,
+    prices[] {
+      currency,
+      price
+    },
+    isActive,
+    sortOrder,
+    freeShippingThreshold {
+      enabled,
+      thresholds[] {
+        currency,
+        amount
+      }
+    }
+  },
+  taxSettings {
+    isActive,
+    taxRates[] {
+      currency,
+      type,
+      rate
+    },
+    displayMessage
+  }
+}`;
+
+export interface ShippingPrice {
+  currency: 'XOF' | 'USD' | 'EUR';
+  price: number;
+}
+
+export interface FreeShippingThreshold {
+  currency: 'XOF' | 'USD' | 'EUR';
+  amount: number;
+}
+
+export interface ShippingOption {
+  id: string;
+  name: string;
+  type: 'standard' | 'express' | 'overnight' | 'international';
+  description: string;
+  estimatedDays: string;
+  prices: ShippingPrice[];
+  isActive: boolean;
+  sortOrder: number;
+  freeShippingThreshold?: {
+    enabled: boolean;
+    thresholds?: FreeShippingThreshold[];
+  };
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Sanity document types
+interface SanityShippingPrice {
+  currency?: string;
+  price?: number;
+}
+
+interface SanityFreeShippingThreshold {
+  currency?: string;
+  amount?: number;
+}
+
+interface SanityShippingOptionItem {
+  name?: string;
+  type?: string;
+  description?: string;
+  estimatedDays?: string;
+  prices?: SanityShippingPrice[];
+  isActive?: boolean;
+  sortOrder?: number;
+  freeShippingThreshold?: {
+    enabled?: boolean;
+    thresholds?: SanityFreeShippingThreshold[];
+  };
+}
+
+interface SanityTaxRate {
+  currency?: string;
+  type?: string;
+  rate?: number;
+}
+
+interface SanityTaxSettings {
+  isActive?: boolean;
+  taxRates?: SanityTaxRate[];
+  displayMessage?: string;
+}
+
+interface SanityShippingAndTaxesDocument {
+  _id?: string;
+  _createdAt?: string;
+  _updatedAt?: string;
+  shippingOptions?: SanityShippingOptionItem[];
+  taxSettings?: SanityTaxSettings;
+}
+
+/**
+ * Transform Sanity shipping option item to ShippingOption type
+ */
+function transformSanityShippingOption(
+  item: SanityShippingOptionItem,
+  documentId: string,
+  createdAt: string,
+  updatedAt: string
+): ShippingOption {
+  return {
+    id: `${documentId}-${item.name || 'shipping'}`,
+    name: item.name || '',
+    type: (item.type || 'standard') as ShippingOption['type'],
+    description: item.description || '',
+    estimatedDays: item.estimatedDays || '',
+    prices: (item.prices || []).map((price) => ({
+      currency: (price.currency || 'XOF') as 'XOF' | 'USD' | 'EUR',
+      price: price.price || 0,
+    })),
+    isActive: item.isActive !== false,
+    sortOrder: item.sortOrder || 0,
+    freeShippingThreshold: item.freeShippingThreshold
+      ? {
+          enabled: item.freeShippingThreshold.enabled || false,
+          thresholds: (item.freeShippingThreshold.thresholds || []).map(
+            (threshold) => ({
+              currency: (threshold.currency ||
+                'XOF') as 'XOF' | 'USD' | 'EUR',
+              amount: threshold.amount || 0,
+            })
+          ),
+        }
+      : undefined,
+    createdAt: createdAt ? new Date(createdAt) : new Date(),
+    updatedAt: updatedAt ? new Date(updatedAt) : new Date(),
+  };
+}
+
+/**
+ * Get all shipping options from Sanity
+ */
+export async function getAllShippingOptions(): Promise<ShippingOption[]> {
+  try {
+    const doc = await sanityClient.fetch<SanityShippingAndTaxesDocument>(
+      SHIPPING_AND_TAXES_QUERY
+    );
+    if (!doc || !doc.shippingOptions) return [];
+    
+    return doc.shippingOptions
+      .map((item) =>
+        transformSanityShippingOption(
+          item,
+          doc._id || '',
+          doc._createdAt || '',
+          doc._updatedAt || ''
+        )
+      )
+      .sort((a, b) => a.sortOrder - b.sortOrder);
+  } catch (error) {
+    console.error('Error fetching shipping options from Sanity:', error);
+    return [];
+  }
+}
+
+/**
+ * Get active shipping options from Sanity
+ */
+export async function getActiveShippingOptions(): Promise<ShippingOption[]> {
+  try {
+    const doc = await sanityClient.fetch<SanityShippingAndTaxesDocument>(
+      SHIPPING_AND_TAXES_QUERY
+    );
+    if (!doc || !doc.shippingOptions) return [];
+    
+    return doc.shippingOptions
+      .filter((item) => item.isActive !== false)
+      .map((item) =>
+        transformSanityShippingOption(
+          item,
+          doc._id || '',
+          doc._createdAt || '',
+          doc._updatedAt || ''
+        )
+      )
+      .sort((a, b) => a.sortOrder - b.sortOrder);
+  } catch (error) {
+    console.error('Error fetching active shipping options from Sanity:', error);
+    return [];
+  }
+}
+
+/**
+ * Get a shipping option by name (since we now use array items)
+ */
+export async function getShippingOptionByName(
+  name: string
+): Promise<ShippingOption | null> {
+  try {
+    const doc = await sanityClient.fetch<SanityShippingAndTaxesDocument>(
+      SHIPPING_AND_TAXES_QUERY
+    );
+    if (!doc || !doc.shippingOptions) return null;
+    
+    const item = doc.shippingOptions.find((opt) => opt.name === name);
+    if (!item) return null;
+    
+    return transformSanityShippingOption(
+      item,
+      doc._id || '',
+      doc._createdAt || '',
+      doc._updatedAt || ''
+    );
+  } catch (error) {
+    console.error(
+      `Error fetching shipping option by name "${name}" from Sanity:`,
+      error
+    );
+    return null;
+  }
+}
+
+// Tax settings are now part of the shippingAndTaxes document
+
+export interface TaxRate {
+  currency: 'XOF' | 'USD' | 'EUR';
+  type: 'percentage' | 'fixed';
+  rate: number;
+}
+
+export interface TaxSettings {
+  id: string;
+  isActive: boolean;
+  taxRates: TaxRate[];
+  displayMessage?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+/**
+ * Transform Sanity tax settings to TaxSettings type
+ */
+function transformSanityTaxSettings(
+  taxSettings: SanityTaxSettings,
+  documentId: string,
+  createdAt: string,
+  updatedAt: string
+): TaxSettings | null {
+  if (!taxSettings) return null;
+  
+  return {
+    id: documentId || '',
+    isActive: taxSettings.isActive !== false,
+    taxRates: (taxSettings.taxRates || []).map((rate) => ({
+      currency: (rate.currency || 'XOF') as 'XOF' | 'USD' | 'EUR',
+      type: (rate.type || 'percentage') as 'percentage' | 'fixed',
+      rate: rate.rate || 0,
+    })),
+    displayMessage: taxSettings.displayMessage || 'Taxes included in price',
+    createdAt: createdAt ? new Date(createdAt) : new Date(),
+    updatedAt: updatedAt ? new Date(updatedAt) : new Date(),
+  };
+}
+
+/**
+ * Get tax settings from Sanity
+ */
+export async function getTaxSettings(): Promise<TaxSettings | null> {
+  try {
+    const doc = await sanityClient.fetch<SanityShippingAndTaxesDocument>(
+      SHIPPING_AND_TAXES_QUERY
+    );
+    if (!doc || !doc.taxSettings) return null;
+    
+    return transformSanityTaxSettings(
+      doc.taxSettings,
+      doc._id || '',
+      doc._createdAt || '',
+      doc._updatedAt || ''
+    );
+  } catch (error) {
+    console.error('Error fetching tax settings from Sanity:', error);
+    return null;
+  }
+}
+
+/**
+ * Calculate tax amount based on subtotal and currency
+ */
+export function calculateTax(
+  subtotal: number,
+  currency: 'XOF' | 'USD' | 'EUR',
+  taxSettings: TaxSettings | null
+): number {
+  if (!taxSettings || !taxSettings.isActive) {
+    return 0;
+  }
+
+  const taxRate = taxSettings.taxRates.find((r) => r.currency === currency);
+  if (!taxRate) {
+    return 0;
+  }
+
+  if (taxRate.type === 'percentage') {
+    return subtotal * taxRate.rate;
+  } else {
+    // Fixed amount
+    return taxRate.rate;
+  }
+}

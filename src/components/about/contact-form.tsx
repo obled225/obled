@@ -79,7 +79,12 @@ export function ContactForm() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid gap-4 md:grid-cols-2">
           <Input
-            label={tContact('form.fields.name')}
+            label={
+              <span>
+                {tContact('form.fields.name')}{' '}
+                <span className="text-red-500">*</span>
+              </span>
+            }
             type="text"
             name="name"
             value={formData.name}
@@ -88,7 +93,12 @@ export function ContactForm() {
             disabled={isSubmitting}
           />
           <Input
-            label={tContact('form.fields.email')}
+            label={
+              <span>
+                {tContact('form.fields.email')}{' '}
+                <span className="text-red-500">*</span>
+              </span>
+            }
             type="email"
             name="email"
             value={formData.email}
@@ -117,7 +127,12 @@ export function ContactForm() {
           />
         </div>
         <Textarea
-          label={tContact('form.fields.message')}
+          label={
+            <span>
+              {tContact('form.fields.message')}{' '}
+              <span className="text-red-500">*</span>
+            </span>
+          }
           name="message"
           value={formData.message}
           onChange={handleInputChange}

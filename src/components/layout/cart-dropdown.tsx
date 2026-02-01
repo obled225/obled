@@ -36,7 +36,7 @@ const CartDropdown = () => {
         >
           <ShoppingCart className="w-5 h-5" />
           {totalItems > 0 && (
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-md w-5 h-5 flex items-center justify-center">
               {totalItems > 99 ? '99+' : totalItems}
             </span>
           )}
@@ -54,7 +54,7 @@ const CartDropdown = () => {
         >
           <PopoverPanel
             static
-            className="absolute top-full right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg w-[calc(100vw-2rem)] sm:w-96 max-w-sm z-50"
+            className="absolute top-full right-0 mt-2 bg-white border border-gray-200 rounded-md shadow-lg w-[calc(100vw-2rem)] sm:w-96 max-w-sm z-50"
           >
             <div className="p-3 sm:p-4">
               <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">
@@ -114,7 +114,7 @@ const CartDropdown = () => {
                               {formatPrice(
                                 (basePrice +
                                   (item.selectedVariant?.priceModifier || 0)) *
-                                  item.quantity,
+                                item.quantity,
                                 displayCurrency
                               )}
                             </p>
@@ -151,7 +151,7 @@ const CartDropdown = () => {
                 </>
               ) : (
                 <div className="text-center py-6 sm:py-8">
-                  <div className="bg-gray-100 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                  <div className="bg-gray-100 w-10 h-10 sm:w-12 sm:h-12 rounded-md flex items-center justify-center mx-auto mb-3 sm:mb-4">
                     <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" />
                   </div>
                   <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">
