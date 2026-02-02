@@ -91,6 +91,28 @@ export function ProductDetail({ product }: ProductDetailProps) {
     fetchTaxSettings();
   }, []);
 
+  // Check if sizes are required and if a valid size is selected
+  const hasAvailableSizes = useMemo(() => {
+    if (!product.sizes || product.sizes.length === 0) {
+      return true; // No sizes required, so it's valid
+    }
+    // Check if there are any available sizes
+    return product.sizes.some((size) => size.available);
+  }, [product.sizes]);
+
+  const hasValidSizeSelection = useMemo(() => {
+    if (!product.sizes || product.sizes.length === 0) {
+      return true; // No sizes required, so selection is valid
+    }
+    // If sizes exist, we need a selected size that is available
+    if (!selectedSize) return false;
+    const selectedSizeObj = product.sizes.find((s) => s.name === selectedSize);
+    return selectedSizeObj?.available === true;
+  }, [product.sizes, selectedSize]);
+
+  // Buttons should be disabled if sizes are required but none are available or none selected
+  const isAddToCartDisabled = product.soldOut || isAdding || !hasAvailableSizes || !hasValidSizeSelection;
+
   // All prices are in XOF, convert to selected currency
   const basePriceXOF = product.price || 0;
 
@@ -212,6 +234,17 @@ export function ProductDetail({ product }: ProductDetailProps) {
   }, [product.slug]);
 
   const handleAddToCart = async () => {
+    // Prevent adding to cart if sizes are required but none are available or selected
+    if (product.sizes && product.sizes.length > 0) {
+      if (!hasAvailableSizes || !hasValidSizeSelection) {
+        error(
+          t('productDetail.sizeRequired') || 'Size required',
+          t('productDetail.selectAvailableSize') || 'Please select an available size.'
+        );
+        return;
+      }
+    }
+
     setIsAdding(true);
     try {
       // For business products with packs, always use a pack
@@ -261,6 +294,17 @@ export function ProductDetail({ product }: ProductDetailProps) {
   };
 
   const handleBuyNow = async () => {
+    // Prevent buying if sizes are required but none are available or selected
+    if (product.sizes && product.sizes.length > 0) {
+      if (!hasAvailableSizes || !hasValidSizeSelection) {
+        error(
+          t('productDetail.sizeRequired') || 'Size required',
+          t('productDetail.selectAvailableSize') || 'Please select an available size.'
+        );
+        return;
+      }
+    }
+
     try {
       // For business products with packs, always use a pack
       if (
@@ -409,22 +453,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
             {product.name}
           </h1>
 
-          {/* Variant Toggle */}
-          {product.variant && (
-            <div className="mb-4">
-              <Link
-                href={`/products/${product.variant.slug}`}
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
-              >
-                <span>
-                  {t('productDetail.viewVariant') || 'View'}{' '}
-                  {product.variant.name}
-                </span>
-                <span className="text-gray-500">→</span>
-              </Link>
-            </div>
-          )}
-
           {/* Price */}
           <div className="mb-6">
             <div className="flex items-center gap-3 mb-1">
@@ -455,28 +483,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
               )}
           </div>
 
-          {/* Product Specifications (Grammage & Material) */}
-          {(product.grammage || product.material) && (
-            <div className="mb-6 flex flex-wrap gap-4 text-sm text-gray-600">
-              {product.grammage && (
-                <div className="flex items-center gap-2">
-                  <span className="font-medium text-gray-900">
-                    {t('productDetail.grammage')}:
-                  </span>
-                  <span>{product.grammage} g/m²</span>
-                </div>
-              )}
-              {product.material && (
-                <div className="flex items-center gap-2">
-                  <span className="font-medium text-gray-900">
-                    {t('productDetail.material')}:
-                  </span>
-                  <span>{product.material}</span>
-                </div>
-              )}
-            </div>
-          )}
-
           {/* Color Selector */}
           {product.colors && product.colors.length > 1 && (
             <div className="mb-6">
@@ -494,7 +500,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                       onClick={() => handleColorChange(color.name)}
                       disabled={!color.available}
                       className={cn(
-                        'relative h-8 w-8 rounded-md border-2 transition-all overflow-hidden',
+                        'relative h-8 w-8 rounded-full border-2 transition-all overflow-hidden',
                         selectedColor === color.name
                           ? isWhite
                             ? 'border-gray-900'
@@ -533,14 +539,42 @@ export function ProductDetail({ product }: ProductDetailProps) {
                   );
                 })}
               </div>
-              <p className="text-sm font-medium text-gray-900">
-                {t('productDetail.color')}:{' '}
-                {capitalizeColorName(
-                  selectedColor || product.colors[0]?.name || ''
+              <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600">
+                <span>
+                  {capitalizeColorName(
+                    selectedColor || product.colors[0]?.name || ''
+                  )}
+                </span>
+                {product.grammage && (
+                  <>
+                    <span>•</span>
+                    <span>{product.grammage} g/m²</span>
+                  </>
                 )}
-              </p>
+                {product.material && (
+                  <>
+                    <span>•</span>
+                    <span>{product.material}</span>
+                  </>
+                )}
+              </div>
             </div>
           )}
+          {/* Product Specifications (Grammage & Material) - Only show if no colors */}
+          {(!product.colors || product.colors.length <= 1) &&
+            (product.grammage || product.material) && (
+              <div className="mb-6 flex flex-wrap items-center gap-2 text-sm text-gray-600">
+                {product.grammage && (
+                  <>
+                    <span>{product.grammage} g/m²</span>
+                    {product.material && <span>•</span>}
+                  </>
+                )}
+                {product.material && (
+                  <span>{product.material}</span>
+                )}
+              </div>
+            )}
 
           {/* Size Selector */}
           {product.sizes && product.sizes.length > 0 && (
@@ -557,8 +591,8 @@ export function ProductDetail({ product }: ProductDetailProps) {
                     className={cn(
                       'relative flex h-10 min-w-[48px] items-center justify-center rounded-md border px-4 text-sm font-medium transition-colors',
                       selectedSize === size.name
-                        ? 'border-gray-900 bg-gray-900 text-white'
-                        : 'border-gray-200 bg-white text-gray-900 hover:border-gray-900',
+                        ? 'border-blue-600 bg-blue-600 text-white'
+                        : 'border-gray-200 bg-white text-gray-900 hover:border-blue-600',
                       !size.available &&
                       'cursor-not-allowed border-gray-200 text-gray-400 opacity-50'
                     )}
@@ -632,20 +666,23 @@ export function ProductDetail({ product }: ProductDetailProps) {
           <div className="space-y-3 mb-6 sm:mb-8">
             <Button
               onClick={handleAddToCart}
-              disabled={product.soldOut || isAdding}
+              disabled={isAddToCartDisabled}
               className="w-full h-11 sm:h-12 text-sm font-medium touch-target"
             >
               {isAdding
                 ? t('productDetail.adding')
                 : product.soldOut
                   ? t('outOfStock')
-                  : t('productDetail.addToCart')}
+                  : !hasAvailableSizes || !hasValidSizeSelection
+                    ? t('productDetail.noSizeAvailable') || 'No size available'
+                    : t('productDetail.addToCart')}
             </Button>
             {!product.soldOut && (
               <Button
                 variant="outline"
-                className="w-full h-11 sm:h-12 text-sm font-medium border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white transition-colors touch-target"
+                className="w-full h-11 sm:h-12 text-sm font-medium border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors touch-target"
                 onClick={handleBuyNow}
+                disabled={!hasAvailableSizes || !hasValidSizeSelection}
               >
                 {t('productDetail.buyNow')}
               </Button>
@@ -656,7 +693,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
               <Link href={`/products/${product.businessPackProduct.slug}`}>
                 <Button
                   variant="outline"
-                  className="w-full h-11 sm:h-12 text-sm font-medium border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors touch-target"
+                  className="w-full h-11 sm:h-12 text-sm font-medium border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition-colors touch-target"
                 >
                   <Package className="h-4 w-4 mr-2" />
                   {t('productDetail.viewBusinessPack')}

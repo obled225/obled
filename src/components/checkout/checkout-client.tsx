@@ -307,8 +307,8 @@ export function CheckoutClient() {
 
             <Button
               type="submit"
-              className="w-full"
-              size="lg"
+              variant="outline"
+              className="w-full h-11 sm:h-12 text-sm font-medium border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors touch-target"
               disabled={isSubmitting}
             >
               {isSubmitting ? t('processing') : t('proceedToPayment')}

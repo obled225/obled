@@ -322,13 +322,6 @@ export default defineType({
       description: 'Sorting feature: Best seller products appear first when "Best sellers" sort option is selected',
     }),
     defineField({
-      name: 'variant',
-      title: 'Variant Product',
-      type: 'reference',
-      to: [{type: 'products'}],
-      description: 'Link to the main variant of this product (e.g., if this is short sleeves, link to the long sleeves version, or vice versa). Use for products that are essentially the same but with different attributes.',
-    }),
-    defineField({
       name: 'relatedProducts',
       title: 'Related Products',
       type: 'array',

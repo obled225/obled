@@ -75,7 +75,6 @@
       "metaTitle": "Product not found"
     },
     "productDetail": {
-      "color": "Color",
       "size": "Size",
       "quantity": "Quantity",
       "adding": "Adding...",
@@ -91,8 +90,9 @@
       "taxesIncluded": "All taxes included",
       "total": "Total",
       "each": "each",
-      "grammage": "Grammage",
-      "material": "Material"
+      "noSizeAvailable": "No size available",
+      "sizeRequired": "Size required",
+      "selectAvailableSize": "Please select an available size."
     },
     "productTabs": {
       "productInformation": "Product Information",

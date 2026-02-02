@@ -161,11 +161,11 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                                 p.quantity === item.selectedVariant?.packSize
                             ) as
                               | {
-                                  quantity: number;
-                                  label?: string;
-                                  price?: number;
-                                  originalPrice?: number;
-                                }
+                                quantity: number;
+                                label?: string;
+                                price?: number;
+                                originalPrice?: number;
+                              }
                               | undefined;
                             originalPriceXOF = pack?.originalPrice;
                           } else {
@@ -240,7 +240,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">{t('subtotal')}</span>
               {summary.originalSubtotal &&
-              summary.originalSubtotal > summary.subtotal ? (
+                summary.originalSubtotal > summary.subtotal ? (
                 <span className="text-sm text-gray-500">
                   {formatPrice(summary.originalSubtotal, currency)}
                 </span>
@@ -277,7 +277,11 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               <span>{t('total')}</span>
               <span>{formatPrice(summary.total, currency)}</span>
             </div>
-            <Button className="w-full" size="lg" onClick={handleCheckout}>
+            <Button
+              variant="outline"
+              className="w-full h-11 sm:h-12 text-sm font-medium border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors touch-target"
+              onClick={handleCheckout}
+            >
               {t('checkout')}
             </Button>
           </div>

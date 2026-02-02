@@ -75,7 +75,6 @@
       "metaTitle": "Produit introuvable"
     },
     "productDetail": {
-      "color": "Couleur",
       "size": "Taille",
       "quantity": "Quantité",
       "adding": "Ajout en cours...",
@@ -91,8 +90,9 @@
       "taxesIncluded": "Toutes taxes comprises",
       "total": "Total",
       "each": "l'unité",
-      "grammage": "Grammage",
-      "material": "Matière"
+      "noSizeAvailable": "Aucune taille disponible",
+      "sizeRequired": "Taille requise",
+      "selectAvailableSize": "Veuillez sélectionner une taille disponible."
     },
     "productTabs": {
       "productInformation": "Informations produit",
