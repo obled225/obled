@@ -15,7 +15,9 @@ RETURNS TABLE (
     discount_amount NUMERIC,
     shipping_address JSONB,
     items JSON,
-    created_at TIMESTAMPTZ
+    created_at TIMESTAMPTZ,
+    email_dispatch_status TEXT,
+    email_dispatch_attempts INTEGER
 )
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -53,7 +55,9 @@ BEGIN
             FROM public.order_items oi
             WHERE oi.order_id = o.id
         ) AS items,
-        o.created_at
+        o.created_at,
+        o.email_dispatch_status,
+        o.email_dispatch_attempts
     FROM
         public.orders o
     JOIN

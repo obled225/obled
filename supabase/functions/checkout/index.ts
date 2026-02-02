@@ -403,12 +403,15 @@ serve(async (req: Request) => {
     const successRedirectPath = payload.successUrlPath || '/payment/success';
     const cancelRedirectPath = payload.cancelUrlPath || '/payment/error';
 
-    // Use line_items based checkout for e-commerce
+    // Use DIRECT CHARGE (amount-based) instead of line_items
+    // This allows dynamic pricing without pre-configured products in lomi
     // lomi. supports XOF, EUR, and USD currencies
     // currency_code must be ISO 4217 currency code (XOF, EUR, USD) - never "F CFA"
     const lomiPayload = {
       success_url: `${APP_BASE_URL}${successRedirectPath}?order_id=${encodeURIComponent(orderId)}&status=success`,
       cancel_url: `${APP_BASE_URL}${cancelRedirectPath}?order_id=${encodeURIComponent(orderId)}&status=cancelled`,
+      // Direct charge: specify total amount instead of line_items
+      amount: totalAmount,
       // Currency code: XOF, EUR, or USD (ISO 4217 format)
       currency_code: currencyCode,
       customer_email: payload.userEmail,
@@ -418,41 +421,14 @@ serve(async (req: Request) => {
       customer_country: payload.shippingAddress?.country,
       customer_address: payload.shippingAddress?.address,
       customer_postal_code: payload.shippingAddress?.postalCode,
-      line_items: payload.cartItems.map((item, index) => {
-        // Use validated price from pricing validation (items are in same order)
-        const validatedItem = pricingValidation.recalculatedItems[index];
-        // Use validated price if available and valid (> 0), otherwise fall back to client price
-        const validatedPricePerItem =
-          validatedItem && validatedItem.validatedPrice > 0
-            ? validatedItem.validatedPrice / item.quantity
-            : item.price;
-
-        // Ad-Hoc Pricing (Direct Charge)
-        // unit_amount: For XOF, it's in base units (e.g., 100000 = 100,000 XOF)
-        // For EUR/USD, prices are already converted and should be in base units (e.g., 150.00 EUR = 150)
-        // lomi. handles the currency formatting based on currency_code
-        return {
-          price_data: {
-            currency: currencyCode, // XOF, EUR, or USD (never "F CFA")
-            product_data: {
-              name: item.productTitle + (item.variantTitle ? ` (${item.variantTitle})` : ''),
-              images: item.productImageUrl ? [item.productImageUrl] : undefined,
-              metadata: {
-                product_id: item.productId,
-                variant_id: item.variantId
-              }
-            },
-            unit_amount: validatedPricePerItem // Use validated price (server is source of truth)
-          },
-          quantity: item.quantity
-        };
-      }),
+      // Optional: Add title and description for the charge
+      title: `Order #${orderId.substring(0, 8)}`,
+      description: `${payload.cartItems.length} item(s): ${payload.cartItems.map(item => item.productTitle).join(', ').substring(0, 100)}`,
       allow_coupon_code:
         payload.allowCouponCode !== undefined
           ? payload.allowCouponCode
           : true,
-      allow_quantity:
-        payload.allowQuantity !== undefined ? payload.allowQuantity : false,
+      allow_quantity: false, // Direct charge doesn't support quantity adjustment
       metadata: {
         internal_order_id: orderId,
         customer_id: customerId,
@@ -461,6 +437,24 @@ serve(async (req: Request) => {
         total_shipping_cost: shippingFee,
         total_tax: taxAmount,
         total_discount: discountAmount,
+        // Store cart items in metadata for reference
+        cart_items: payload.cartItems.map((item, index) => {
+          const validatedItem = pricingValidation.recalculatedItems[index];
+          const validatedPricePerItem =
+            validatedItem && validatedItem.validatedPrice > 0
+              ? validatedItem.validatedPrice / item.quantity
+              : item.price;
+          return {
+            product_id: item.productId,
+            product_title: item.productTitle,
+            variant_id: item.variantId,
+            variant_title: item.variantTitle,
+            quantity: item.quantity,
+            price_per_item: validatedPricePerItem,
+            total: validatedPricePerItem * item.quantity,
+            image_url: item.productImageUrl
+          };
+        }),
       },
     };
 
