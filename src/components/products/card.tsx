@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useLayoutEffect, useRef } from 'react';
+import { useState, useLayoutEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Product, formatPrice } from '@/lib/types';
@@ -126,6 +126,20 @@ export function ProductCard({ product, isFirst = false }: ProductCardProps) {
     }
   };
 
+  // Check if product is out of stock
+  // Product is out of stock if explicitly marked as soldOut/inStock false OR if sizes exist but none are available
+  const isOutOfStock = useMemo(() => {
+    if (!product.inStock) return true;
+    // If product has sizes but none are available, it's out of stock
+    if (product.sizes && product.sizes.length > 0) {
+      const hasAvailableSizes = product.sizes.some((size) => size.available);
+      if (!hasAvailableSizes) {
+        return true;
+      }
+    }
+    return false;
+  }, [product.inStock, product.sizes]);
+
   return (
     <Link
       href={`/products/${product.slug}`}
@@ -161,8 +175,8 @@ export function ProductCard({ product, isFirst = false }: ProductCardProps) {
             <span>{t('noImage')}</span>
           </div>
         )}
-        {!product.inStock && (
-          <span className="absolute bottom-4 left-4 rounded-sm bg-gray-900 px-3 py-1.5 text-xs font-medium text-white z-10">
+        {isOutOfStock && (
+          <span className="absolute bottom-4 right-4 rounded-md bg-gray-900 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.1)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] dark:bg-gray-800 dark:text-gray-100 px-3 py-1.5 text-xs font-medium z-10">
             {t('outOfStock')}
           </span>
         )}

@@ -1,5 +1,5 @@
-import { Input } from "@/components/ui/Input";
 import { ChevronDown, Phone } from "lucide-react";
+import { cn } from "@/lib/actions/utils";
 import React, { useEffect, useCallback, useRef } from "react";
 import * as RPNInput from "react-phone-number-input";
 import flags from "react-phone-number-input/flags";
@@ -69,33 +69,25 @@ export default function CheckoutPhoneNumberInput({
 
   return (
     <div className="space-y-2">
-      <div className="relative shadow-sm shadow-black/4">
-        <div
-          className="flex w-full rounded-sm bg-transparent"
-          style={{
-            borderLeft: "clamp(1px, 0.12vw, 1.3px) solid hsl(var(--input))",
-            borderRight: "clamp(1px, 0.12vw, 1.3px) solid hsl(var(--input))",
+      <div className="relative flex w-full rounded-md border border-input bg-background">
+        <RPNInput.default
+          className="flex w-full"
+          international
+          defaultCountry={(defaultCountry || 'CI') as RPNInput.Country}
+          flagComponent={FlagComponent}
+          countrySelectComponent={CountrySelect}
+          inputComponent={PhoneInput}
+          placeholder="Phone number"
+          value={value}
+          onChange={onChange}
+          onCountryChange={(countryCode) => {
+            // Convert country code to country name before calling parent callback
+            const countryName = countryCodeToName(countryCode);
+            onCountryChange?.(countryName);
           }}
-        >
-          <RPNInput.default
-            className="flex w-full"
-            international
-            defaultCountry={(defaultCountry || 'CI') as RPNInput.Country}
-            flagComponent={FlagComponent}
-            countrySelectComponent={CountrySelect}
-            inputComponent={PhoneInput}
-            placeholder="Phone number"
-            value={value}
-            onChange={onChange}
-            onCountryChange={(countryCode) => {
-              // Convert country code to country name before calling parent callback
-              const countryName = countryCodeToName(countryCode);
-              onCountryChange?.(countryName);
-            }}
-            onBlur={() => validatePhoneNumber(value)}
-            countryCallingCodeEditable={true}
-          />
-        </div>
+          onBlur={() => validatePhoneNumber(value)}
+          countryCallingCodeEditable={true}
+        />
         <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-red-500 pointer-events-none">
           *
         </span>
@@ -107,10 +99,13 @@ export default function CheckoutPhoneNumberInput({
 type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
 
 const PhoneInput = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ ...props }, ref) => {
+  ({ className, ...props }, ref) => {
     return (
-      <Input
-        className="border-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-l-none rounded-r-sm bg-transparent"
+      <input
+        className={cn(
+          "flex h-10 w-full rounded-r-md border-0 bg-transparent px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+          className
+        )}
         ref={ref}
         {...props}
         autoComplete="tel"
@@ -141,13 +136,8 @@ const CountrySelect = ({
   };
 
   return (
-    <div
-      className="relative inline-flex items-center self-stretch bg-transparent h-10 pe-2 ps-3 text-foreground transition-colors border-0 shadow-none rounded-l-sm"
-      style={{
-        borderRight: "clamp(1px, 0.12vw, 1.3px) solid hsl(var(--input))",
-      }}
-    >
-      <div className="inline-flex items-center gap-1" aria-hidden="true">
+    <div className="relative inline-flex items-center self-stretch h-10 px-3 border-r border-input">
+      <div className="inline-flex items-center gap-2" aria-hidden="true">
         <FlagComponent country={value} countryName={value} aria-hidden="true" />
         <span className="text-muted-foreground/80">
           <ChevronDown size={16} strokeWidth={2} aria-hidden="true" />
@@ -157,7 +147,7 @@ const CountrySelect = ({
         disabled={disabled}
         value={value || ""}
         onChange={handleSelect}
-        className="absolute inset-0 text-sm opacity-0"
+        className="absolute inset-0 text-sm opacity-0 cursor-pointer"
         aria-label="Select country"
         data-lpignore="true"
       >

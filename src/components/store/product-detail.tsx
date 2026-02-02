@@ -110,8 +110,18 @@ export function ProductDetail({ product }: ProductDetailProps) {
     return selectedSizeObj?.available === true;
   }, [product.sizes, selectedSize]);
 
+  // Product is out of stock if explicitly marked as soldOut OR if sizes exist but none are available
+  const isOutOfStock = useMemo(() => {
+    if (product.soldOut) return true;
+    // If product has sizes but none are available, it's out of stock
+    if (product.sizes && product.sizes.length > 0 && !hasAvailableSizes) {
+      return true;
+    }
+    return false;
+  }, [product.soldOut, product.sizes, hasAvailableSizes]);
+
   // Buttons should be disabled if sizes are required but none are available or none selected
-  const isAddToCartDisabled = product.soldOut || isAdding || !hasAvailableSizes || !hasValidSizeSelection;
+  const isAddToCartDisabled = isOutOfStock || isAdding || !hasAvailableSizes || !hasValidSizeSelection;
 
   // All prices are in XOF, convert to selected currency
   const basePriceXOF = product.price || 0;
@@ -467,11 +477,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
                   {formatPrice(displayPrice, currency)}
                 </span>
               </div>
-              {product.soldOut && (
-                <span className="rounded-sm bg-gray-900 px-3 py-1 text-xs font-medium text-white">
-                  {t('outOfStock')}
-                </span>
-              )}
             </div>
             {/* Only show "All taxes included" when tax is NOT enabled */}
             {(!taxSettings ||
@@ -671,13 +676,13 @@ export function ProductDetail({ product }: ProductDetailProps) {
             >
               {isAdding
                 ? t('productDetail.adding')
-                : product.soldOut
+                : isOutOfStock
                   ? t('outOfStock')
                   : !hasAvailableSizes || !hasValidSizeSelection
                     ? t('productDetail.noSizeAvailable') || 'No size available'
                     : t('productDetail.addToCart')}
             </Button>
-            {!product.soldOut && (
+            {!isOutOfStock && (
               <Button
                 variant="outline"
                 className="w-full h-11 sm:h-12 text-sm font-medium border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors touch-target"
