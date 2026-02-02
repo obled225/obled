@@ -233,13 +233,19 @@ serve(async (req: Request) => {
       clientDiscount
     );
 
-    // Handle critical errors (product not found, etc.)
+    // Handle critical errors (product not found, out of stock, etc.)
     if (pricingValidation.hasCriticalErrors) {
       console.error('Pricing validation failed with critical errors:');
       pricingValidation.errors.forEach((error) => console.error(`  - ${error}`));
+      const hasOutOfStock = pricingValidation.errors.some((e) =>
+        e.toLowerCase().includes('out of stock')
+      );
       return new Response(
         JSON.stringify({
-          error: 'Pricing validation failed',
+          error: hasOutOfStock
+            ? 'Some items in your cart are no longer available.'
+            : 'Pricing validation failed',
+          code: hasOutOfStock ? 'OUT_OF_STOCK' : 'PRICING_VALIDATION_FAILED',
           details: pricingValidation.errors,
         }),
         {

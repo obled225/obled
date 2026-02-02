@@ -55,7 +55,7 @@ export function useCartPricing(
   options: UseCartPricingOptions = {}
 ): CartPricingResult {
   const { shippingCost = 0 } = options;
-  const { getCartSummary } = useCartStore();
+  const { getCartSummary, cart } = useCartStore();
   const { currency } = useCurrencyStore();
   const [taxSettings, setTaxSettings] = useState<TaxSettings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -75,8 +75,20 @@ export function useCartPricing(
     fetchTaxSettings();
   }, []);
 
+  // Subscribe to cart so pricing recalculates when items/quantities change (e.g. in cart drawer)
+  const cartSnapshot = useMemo(() => {
+    const updatedAt =
+      cart.updatedAt instanceof Date
+        ? cart.updatedAt.getTime()
+        : typeof cart.updatedAt === 'string'
+          ? new Date(cart.updatedAt).getTime()
+          : 0;
+    return { items: cart.items, updatedAt: updatedAt || 0 };
+  }, [cart.items, cart.updatedAt]);
+
   // Calculate tax when subtotal or currency changes (using useMemo instead of useEffect)
   // Tax should be calculated on the discounted subtotal, not the full subtotal
+  // cartSnapshot in deps forces recalc when cart changes; getCartSummary() reads store at call time
   const taxAmount = useMemo(() => {
     if (!taxSettings) return 0;
 
@@ -86,12 +98,15 @@ export function useCartPricing(
 
     // Calculate tax on the discounted subtotal
     return calculateTax(discountedSubtotal, currency, taxSettings);
-  }, [taxSettings, currency, getCartSummary]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- cartSnapshot triggers recalc when cart items/quantity change
+  }, [taxSettings, currency, getCartSummary, cartSnapshot]);
 
   // Get complete cart summary with tax and shipping
+  // cartSnapshot in deps forces recalc when cart changes; getCartSummary() reads store at call time
   const cartSummary = useMemo(() => {
     return getCartSummary(currency, taxAmount, shippingCost);
-  }, [getCartSummary, currency, taxAmount, shippingCost]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- cartSnapshot triggers recalc when cart items/quantity change
+  }, [getCartSummary, currency, taxAmount, shippingCost, cartSnapshot]);  
 
   return {
     taxSettings,

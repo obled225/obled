@@ -573,6 +573,7 @@
     "errors": {
       "fillAllFields": "Please fill in all required fields.",
       "checkoutSessionFailed": "Failed to create checkout session. Please try again.",
+      "outOfStock": "Some items in your cart are no longer available. Please remove them and try again.",
       "unexpectedError": "An unexpected error occurred. Please try again."
     }
   },

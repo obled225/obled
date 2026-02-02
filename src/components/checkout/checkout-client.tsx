@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/lib/store/cart-store';
 import { useCurrencyStore } from '@/lib/store/currency-store';
 import { supabase } from '@/lib/supabase/client';
+import { FunctionsHttpError } from '@supabase/supabase-js';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/label';
@@ -135,7 +136,24 @@ export function CheckoutClient() {
 
       if (error) {
         console.error('Error creating checkout session:', error);
-        showError('Error', error.message || t('errors.checkoutSessionFailed'));
+        let message = error.message || t('errors.checkoutSessionFailed');
+        // Parse response body when function returns 4xx (e.g. OUT_OF_STOCK)
+        if (error instanceof FunctionsHttpError) {
+          try {
+            const body = (await error.context.json()) as {
+              code?: string;
+              error?: string;
+            };
+            if (body?.code === 'OUT_OF_STOCK') {
+              message = t('errors.outOfStock');
+            } else if (body?.error) {
+              message = body.error;
+            }
+          } catch {
+            // ignore parse failure, use message above
+          }
+        }
+        showError('Error', message);
         setIsSubmitting(false);
         return;
       }

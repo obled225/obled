@@ -577,6 +577,7 @@
     "errors": {
       "fillAllFields": "Veuillez remplir tous les champs obligatoires.",
       "checkoutSessionFailed": "Échec de la création de la session de paiement. Veuillez réessayer.",
+      "outOfStock": "Certains articles de votre panier ne sont plus disponibles. Veuillez les retirer et réessayer.",
       "unexpectedError": "Une erreur inattendue s'est produite. Veuillez réessayer."
     }
   },
