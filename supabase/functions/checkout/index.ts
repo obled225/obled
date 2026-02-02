@@ -23,7 +23,7 @@ if (!supabaseUrl || !supabaseServiceRoleKey) {
 const supabase = createClient(supabaseUrl || '', supabaseServiceRoleKey || '');
 
 // lomi. API Config
-const LOMI_API_KEY = Deno.env.get('LOMI_API_KEY');
+const LOMI_SECRET_KEY = Deno.env.get('LOMI_SECRET_KEY');
 const LOMI_API_BASE_URL =
   Deno.env.get('LOMI_API_BASE_URL') || 'https://api.lomi.africa';
 const APP_BASE_URL = (
@@ -84,8 +84,8 @@ serve(async (req: Request) => {
       }
     );
   }
-  if (!LOMI_API_KEY) {
-    console.error('LOMI_API_KEY is not set for the function.');
+  if (!LOMI_SECRET_KEY) {
+    console.error('LOMI_SECRET_KEY is not set for the function.');
     return new Response(
       JSON.stringify({
         error: 'lomi. API key not configured for the function.',
@@ -475,7 +475,7 @@ serve(async (req: Request) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': LOMI_API_KEY,
+        'x-api-key': LOMI_SECRET_KEY,
       },
       body: JSON.stringify(lomiPayload),
     });
