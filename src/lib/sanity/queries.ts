@@ -251,6 +251,8 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
     isBusinessProduct: doc.isBusinessProduct || false,
     featured: doc.featured || false,
     bestSeller: doc.bestSeller || false,
+    grammage: doc.grammage,
+    material: doc.material,
     businessPacks: doc.businessPacks?.map(
       (pack: {
         quantity: number;
@@ -290,6 +292,8 @@ const ALL_PRODUCTS_QUERY = `*[_type == "products" && !(_id in path("drafts.**"))
   basePrice,
   description,
   inStock,
+  grammage,
+  material,
   "images": images[].asset->,
   "categories": categories[]->{
     _id,
@@ -353,6 +357,8 @@ const PRODUCT_BY_SLUG_QUERY = `*[_type == "products" && slug.current == $slug &&
   basePrice,
   description,
   inStock,
+  grammage,
+  material,
   "images": images[].asset->,
   "categories": categories[]->{
     _id,
@@ -410,6 +416,8 @@ const PRODUCTS_BY_CATEGORY_QUERY = `*[_type == "products" && $categoryId in cate
   basePrice,
   description,
   inStock,
+  grammage,
+  material,
   "images": images[].asset->,
   "categories": categories[]->{
     _id,
@@ -467,6 +475,8 @@ const FEATURED_PRODUCTS_QUERY = `*[_type == "products" && featured == true && !(
   basePrice,
   description,
   inStock,
+  grammage,
+  material,
   "images": images[].asset->,
   "categories": categories[]->{
     _id,
@@ -541,6 +551,8 @@ export async function getShopProducts(): Promise<Product[]> {
       basePrice,
       description,
       inStock,
+      grammage,
+      material,
       "images": images[].asset->,
       "categories": categories[]->{
         _id,
@@ -611,6 +623,8 @@ export async function getBusinessProducts(): Promise<Product[]> {
       basePrice,
       description,
       inStock,
+      grammage,
+      material,
       "images": images[].asset->,
       "categories": categories[]->{
         _id,
@@ -731,6 +745,8 @@ export async function getProductById(id: string): Promise<Product | null> {
       basePrice,
       description,
       inStock,
+      grammage,
+      material,
       "images": images[].asset->,
       "categories": categories[]->{
         _id,
@@ -1057,6 +1073,8 @@ export async function getProductsByCategorySlug(
       originalPrice,
       description,
       inStock,
+      grammage,
+      material,
       "images": images[].asset->,
       "categories": categories[]->{
         _id,

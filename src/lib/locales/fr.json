@@ -90,7 +90,9 @@
       "relatedProducts": "Produits associés",
       "taxesIncluded": "Toutes taxes comprises",
       "total": "Total",
-      "each": "l'unité"
+      "each": "l'unité",
+      "grammage": "Grammage",
+      "material": "Matière"
     },
     "productTabs": {
       "productInformation": "Informations produit",
@@ -144,6 +146,14 @@
         "inStock": "En stock",
         "outOfStock": "En rupture de stock",
         "products": "produits"
+      },
+      "grammage": {
+        "title": "Grammage",
+        "all": "Tous les grammages"
+      },
+      "material": {
+        "title": "Matière",
+        "all": "Toutes les matières"
       },
       "sort": {
         "title": "Trier par",

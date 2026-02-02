@@ -109,6 +109,23 @@ export function ProductCard({ product, isFirst = false }: ProductCardProps) {
     ? convertPrice(product.originalPrice, currency)
     : undefined;
 
+  // Format number without currency symbol (for strikethrough price)
+  const formatNumberWithoutCurrency = (value: number, currency: string): string => {
+    const normalizedCurrency = currency.toUpperCase();
+    if (normalizedCurrency === 'XOF') {
+      return new Intl.NumberFormat('fr-FR', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }).format(value);
+    } else {
+      // USD or EUR - show up to 2 decimals
+      return new Intl.NumberFormat('fr-FR', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+      }).format(value);
+    }
+  };
+
   return (
     <Link
       href={`/products/${product.slug}`}
@@ -129,8 +146,8 @@ export function ProductCard({ product, isFirst = false }: ProductCardProps) {
                 alt={`${product.name} - Image ${index + 1}`}
                 fill
                 className={`object-cover transition-opacity duration-500 ${index === currentImageIndex
-                    ? 'opacity-100'
-                    : 'opacity-0 absolute'
+                  ? 'opacity-100'
+                  : 'opacity-0 absolute'
                   }`}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                 unoptimized
@@ -159,19 +176,38 @@ export function ProductCard({ product, isFirst = false }: ProductCardProps) {
             {product.category?.name || ''}
           </p>
           <div className="flex items-center space-x-2">
-            {displayOriginalPrice && displayOriginalPrice > displayPrice && (
-              <span className="text-sm text-gray-500 line-through">
-                {formatPrice(displayOriginalPrice, currency)}
+            {product.isBusinessProduct &&
+              product.businessPacks &&
+              product.businessPacks.length > 0 ? (
+              <span className="text-sm text-gray-900">
+                {displayOriginalPrice && displayOriginalPrice > displayPrice ? (
+                  <>
+                    <span className="font-normal">{t('from')}</span>{' '}
+                    <span className="text-gray-500 line-through font-normal">
+                      {formatNumberWithoutCurrency(displayOriginalPrice, currency)}
+                    </span>{' '}
+                    <span className="font-medium">{formatPrice(displayPrice, currency)}</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="font-normal">{t('from')}</span>{' '}
+                    <span className="font-medium">{formatPrice(displayPrice, currency)}</span>
+                  </>
+                )}
               </span>
+            ) : (
+              // Regular products: show strikethrough separately if exists
+              <>
+                {displayOriginalPrice && displayOriginalPrice > displayPrice && (
+                  <span className="text-sm text-gray-500 line-through">
+                    {formatPrice(displayOriginalPrice, currency)}
+                  </span>
+                )}
+                <span className="text-sm font-medium text-gray-900">
+                  {formatPrice(displayPrice, currency)}
+                </span>
+              </>
             )}
-            <span className="text-sm font-medium text-gray-900">
-              {/* Only show "From" for business products with packs (multiple items) */}
-              {product.isBusinessProduct &&
-                product.businessPacks &&
-                product.businessPacks.length > 0
-                ? `${t('from')} ${formatPrice(displayPrice, currency)}`
-                : formatPrice(displayPrice, currency)}
-            </span>
           </div>
         </div>
       </div>

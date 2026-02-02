@@ -90,7 +90,9 @@
       "relatedProducts": "Related Products",
       "taxesIncluded": "All taxes included",
       "total": "Total",
-      "each": "each"
+      "each": "each",
+      "grammage": "Grammage",
+      "material": "Material"
     },
     "productTabs": {
       "productInformation": "Product Information",
@@ -144,6 +146,14 @@
         "inStock": "In stock",
         "outOfStock": "Out of stock",
         "products": "products"
+      },
+      "grammage": {
+        "title": "Grammage",
+        "all": "All grammages"
+      },
+      "material": {
+        "title": "Material",
+        "all": "All materials"
       },
       "sort": {
         "title": "Sort by",

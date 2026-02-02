@@ -455,6 +455,28 @@ export function ProductDetail({ product }: ProductDetailProps) {
               )}
           </div>
 
+          {/* Product Specifications (Grammage & Material) */}
+          {(product.grammage || product.material) && (
+            <div className="mb-6 flex flex-wrap gap-4 text-sm text-gray-600">
+              {product.grammage && (
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-gray-900">
+                    {t('productDetail.grammage')}:
+                  </span>
+                  <span>{product.grammage} g/m²</span>
+                </div>
+              )}
+              {product.material && (
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-gray-900">
+                    {t('productDetail.material')}:
+                  </span>
+                  <span>{product.material}</span>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Color Selector */}
           {product.colors && product.colors.length > 1 && (
             <div className="mb-6">

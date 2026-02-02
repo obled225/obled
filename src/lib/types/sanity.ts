@@ -98,6 +98,8 @@ export interface SanityProductExpanded extends Omit<
   }>;
   featured?: boolean;
   bestSeller?: boolean;
+  grammage?: string; // Fabric weight (e.g., '180', '200')
+  material?: string; // Material composition (e.g., '100% coton', '100% coton PK')
   description?: PortableTextBlock[];
 }
 
@@ -180,6 +182,8 @@ export interface Product {
   description?: PortableTextBlock[];
   category: ProductCategory;
   inStock: boolean;
+  grammage?: string; // Fabric weight (e.g., '180', '200')
+  material?: string; // Material composition (e.g., '100% coton', '100% coton PK')
   variant?: {
     id: string;
     name: string;
