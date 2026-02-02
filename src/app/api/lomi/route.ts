@@ -203,10 +203,9 @@ export async function POST(request: Request) {
     const currency = eventData.currency_code || eventData.currency || 'XOF';
 
     // Determine payment status based on event type
+    // Valid lomi. webhook events: PAYMENT_SUCCEEDED, PAYMENT_FAILED, PAYMENT_CREATED, REFUND_*, SUBSCRIPTION_*
     let paymentStatusForDb = 'unknown';
-    if (lomiEventType === 'CHECKOUT_COMPLETED') {
-      paymentStatusForDb = 'paid';
-    } else if (lomiEventType === 'PAYMENT_SUCCEEDED') {
+    if (lomiEventType === 'PAYMENT_SUCCEEDED') {
       paymentStatusForDb = 'paid';
     } else if (lomiEventType === 'PAYMENT_FAILED') {
       paymentStatusForDb = 'payment_failed';
