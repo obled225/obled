@@ -161,11 +161,11 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                                 p.quantity === item.selectedVariant?.packSize
                             ) as
                               | {
-                                quantity: number;
-                                label?: string;
-                                price?: number;
-                                originalPrice?: number;
-                              }
+                                  quantity: number;
+                                  label?: string;
+                                  price?: number;
+                                  originalPrice?: number;
+                                }
                               | undefined;
                             originalPriceXOF = pack?.originalPrice;
                           } else {
@@ -240,7 +240,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">{t('subtotal')}</span>
               {summary.originalSubtotal &&
-                summary.originalSubtotal > summary.subtotal ? (
+              summary.originalSubtotal > summary.subtotal ? (
                 <span className="text-sm text-gray-500">
                   {formatPrice(summary.originalSubtotal, currency)}
                 </span>
@@ -268,7 +268,9 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     <>
                       {formatPrice(summary.tax, currency)}{' '}
                       <span className="text-muted-foreground text-xs">
-                        ({((taxSettings.taxRates[0].rate || 0) * 100).toFixed(1)}%)
+                        (
+                        {((taxSettings.taxRates[0].rate || 0) * 100).toFixed(1)}
+                        %)
                       </span>
                     </>
                   ) : (

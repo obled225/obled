@@ -228,11 +228,10 @@ export function ShippingCalculator({
 
         {/* Free Shipping Message */}
         <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-md">
-          <p className="text-sm text-green-900 font-medium">
-            {t('free')}
-          </p>
+          <p className="text-sm text-green-900 font-medium">{t('free')}</p>
           <p className="text-sm text-green-700 mt-1">
-            {t('noShippingOptionsAvailable') || 'No shipping options configured. Shipping is free.'}
+            {t('noShippingOptionsAvailable') ||
+              'No shipping options configured. Shipping is free.'}
           </p>
         </div>
 
@@ -324,10 +323,11 @@ export function ShippingCalculator({
           {availableOptions.map((option) => (
             <label
               key={option.id}
-              className={`block p-4 border rounded-md cursor-pointer transition-colors ${selectedShipping === option.id
+              className={`block p-4 border rounded-md cursor-pointer transition-colors ${
+                selectedShipping === option.id
                   ? 'border-blue-500 bg-blue-50'
                   : 'border-gray-200 hover:border-gray-300'
-                }`}
+              }`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center">

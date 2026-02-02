@@ -162,6 +162,11 @@ serve(async (req: Request) => {
 
     const customerName = orderData.customer_name || 'Valued Customer';
     const orderItems = orderData.items || [];
+    // Calculate subtotal (before discount) for display in email
+    // Formula stored in DB: total_amount = subtotal_before_discount + shipping + tax - discount
+    // So to get subtotal_before_discount: subtotal = total_amount - shipping - tax + discount
+    // This matches the calculation in checkout/index.ts where:
+    //   totalAmount = subtotal + shippingFee + taxAmount - discountAmount
     const subtotal = orderData.total_amount - (orderData.shipping_fee || 0) - (orderData.tax_amount || 0) + (orderData.discount_amount || 0);
 
     // --- 3. Generate Customer Order Confirmation Email HTML using Email Engine ---

@@ -1,11 +1,11 @@
-import { ChevronDown, Phone } from "lucide-react";
-import { cn } from "@/lib/actions/utils";
-import React, { useEffect, useCallback, useRef } from "react";
-import * as RPNInput from "react-phone-number-input";
-import flags from "react-phone-number-input/flags";
-import { isValidPhoneNumber } from "react-phone-number-input";
-import { useCountryDetection } from "@/lib/hooks/checkout/use-country-detection";
-import { countryCodeToName } from "@/lib/utils/country-helpers";
+import { ChevronDown, Phone } from 'lucide-react';
+import { cn } from '@/lib/actions/utils';
+import React, { useEffect, useCallback, useRef } from 'react';
+import * as RPNInput from 'react-phone-number-input';
+import flags from 'react-phone-number-input/flags';
+import { isValidPhoneNumber } from 'react-phone-number-input';
+import { useCountryDetection } from '@/lib/hooks/checkout/use-country-detection';
+import { countryCodeToName } from '@/lib/utils/country-helpers';
 
 interface PhoneNumberInputProps {
   value: string;
@@ -22,9 +22,9 @@ export default function CheckoutPhoneNumberInput({
 }: PhoneNumberInputProps) {
   // Use centralized country detection hook
   const { countryCode: defaultCountry } = useCountryDetection({
-    countryCodeKey: "user_country_code",
-    countryNameKey: "user_country_name",
-    fallbackCountryCode: "CI",
+    countryCodeKey: 'user_country_code',
+    countryNameKey: 'user_country_name',
+    fallbackCountryCode: 'CI',
     fallbackCountryName: "Côte d'Ivoire",
   });
 
@@ -45,7 +45,7 @@ export default function CheckoutPhoneNumberInput({
         onValidationChange?.(false);
       }
     },
-    [onValidationChange],
+    [onValidationChange]
   );
 
   useEffect(() => {
@@ -103,7 +103,7 @@ const PhoneInput = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <input
         className={cn(
-          "flex h-10 w-full rounded-r-md border-0 bg-transparent px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+          'flex h-10 w-full rounded-r-md border-0 bg-transparent px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
           className
         )}
         ref={ref}
@@ -113,10 +113,10 @@ const PhoneInput = React.forwardRef<HTMLInputElement, InputProps>(
         data-form-type="other"
       />
     );
-  },
+  }
 );
 
-PhoneInput.displayName = "PhoneInput";
+PhoneInput.displayName = 'PhoneInput';
 
 type CountrySelectProps = {
   disabled?: boolean;
@@ -145,7 +145,7 @@ const CountrySelect = ({
       </div>
       <select
         disabled={disabled}
-        value={value || ""}
+        value={value || ''}
         onChange={handleSelect}
         className="absolute inset-0 text-sm opacity-0 cursor-pointer"
         aria-label="Select country"
@@ -157,8 +157,8 @@ const CountrySelect = ({
         {options
           .filter((x) => x.value)
           .map((option) => (
-            <option key={option.value || "empty"} value={option.value}>
-              {option.label}{" "}
+            <option key={option.value || 'empty'} value={option.value}>
+              {option.label}{' '}
               {option.value &&
                 `+${RPNInput.getCountryCallingCode(option.value)}`}
             </option>

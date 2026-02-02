@@ -77,9 +77,7 @@ export function ProductFilters({
 
   // Only show availability filter if there's a mix of in-stock and out-of-stock items
   const showAvailabilityFilter = useMemo(() => {
-    return (
-      availabilityCounts.inStock > 0 && availabilityCounts.outOfStock > 0
-    );
+    return availabilityCounts.inStock > 0 && availabilityCounts.outOfStock > 0;
   }, [availabilityCounts]);
 
   // Get unique grammage and material values from products
@@ -296,22 +294,23 @@ export function ProductFilters({
                           category: undefined,
                         }));
                       }}
-                      className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors ${!filters.category
-                        ? 'bg-accent font-medium'
-                        : 'hover:bg-accent/50'
-                        }`}
+                      className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors ${
+                        !filters.category
+                          ? 'bg-accent font-medium'
+                          : 'hover:bg-accent/50'
+                      }`}
                     >
                       {t('allCategories')}
                     </button>
                     {(categories.length > 0
                       ? categories.map((cat) => cat.name)
                       : Array.from(
-                        new Set(
-                          products
-                            .map((p) => p.category?.name)
-                            .filter(Boolean)
+                          new Set(
+                            products
+                              .map((p) => p.category?.name)
+                              .filter(Boolean)
+                          )
                         )
-                      )
                     ).map((cat) => (
                       <button
                         key={cat}
@@ -319,10 +318,11 @@ export function ProductFilters({
                         onClick={() => {
                           setFilters((prev) => ({ ...prev, category: cat }));
                         }}
-                        className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors ${filters.category === cat
-                          ? 'bg-accent font-medium'
-                          : 'hover:bg-accent/50'
-                          }`}
+                        className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors ${
+                          filters.category === cat
+                            ? 'bg-accent font-medium'
+                            : 'hover:bg-accent/50'
+                        }`}
                       >
                         {cat}
                       </button>
@@ -341,12 +341,16 @@ export function ProductFilters({
                     <button
                       type="button"
                       onClick={() => {
-                        setFilters((prev) => ({ ...prev, grammage: undefined }));
+                        setFilters((prev) => ({
+                          ...prev,
+                          grammage: undefined,
+                        }));
                       }}
-                      className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors ${!filters.grammage
-                        ? 'bg-accent font-medium'
-                        : 'hover:bg-accent/50'
-                        }`}
+                      className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors ${
+                        !filters.grammage
+                          ? 'bg-accent font-medium'
+                          : 'hover:bg-accent/50'
+                      }`}
                     >
                       {t('grammage.all')}
                     </button>
@@ -357,10 +361,11 @@ export function ProductFilters({
                         onClick={() => {
                           setFilters((prev) => ({ ...prev, grammage }));
                         }}
-                        className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors ${filters.grammage === grammage
-                          ? 'bg-accent font-medium'
-                          : 'hover:bg-accent/50'
-                          }`}
+                        className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors ${
+                          filters.grammage === grammage
+                            ? 'bg-accent font-medium'
+                            : 'hover:bg-accent/50'
+                        }`}
                       >
                         {grammage} g/m²
                       </button>
@@ -379,12 +384,16 @@ export function ProductFilters({
                     <button
                       type="button"
                       onClick={() => {
-                        setFilters((prev) => ({ ...prev, material: undefined }));
+                        setFilters((prev) => ({
+                          ...prev,
+                          material: undefined,
+                        }));
                       }}
-                      className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors ${!filters.material
-                        ? 'bg-accent font-medium'
-                        : 'hover:bg-accent/50'
-                        }`}
+                      className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors ${
+                        !filters.material
+                          ? 'bg-accent font-medium'
+                          : 'hover:bg-accent/50'
+                      }`}
                     >
                       {t('material.all')}
                     </button>
@@ -395,10 +404,11 @@ export function ProductFilters({
                         onClick={() => {
                           setFilters((prev) => ({ ...prev, material }));
                         }}
-                        className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors ${filters.material === material
-                          ? 'bg-accent font-medium'
-                          : 'hover:bg-accent/50'
-                          }`}
+                        className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors ${
+                          filters.material === material
+                            ? 'bg-accent font-medium'
+                            : 'hover:bg-accent/50'
+                        }`}
                       >
                         {material}
                       </button>
@@ -419,7 +429,9 @@ export function ProductFilters({
                         <input
                           type="checkbox"
                           checked={filters.availability.outOfStock}
-                          onChange={() => handleAvailabilityToggle('outOfStock')}
+                          onChange={() =>
+                            handleAvailabilityToggle('outOfStock')
+                          }
                           className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
                         />
                         <div className="flex-1">
@@ -486,10 +498,11 @@ export function ProductFilters({
                     setFilters((prev) => ({ ...prev, sortBy: option }));
                     setIsMobileSortOpen(false);
                   }}
-                  className={`w-full text-left px-3 py-3 text-sm rounded-md transition-colors ${filters.sortBy === option
-                    ? 'bg-accent font-medium'
-                    : 'hover:bg-accent/50'
-                    }`}
+                  className={`w-full text-left px-3 py-3 text-sm rounded-md transition-colors ${
+                    filters.sortBy === option
+                      ? 'bg-accent font-medium'
+                      : 'hover:bg-accent/50'
+                  }`}
                 >
                   {t(`sort.options.${option}`)}
                 </button>
@@ -543,18 +556,19 @@ export function ProductFilters({
                       setFilters((prev) => ({ ...prev, category: undefined }));
                       setIsCategoryOpen(false);
                     }}
-                    className={`w-full text-left px-4 py-2 text-sm hover:bg-accent transition-colors ${!filters.category ? 'bg-accent font-medium' : ''
-                      }`}
+                    className={`w-full text-left px-4 py-2 text-sm hover:bg-accent transition-colors ${
+                      !filters.category ? 'bg-accent font-medium' : ''
+                    }`}
                   >
                     {t('allCategories')}
                   </button>
                   {(categories.length > 0
                     ? categories.map((cat) => cat.name)
                     : Array.from(
-                      new Set(
-                        products.map((p) => p.category?.name).filter(Boolean)
+                        new Set(
+                          products.map((p) => p.category?.name).filter(Boolean)
+                        )
                       )
-                    )
                   ).map((cat) => (
                     <button
                       key={cat}
@@ -563,8 +577,9 @@ export function ProductFilters({
                         setFilters((prev) => ({ ...prev, category: cat }));
                         setIsCategoryOpen(false);
                       }}
-                      className={`w-full text-left px-4 py-2 text-sm hover:bg-accent transition-colors ${filters.category === cat ? 'bg-accent font-medium' : ''
-                        }`}
+                      className={`w-full text-left px-4 py-2 text-sm hover:bg-accent transition-colors ${
+                        filters.category === cat ? 'bg-accent font-medium' : ''
+                      }`}
                     >
                       {cat}
                     </button>
@@ -583,7 +598,11 @@ export function ProductFilters({
               onClick={() => setIsGrammageOpen(!isGrammageOpen)}
               className="flex items-center gap-2 text-foreground hover:text-foreground/80 transition-colors"
             >
-              <span>{filters.grammage ? `${filters.grammage} g/m²` : t('grammage.title')}</span>
+              <span>
+                {filters.grammage
+                  ? `${filters.grammage} g/m²`
+                  : t('grammage.title')}
+              </span>
               <svg
                 className={`w-3 h-3 transition-transform ${isGrammageOpen ? 'rotate-180' : ''}`}
                 fill="none"
@@ -612,8 +631,9 @@ export function ProductFilters({
                       setFilters((prev) => ({ ...prev, grammage: undefined }));
                       setIsGrammageOpen(false);
                     }}
-                    className={`w-full text-left px-4 py-2 text-sm hover:bg-accent transition-colors ${!filters.grammage ? 'bg-accent font-medium' : ''
-                      }`}
+                    className={`w-full text-left px-4 py-2 text-sm hover:bg-accent transition-colors ${
+                      !filters.grammage ? 'bg-accent font-medium' : ''
+                    }`}
                   >
                     {t('grammage.all')}
                   </button>
@@ -625,8 +645,11 @@ export function ProductFilters({
                         setFilters((prev) => ({ ...prev, grammage }));
                         setIsGrammageOpen(false);
                       }}
-                      className={`w-full text-left px-4 py-2 text-sm hover:bg-accent transition-colors ${filters.grammage === grammage ? 'bg-accent font-medium' : ''
-                        }`}
+                      className={`w-full text-left px-4 py-2 text-sm hover:bg-accent transition-colors ${
+                        filters.grammage === grammage
+                          ? 'bg-accent font-medium'
+                          : ''
+                      }`}
                     >
                       {grammage} g/m²
                     </button>
@@ -674,8 +697,9 @@ export function ProductFilters({
                       setFilters((prev) => ({ ...prev, material: undefined }));
                       setIsMaterialOpen(false);
                     }}
-                    className={`w-full text-left px-4 py-2 text-sm hover:bg-accent transition-colors ${!filters.material ? 'bg-accent font-medium' : ''
-                      }`}
+                    className={`w-full text-left px-4 py-2 text-sm hover:bg-accent transition-colors ${
+                      !filters.material ? 'bg-accent font-medium' : ''
+                    }`}
                   >
                     {t('material.all')}
                   </button>
@@ -687,8 +711,11 @@ export function ProductFilters({
                         setFilters((prev) => ({ ...prev, material }));
                         setIsMaterialOpen(false);
                       }}
-                      className={`w-full text-left px-4 py-2 text-sm hover:bg-accent transition-colors ${filters.material === material ? 'bg-accent font-medium' : ''
-                        }`}
+                      className={`w-full text-left px-4 py-2 text-sm hover:bg-accent transition-colors ${
+                        filters.material === material
+                          ? 'bg-accent font-medium'
+                          : ''
+                      }`}
                     >
                       {material}
                     </button>
@@ -741,7 +768,9 @@ export function ProductFilters({
                         <input
                           type="checkbox"
                           checked={filters.availability.outOfStock}
-                          onChange={() => handleAvailabilityToggle('outOfStock')}
+                          onChange={() =>
+                            handleAvailabilityToggle('outOfStock')
+                          }
                           className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
                         />
                         <div className="flex-1">
@@ -828,8 +857,9 @@ export function ProductFilters({
                       key={option}
                       type="button"
                       onClick={() => handleSortChange(option)}
-                      className={`w-full text-left px-4 py-2 text-sm hover:bg-accent transition-colors ${filters.sortBy === option ? 'bg-accent font-medium' : ''
-                        }`}
+                      className={`w-full text-left px-4 py-2 text-sm hover:bg-accent transition-colors ${
+                        filters.sortBy === option ? 'bg-accent font-medium' : ''
+                      }`}
                     >
                       {t(`sort.options.${option}`)}
                     </button>

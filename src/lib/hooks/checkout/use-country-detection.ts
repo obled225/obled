@@ -24,7 +24,7 @@ export function useCountryDetection(
     countryCodeKey = 'user_country_code',
     countryNameKey = 'user_country_name',
     fallbackCountryCode = 'CI',
-    fallbackCountryName = 'Côte d\'Ivoire',
+    fallbackCountryName = "Côte d'Ivoire",
   } = options;
 
   const [countryCode, setCountryCode] = useState<string | undefined>(
@@ -65,7 +65,12 @@ export function useCountryDetection(
     } finally {
       setIsLoading(false);
     }
-  }, [countryCodeKey, countryNameKey, fallbackCountryCode, fallbackCountryName]);
+  }, [
+    countryCodeKey,
+    countryNameKey,
+    fallbackCountryCode,
+    fallbackCountryName,
+  ]);
 
   return {
     countryCode,

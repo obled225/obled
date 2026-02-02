@@ -4,6 +4,12 @@
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
 import { corsHeaders } from '../_shared/cors.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import {
+  validateAndRecalculatePricing,
+  recalculateTax,
+  getTaxSettings,
+  validateShippingCost,
+} from '../_shared/pricing-validation.ts';
 
 // Initialize Supabase client
 const supabaseUrl = Deno.env.get('SUPABASE_URL');
@@ -204,25 +210,102 @@ serve(async (req: Request) => {
 
     console.log('Customer upserted successfully:', customerId);
 
-    // --- Calculate totals ---
-    // Validate and normalize currency code - ensure it's always XOF, EUR, or USD (never F CFA)
+    // --- Validate and normalize currency code ---
     let currencyCode = (payload.currencyCode || 'XOF').toUpperCase();
-    // Map any invalid currency codes to XOF
     const validCurrencies = ['XOF', 'EUR', 'USD'];
     if (!validCurrencies.includes(currencyCode)) {
       console.warn(`Invalid currency code "${currencyCode}", defaulting to XOF`);
       currencyCode = 'XOF';
     }
-    let subtotal = 0;
-    const shippingFee = payload.shippingFee || 0;
-    const taxAmount = payload.taxAmount || 0;
-    const discountAmount = payload.discountAmount || 0;
 
-    for (const item of payload.cartItems) {
-      subtotal += item.price * item.quantity;
+    // --- Validate and recalculate pricing from source of truth (Sanity) ---
+    const clientSubtotal = payload.cartItems.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+    const clientDiscount = payload.discountAmount || 0;
+
+    console.log('Validating pricing against Sanity...');
+    const pricingValidation = await validateAndRecalculatePricing(
+      payload.cartItems,
+      currencyCode as 'XOF' | 'EUR' | 'USD',
+      clientSubtotal,
+      clientDiscount
+    );
+
+    // Handle critical errors (product not found, etc.)
+    if (pricingValidation.hasCriticalErrors) {
+      console.error('Pricing validation failed with critical errors:');
+      pricingValidation.errors.forEach((error) => console.error(`  - ${error}`));
+      return new Response(
+        JSON.stringify({
+          error: 'Pricing validation failed',
+          details: pricingValidation.errors,
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400,
+        }
+      );
     }
 
+    // Log warnings (price mismatches, etc.)
+    if (pricingValidation.warnings.length > 0) {
+      console.warn('Pricing validation found discrepancies (non-critical):');
+      pricingValidation.warnings.forEach((warning) => console.warn(`  - ${warning}`));
+      console.warn('Using server-validated prices instead of client-provided prices');
+    }
+
+    // Use validated prices (server is source of truth)
+    const subtotal = pricingValidation.subtotal;
+    const discountAmount = pricingValidation.discount;
+
+    // Validate shipping cost
+    const shippingFee = payload.shippingFee || 0;
+    const shippingValidation = validateShippingCost(shippingFee);
+    if (!shippingValidation.isValid) {
+      console.warn(`Shipping cost validation: ${shippingValidation.error}`);
+      // For now, we'll still use the client-provided shipping fee
+      // but log the warning for monitoring
+    }
+
+    // Recalculate tax using validated subtotal
+    const taxSettings = await getTaxSettings();
+    // Tax should be calculated on the discounted subtotal
+    const discountedSubtotal = subtotal - discountAmount;
+    const taxAmount = recalculateTax(
+      discountedSubtotal,
+      currencyCode as 'XOF' | 'EUR' | 'USD',
+      taxSettings
+    );
+
+    // Validate tax amount if client provided one
+    const clientTaxAmount = payload.taxAmount || 0;
+    const taxDifference = Math.abs(taxAmount - clientTaxAmount);
+    if (taxDifference > 0.01) {
+      console.warn(
+        `Tax amount mismatch: client sent ${clientTaxAmount.toFixed(2)} ${currencyCode}, but server calculated ${taxAmount.toFixed(2)} ${currencyCode}. Using server-calculated value.`
+      );
+    }
+
+    // Calculate total amount
+    // Formula: total = (subtotal - discount) + shipping + tax
+    // Which equals: total = subtotal + shipping + tax - discount
+    // Where:
+    //   - subtotal = sum of item prices BEFORE discount (validated from Sanity)
+    //   - discount = discount amount (if originalPrice > currentPrice)
+    //   - shipping = shipping fee
+    //   - tax = tax calculated on discounted subtotal (subtotal - discount)
     const totalAmount = subtotal + shippingFee + taxAmount - discountAmount;
+
+    console.log('Final pricing breakdown:', {
+      subtotal: `${subtotal.toFixed(2)} ${currencyCode}`,
+      discount: `${discountAmount.toFixed(2)} ${currencyCode}`,
+      discountedSubtotal: `${(subtotal - discountAmount).toFixed(2)} ${currencyCode}`,
+      shipping: `${shippingFee.toFixed(2)} ${currencyCode}`,
+      tax: `${taxAmount.toFixed(2)} ${currencyCode}`,
+      total: `${totalAmount.toFixed(2)} ${currencyCode}`,
+    });
 
     // --- Create Order using RPC ---
     console.log('Creating order using RPC function');
@@ -265,10 +348,25 @@ serve(async (req: Request) => {
 
     console.log('Order created successfully:', orderId);
 
-    // --- Create Order Items ---
-    for (const item of payload.cartItems) {
-      const itemTotal = item.price * item.quantity;
-      console.log(`Creating order item for ${item.productTitle}`);
+    // --- Create Order Items using validated prices ---
+    for (let i = 0; i < payload.cartItems.length; i++) {
+      const item = payload.cartItems[i];
+      // Use validated price from pricing validation (items are in same order)
+      const validatedItem = pricingValidation.recalculatedItems[i];
+      // Use validated price if available and valid (> 0), otherwise fall back to client price
+      // Note: If hasCriticalErrors is true, we shouldn't reach here, but this is a safety check
+      const validatedPricePerItem =
+        validatedItem && validatedItem.validatedPrice > 0
+          ? validatedItem.validatedPrice / item.quantity
+          : item.price;
+      const itemTotal = validatedPricePerItem * item.quantity;
+
+      console.log(`Creating order item for ${item.productTitle}`, {
+        clientPrice: item.price,
+        validatedPrice: validatedPricePerItem,
+        quantity: item.quantity,
+        total: itemTotal,
+      });
 
       const { error: itemError } = await supabase.rpc('create_order_item', {
         p_order_id: orderId,
@@ -278,7 +376,7 @@ serve(async (req: Request) => {
         p_variant_id: item.variantId || null,
         p_variant_title: item.variantTitle || null,
         p_quantity: item.quantity,
-        p_price_per_item: item.price,
+        p_price_per_item: validatedPricePerItem, // Use validated price
         p_total_amount: itemTotal,
         p_product_image_url: item.productImageUrl || null,
       });
@@ -320,7 +418,15 @@ serve(async (req: Request) => {
       customer_country: payload.shippingAddress?.country,
       customer_address: payload.shippingAddress?.address,
       customer_postal_code: payload.shippingAddress?.postalCode,
-      line_items: payload.cartItems.map(item => {
+      line_items: payload.cartItems.map((item, index) => {
+        // Use validated price from pricing validation (items are in same order)
+        const validatedItem = pricingValidation.recalculatedItems[index];
+        // Use validated price if available and valid (> 0), otherwise fall back to client price
+        const validatedPricePerItem =
+          validatedItem && validatedItem.validatedPrice > 0
+            ? validatedItem.validatedPrice / item.quantity
+            : item.price;
+
         // Ad-Hoc Pricing (Direct Charge)
         // unit_amount: For XOF, it's in base units (e.g., 100000 = 100,000 XOF)
         // For EUR/USD, prices are already converted and should be in base units (e.g., 150.00 EUR = 150)
@@ -336,7 +442,7 @@ serve(async (req: Request) => {
                 variant_id: item.variantId
               }
             },
-            unit_amount: item.price // Price in selected currency (already converted from XOF)
+            unit_amount: validatedPricePerItem // Use validated price (server is source of truth)
           },
           quantity: item.quantity
         };

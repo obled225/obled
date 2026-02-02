@@ -48,7 +48,7 @@ export function countryCodeToName(countryCode: string | undefined): string {
     CF: 'Central African Republic',
     CG: 'Congo',
     CH: 'Switzerland',
-    CI: 'Côte d\'Ivoire',
+    CI: "Côte d'Ivoire",
     CK: 'Cook Islands',
     CL: 'Chile',
     CM: 'Cameroon',

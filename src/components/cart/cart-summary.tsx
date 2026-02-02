@@ -184,7 +184,7 @@ export function CartSummary({
               {t('subtotalWithItems', { count: cart.itemCount })}
             </span>
             {cartSummary.originalSubtotal &&
-              cartSummary.originalSubtotal > cartSummary.subtotal ? (
+            cartSummary.originalSubtotal > cartSummary.subtotal ? (
               <span className="text-sm text-gray-500">
                 {formatPrice(cartSummary.originalSubtotal, currency)}
               </span>
@@ -208,8 +208,8 @@ export function CartSummary({
             <span className="text-gray-600">{t('shipping')}</span>
             <span className="font-medium">
               {selectedShipping === 'free-shipping' ||
-                (selectedShipping &&
-                  (globalFreeShippingActive || shippingCost === 0)) ? (
+              (selectedShipping &&
+                (globalFreeShippingActive || shippingCost === 0)) ? (
                 <span className="text-green-600 font-semibold">
                   {tShipping('free')}
                 </span>
@@ -235,7 +235,8 @@ export function CartSummary({
                   <>
                     {formatPrice(cartSummary.tax, currency)}{' '}
                     <span className="text-muted-foreground text-xs">
-                      ({((taxSettings.taxRates[0].rate || 0) * 100).toFixed(1)}%)
+                      ({((taxSettings.taxRates[0].rate || 0) * 100).toFixed(1)}
+                      %)
                     </span>
                   </>
                 ) : (
