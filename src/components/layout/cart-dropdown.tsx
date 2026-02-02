@@ -107,7 +107,7 @@ const CartDropdown = () => {
                               {formatPrice(
                                 (basePrice +
                                   (item.selectedVariant?.priceModifier || 0)) *
-                                  item.quantity,
+                                item.quantity,
                                 currency
                               )}
                             </p>
@@ -135,9 +135,9 @@ const CartDropdown = () => {
                       </span>
                     </div>
 
-                    <Link href="/cart">
+                    <Link href="/checkout">
                       <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors text-sm sm:text-base h-10 sm:h-11">
-                        View Cart
+                        Checkout
                       </button>
                     </Link>
                   </div>

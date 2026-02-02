@@ -3,7 +3,7 @@ import { locales, defaultLocale } from '@/lib/translations/i18n';
 import { siteUrl } from '@/lib/utils/config';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseRoutes = ['', '/about', '/business', '/faq', '/terms', '/cart'];
+  const baseRoutes = ['', '/about', '/business', '/faq', '/terms'];
 
   // Generate sitemap entries for all locales
   const routes: MetadataRoute.Sitemap = [];

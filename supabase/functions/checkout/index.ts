@@ -257,7 +257,10 @@ serve(async (req: Request) => {
     }
 
     // Use validated prices (server is source of truth)
-    const subtotal = pricingValidation.subtotal;
+    // Note: pricingValidation.subtotal is the discounted subtotal (current prices)
+    // pricingValidation.originalSubtotal is the original subtotal (original prices)
+    const discountedSubtotal = pricingValidation.subtotal;
+    const originalSubtotal = pricingValidation.originalSubtotal;
     const discountAmount = pricingValidation.discount;
 
     // Validate shipping cost
@@ -272,9 +275,12 @@ serve(async (req: Request) => {
     // Recalculate tax using validated subtotal
     const taxSettings = await getTaxSettings();
     // Tax should be calculated on the discounted subtotal
-    const discountedSubtotal = subtotal - discountAmount;
+    // Match cart summary logic: tax is calculated on (subtotal - discount)
+    // Note: This matches the cart summary calculation: tempSummary.subtotal - tempSummary.discount
+    // Even though discountedSubtotal is already discounted, we subtract discount again to match cart summary behavior
+    const taxBaseAmount = discountedSubtotal - discountAmount;
     const taxAmount = recalculateTax(
-      discountedSubtotal,
+      taxBaseAmount,
       currencyCode as 'XOF' | 'EUR' | 'USD',
       taxSettings
     );
@@ -289,19 +295,19 @@ serve(async (req: Request) => {
     }
 
     // Calculate total amount
-    // Formula: total = (subtotal - discount) + shipping + tax
-    // Which equals: total = subtotal + shipping + tax - discount
+    // Formula: total = discountedSubtotal + shipping + tax
     // Where:
-    //   - subtotal = sum of item prices BEFORE discount (validated from Sanity)
-    //   - discount = discount amount (if originalPrice > currentPrice)
+    //   - discountedSubtotal = sum of item prices AFTER discount (validated from Sanity, already discounted)
+    //   - discount = discount amount (if originalPrice > currentPrice) - already applied to discountedSubtotal
     //   - shipping = shipping fee
-    //   - tax = tax calculated on discounted subtotal (subtotal - discount)
-    const totalAmount = subtotal + shippingFee + taxAmount - discountAmount;
+    //   - tax = tax calculated on discounted subtotal
+    // Note: discountedSubtotal from pricing validation is already the discounted price, so we don't subtract discount again
+    const totalAmount = discountedSubtotal + shippingFee + taxAmount;
 
     console.log('Final pricing breakdown:', {
-      subtotal: `${subtotal.toFixed(2)} ${currencyCode}`,
+      originalSubtotal: `${originalSubtotal.toFixed(2)} ${currencyCode}`,
       discount: `${discountAmount.toFixed(2)} ${currencyCode}`,
-      discountedSubtotal: `${(subtotal - discountAmount).toFixed(2)} ${currencyCode}`,
+      discountedSubtotal: `${discountedSubtotal.toFixed(2)} ${currencyCode}`,
       shipping: `${shippingFee.toFixed(2)} ${currencyCode}`,
       tax: `${taxAmount.toFixed(2)} ${currencyCode}`,
       total: `${totalAmount.toFixed(2)} ${currencyCode}`,

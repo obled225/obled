@@ -538,7 +538,7 @@
   "shipping": {
     "title": "Shipping options",
     "addMoreForFreeShipping": "Add {amount} more for FREE shipping!",
-    "addAmountToEnableFreeShipping": "Add {amount} worth of items to qualify for free shipping",
+    "addAmountToEnableFreeShipping": "Add {amount} worth of items to qualify for free shipping.",
     "spent": "{amount} spent",
     "forFreeShipping": "{amount} for free shipping",
     "fast": "Fast",
@@ -574,6 +574,30 @@
       "fillAllFields": "Please fill in all required fields.",
       "checkoutSessionFailed": "Failed to create checkout session. Please try again.",
       "unexpectedError": "An unexpected error occurred. Please try again."
+    }
+  },
+  "payment": {
+    "error": {
+      "titleCancelled": "Payment cancelled",
+      "titleFailed": "Payment failed",
+      "descriptionCancelled": "Your payment was cancelled. No charges were made.",
+      "descriptionFailed": "There was an issue processing your payment. Please try again.",
+      "orderId": "Order ID",
+      "tryAgain": "Try again",
+      "backToCheckout": "Back to checkout",
+      "continueShopping": "Continue shopping",
+      "support": "If you continue to experience issues, please contact our support team."
+    },
+    "success": {
+      "title": "Payment successful!",
+      "titleUnknown": "Payment status unknown",
+      "description": "Thank you for your order. We've sent a confirmation email with your order details.",
+      "descriptionUnknown": "We couldn't determine the payment status. Please contact support if you have any questions.",
+      "orderNumber": "Order number",
+      "orderId": "Order ID",
+      "continueShopping": "Continue shopping",
+      "tryAgain": "Try again",
+      "support": "If you have any questions, please contact our support team."
     }
   }
 }

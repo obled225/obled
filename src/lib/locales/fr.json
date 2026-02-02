@@ -541,7 +541,7 @@
   "shipping": {
     "title": "Options de livraison",
     "addMoreForFreeShipping": "Ajoutez {amount} de plus pour la livraison GRATUITE !",
-    "addAmountToEnableFreeShipping": "Ajoutez {amount} d'articles pour bénéficier de la livraison gratuite",
+    "addAmountToEnableFreeShipping": "Ajoutez {amount} d'articles pour bénéficier de la livraison gratuite.",
     "spent": "{amount} dépensé",
     "forFreeShipping": "{amount} pour la livraison gratuite",
     "fast": "Rapide",
@@ -550,7 +550,7 @@
     "estimatedDelivery": "Délai de livraison estimé",
     "freeShippingActive": "Livraison gratuite",
     "freeShippingActiveDescription": "Votre commande bénéficie de la livraison gratuite.",
-    "addAmountForFreeShipping": "Ajoutez {amount} pour activer la livraison gratuite",
+    "addAmountForFreeShipping": "Ajoutez {amount} pour activer la livraison gratuite.",
     "shippingInfo": "Les livraisons à Abidjan sont gérées par notre partenaire Yango Delivery. Nous utilisons DHL et UPS pour les expéditions internationales.",
     "shippingInfoContact": "Nous vous contacterons dès que possible pour confirmer les détails de livraison avec vous si nécessaire.",
     "shippingInfoPromoCode": "Vous pourrez ajouter un code promo directement au moment du paiement."
@@ -578,6 +578,30 @@
       "fillAllFields": "Veuillez remplir tous les champs obligatoires.",
       "checkoutSessionFailed": "Échec de la création de la session de paiement. Veuillez réessayer.",
       "unexpectedError": "Une erreur inattendue s'est produite. Veuillez réessayer."
+    }
+  },
+  "payment": {
+    "error": {
+      "titleCancelled": "Paiement annulé",
+      "titleFailed": "Échec du paiement",
+      "descriptionCancelled": "Votre paiement a été annulé. Aucun prélèvement n'a été effectué.",
+      "descriptionFailed": "Un problème est survenu lors du traitement de votre paiement. Veuillez réessayer.",
+      "orderId": "N° de commande",
+      "tryAgain": "Réessayer",
+      "backToCheckout": "Retour à la commande",
+      "continueShopping": "Continuer les achats",
+      "support": "Si le problème persiste, contactez notre équipe support."
+    },
+    "success": {
+      "title": "Paiement réussi !",
+      "titleUnknown": "Statut du paiement inconnu",
+      "description": "Merci pour votre commande. Nous vous avons envoyé un email de confirmation avec les détails.",
+      "descriptionUnknown": "Nous n'avons pas pu déterminer le statut du paiement. Contactez le support en cas de question.",
+      "orderNumber": "N° de commande",
+      "orderId": "ID commande",
+      "continueShopping": "Continuer les achats",
+      "tryAgain": "Réessayer",
+      "support": "Pour toute question, contactez notre équipe support."
     }
   }
 }
