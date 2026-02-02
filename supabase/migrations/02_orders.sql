@@ -194,8 +194,10 @@ SECURITY DEFINER
 SET search_path = ''
 AS $$
 BEGIN
-    -- Only update if the order doesn't already have a lomi session ID
-    -- This prevents duplicate key errors when the same checkout is retried
+    -- Allow updating if:
+    -- 1. Order doesn't have a session ID yet (NULL or empty), OR
+    -- 2. We're setting it to NULL (for failures/cleanup)
+    -- This prevents overwriting real session IDs while allowing NULL for failures
     UPDATE public.orders
     SET
         lomi_session_id = p_lomi_session_id,
@@ -203,12 +205,16 @@ BEGIN
         payment_processor_details = COALESCE(p_payment_processor_details, payment_processor_details),
         updated_at = NOW()
     WHERE id = p_order_id
-      AND (lomi_session_id IS NULL OR lomi_session_id = '');
+      AND (
+        lomi_session_id IS NULL 
+        OR lomi_session_id = ''
+        OR p_lomi_session_id IS NULL  -- Allow setting to NULL even if already has a value
+      );
 
     IF NOT FOUND THEN
         -- Check if the order exists but already has a session ID
         IF EXISTS (SELECT 1 FROM public.orders WHERE id = p_order_id) THEN
-            RAISE WARNING 'Order ID % already has a lomi session ID, skipping update', p_order_id;
+            RAISE WARNING 'Order ID % already has a lomi session ID and cannot be overwritten with a non-NULL value, skipping update', p_order_id;
         ELSE
             RAISE WARNING 'Order ID % not found during lomi session update', p_order_id;
         END IF;

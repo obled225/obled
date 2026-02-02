@@ -498,13 +498,16 @@ serve(async (req: Request) => {
       console.error('Response was:', lomiResponseText);
 
       // Update order status to failed using RPC
+      // Use NULL for lomi_session_id to avoid unique constraint violations
+      // Failure details are stored in payment_processor_details
       await supabase.rpc('update_order_lomi_session', {
         p_order_id: orderId,
-        p_lomi_session_id: 'failed',
-        p_lomi_checkout_url: 'failed',
+        p_lomi_session_id: null,
+        p_lomi_checkout_url: null,
         p_payment_processor_details: {
           error: 'Invalid JSON response from lomi. API',
           response: lomiResponseText,
+          failure_reason: 'invalid_json_response',
         },
       });
 
@@ -525,11 +528,16 @@ serve(async (req: Request) => {
       console.error('lomi. API error:', lomiResponseData);
 
       // Update order with failure details using RPC
+      // Use NULL for lomi_session_id to avoid unique constraint violations
+      // Failure details are stored in payment_processor_details
       await supabase.rpc('update_order_lomi_session', {
         p_order_id: orderId,
-        p_lomi_session_id: 'failed',
-        p_lomi_checkout_url: 'failed',
-        p_payment_processor_details: lomiResponseData,
+        p_lomi_session_id: null,
+        p_lomi_checkout_url: null,
+        p_payment_processor_details: {
+          ...lomiResponseData,
+          failure_reason: 'lomi_api_error',
+        },
       });
 
       return new Response(
