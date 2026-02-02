@@ -20,18 +20,19 @@ interface PageLayoutProps {
 export function PageLayout({ children, categories }: PageLayoutProps) {
   const pathname = usePathname();
   const isCheckoutPage = pathname === '/checkout';
+  const isAdminPage = pathname?.startsWith('/admin');
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [announcement, setAnnouncement] = useState<{
     text:
-      | string
-      | Array<{
-          _type: 'block';
-          children: Array<{
-            _type: 'span';
-            text: string;
-            marks?: string[];
-          }>;
-        }>;
+    | string
+    | Array<{
+      _type: 'block';
+      children: Array<{
+        _type: 'span';
+        text: string;
+        marks?: string[];
+      }>;
+    }>;
     isActive: boolean;
   } | null>(null);
 
@@ -51,17 +52,19 @@ export function PageLayout({ children, categories }: PageLayoutProps) {
   return (
     <CartProvider>
       <div className="min-h-screen flex flex-col">
-        <Header
-          categories={categories}
-          onVisibilityChange={setIsHeaderVisible}
-        />
-        <ConditionalAnnouncements />
+        {!isAdminPage && (
+          <Header
+            categories={categories}
+            onVisibilityChange={setIsHeaderVisible}
+          />
+        )}
+        {!isAdminPage && <ConditionalAnnouncements />}
         <div className="flex-1">{children}</div>
-        <Footer />
-        {!isCheckoutPage && announcement && (
+        {!isAdminPage && <Footer />}
+        {!isCheckoutPage && !isAdminPage && announcement && (
           <FloatingAnnouncementClient announcement={announcement} />
         )}
-        <Dock isHeaderVisible={isHeaderVisible} />
+        {!isAdminPage && <Dock isHeaderVisible={isHeaderVisible} />}
       </div>
     </CartProvider>
   );

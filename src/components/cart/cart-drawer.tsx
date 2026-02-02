@@ -16,12 +16,7 @@ import { useRouter } from 'next/navigation';
 import { useIsMobile } from '@/lib/hooks/use-is-mobile';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import { useState, useEffect, useMemo } from 'react';
-import {
-  getTaxSettings,
-  calculateTax,
-  type TaxSettings,
-} from '@/lib/sanity/queries';
+import { useCartPricing } from '@/lib/hooks/use-cart-pricing';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -31,34 +26,14 @@ interface CartDrawerProps {
 export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const router = useRouter();
   const t = useTranslations('header.cart');
-  const { cart, updateQuantity, removeItem, getCartSummary } = useCartStore();
+  const { cart, updateQuantity, removeItem } = useCartStore();
   const { currency, convertPrice } = useCurrencyStore();
-  const [taxSettings, setTaxSettings] = useState<TaxSettings | null>(null);
-
-  // Fetch tax settings
-  useEffect(() => {
-    async function fetchTaxSettings() {
-      const settings = await getTaxSettings();
-      setTaxSettings(settings);
-    }
-    fetchTaxSettings();
-  }, []);
-
-  // Calculate tax when subtotal or currency changes (using useMemo instead of useEffect)
-  // Tax should be calculated on the discounted subtotal, not the full subtotal
-  const taxAmount = useMemo(() => {
-    if (!taxSettings) return 0;
-
-    // First, calculate the subtotal and discount
-    const tempSummary = getCartSummary(currency, 0, 0);
-    const discountedSubtotal = tempSummary.subtotal - tempSummary.discount;
-
-    // Calculate tax on the discounted subtotal
-    return calculateTax(discountedSubtotal, currency, taxSettings);
-  }, [taxSettings, currency, getCartSummary]);
-
-  const summary = getCartSummary(currency, taxAmount, 0);
   const isMobile = useIsMobile();
+
+  // Use centralized cart pricing hook
+  const { taxSettings, cartSummary: summary } = useCartPricing({
+    shippingCost: 0,
+  });
 
   const handleCheckout = () => {
     onClose();
@@ -161,11 +136,11 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                                 p.quantity === item.selectedVariant?.packSize
                             ) as
                               | {
-                                  quantity: number;
-                                  label?: string;
-                                  price?: number;
-                                  originalPrice?: number;
-                                }
+                                quantity: number;
+                                label?: string;
+                                price?: number;
+                                originalPrice?: number;
+                              }
                               | undefined;
                             originalPriceXOF = pack?.originalPrice;
                           } else {
@@ -240,7 +215,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">{t('subtotal')}</span>
               {summary.originalSubtotal &&
-              summary.originalSubtotal > summary.subtotal ? (
+                summary.originalSubtotal > summary.subtotal ? (
                 <span className="text-sm text-gray-500">
                   {formatPrice(summary.originalSubtotal, currency)}
                 </span>

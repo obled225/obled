@@ -8,13 +8,11 @@ import { useCurrencyStore } from '@/lib/store/currency-store';
 import { formatPrice } from '@/lib/utils/format';
 import { ShippingCalculator } from './shipping-calculator';
 import {
-  getTaxSettings,
   getGlobalFreeShippingThreshold,
-  calculateTax,
-  type TaxSettings,
 } from '@/lib/sanity/queries';
 import { useTranslations } from 'next-intl';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useCartPricing } from '@/lib/hooks/use-cart-pricing';
 
 interface CartSummaryProps {
   showCheckoutButton?: boolean;
@@ -31,7 +29,7 @@ export function CartSummary({
   className = '',
   onShippingCostChange,
 }: CartSummaryProps) {
-  const { cart, getCartSummary } = useCartStore();
+  const { cart } = useCartStore();
   const { currency, convertPrice } = useCurrencyStore();
   const t = useTranslations('header.cart');
   const tShipping = useTranslations('shipping');
@@ -39,7 +37,6 @@ export function CartSummary({
     undefined
   );
   const [shippingCost, setShippingCost] = useState(0);
-  const [taxSettings, setTaxSettings] = useState<TaxSettings | null>(null);
   const [globalFreeShippingThreshold, setGlobalFreeShippingThreshold] =
     useState<{
       enabled: boolean;
@@ -47,39 +44,27 @@ export function CartSummary({
     } | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch tax settings and global free shipping threshold
+  // Use centralized cart pricing hook
+  const { taxSettings, cartSummary } = useCartPricing({
+    shippingCost,
+  });
+
+  // Fetch global free shipping threshold
   useEffect(() => {
-    async function fetchSettings() {
+    async function fetchGlobalThreshold() {
       try {
-        const [tax, globalThreshold] = await Promise.all([
-          getTaxSettings(),
-          getGlobalFreeShippingThreshold(),
-        ]);
-        setTaxSettings(tax);
+        const globalThreshold = await getGlobalFreeShippingThreshold();
         setGlobalFreeShippingThreshold(globalThreshold);
       } catch (error) {
-        console.error('Error fetching settings:', error);
+        console.error('Error fetching global free shipping threshold:', error);
       } finally {
         setLoading(false);
       }
     }
-    fetchSettings();
+    fetchGlobalThreshold();
   }, []);
 
-  // Calculate tax when subtotal or currency changes (using useMemo instead of useEffect)
-  // Tax should be calculated on the discounted subtotal, not the full subtotal
-  const taxAmount = useMemo(() => {
-    if (!taxSettings) return 0;
-
-    // First, calculate the subtotal and discount
-    const tempSummary = getCartSummary(currency, 0, 0);
-    const discountedSubtotal = tempSummary.subtotal - tempSummary.discount;
-
-    // Calculate tax on the discounted subtotal
-    return calculateTax(discountedSubtotal, currency, taxSettings);
-  }, [taxSettings, currency, getCartSummary]);
-
-  const cartSummary = getCartSummary(currency, taxAmount, shippingCost);
+  // Combine loading states
 
   // Check if global free shipping threshold is met
   const globalFreeShippingActive = useMemo(() => {

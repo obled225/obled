@@ -27,7 +27,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import RelatedProducts from '@/components/products/related';
 import { normalizeColorName } from '@/lib/utils/color';
-import { getTaxSettings, type TaxSettings } from '@/lib/sanity/queries';
+import { useTaxSettings } from '@/lib/hooks/use-tax-settings';
 
 // Helper function to capitalize first letter of color name for display
 const capitalizeColorName = (name: string): string => {
@@ -80,16 +80,9 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isFullscreenGalleryOpen, setIsFullscreenGalleryOpen] = useState(false);
-  const [taxSettings, setTaxSettings] = useState<TaxSettings | null>(null);
 
   // Fetch tax settings
-  useEffect(() => {
-    async function fetchTaxSettings() {
-      const settings = await getTaxSettings();
-      setTaxSettings(settings);
-    }
-    fetchTaxSettings();
-  }, []);
+  const { taxSettings } = useTaxSettings();
 
   // Check if sizes are required and if a valid size is selected
   const hasAvailableSizes = useMemo(() => {
@@ -164,21 +157,21 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const basePrice = packDisplayPrice;
   const baseOriginalPriceXOF = packOriginalPrice
     ? (
+      selectedPack as {
+        quantity: number;
+        label?: string;
+        price?: number;
+        originalPrice?: number;
+      } | null
+    )?.originalPrice
+      ? (
         selectedPack as {
           quantity: number;
           label?: string;
           price?: number;
           originalPrice?: number;
-        } | null
-      )?.originalPrice
-      ? (
-          selectedPack as {
-            quantity: number;
-            label?: string;
-            price?: number;
-            originalPrice?: number;
-          }
-        ).originalPrice
+        }
+      ).originalPrice
       : product.originalPrice
     : product.originalPrice;
   const baseOriginalPrice = baseOriginalPriceXOF
@@ -251,7 +244,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
         error(
           t('productDetail.sizeRequired') || 'Size required',
           t('productDetail.selectAvailableSize') ||
-            'Please select an available size.'
+          'Please select an available size.'
         );
         return;
       }
@@ -312,7 +305,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
         error(
           t('productDetail.sizeRequired') || 'Size required',
           t('productDetail.selectAvailableSize') ||
-            'Please select an available size.'
+          'Please select an available size.'
         );
         return;
       }
@@ -439,7 +432,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                         className={cn(
                           'relative aspect-square overflow-hidden bg-transparent rounded-md transition-all',
                           selectedImage === index &&
-                            'ring-2 ring-blue-600 scale-105'
+                          'ring-2 ring-blue-600 scale-105'
                         )}
                       >
                         {/* Use object-contain for thumbnails to show full image */}
@@ -485,10 +478,10 @@ export function ProductDetail({ product }: ProductDetailProps) {
             {(!taxSettings ||
               !taxSettings.isActive ||
               taxSettings.taxRates.length === 0) && (
-              <p className="text-xs text-gray-500">
-                {t('productDetail.taxesIncluded')}
-              </p>
-            )}
+                <p className="text-xs text-gray-500">
+                  {t('productDetail.taxesIncluded')}
+                </p>
+              )}
           </div>
 
           {/* Color Selector */}
@@ -600,7 +593,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                         ? 'border-blue-600 bg-blue-600 text-white'
                         : 'border-gray-200 bg-white text-gray-900 hover:border-blue-600',
                       !size.available &&
-                        'cursor-not-allowed border-gray-200 text-gray-400 opacity-50'
+                      'cursor-not-allowed border-gray-200 text-gray-400 opacity-50'
                     )}
                   >
                     {size.name}

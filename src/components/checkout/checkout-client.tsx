@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/lib/store/cart-store';
 import { useCurrencyStore } from '@/lib/store/currency-store';
@@ -12,46 +12,22 @@ import { CartSummary } from '@/components/cart/cart-summary';
 import { CartItem } from '@/components/cart/cart-item';
 import { useToast } from '@/lib/hooks/use-toast';
 import CheckoutPhoneNumberInput from './phone-number-input';
-import {
-  getTaxSettings,
-  calculateTax,
-  type TaxSettings,
-} from '@/lib/sanity/queries';
 import { useTranslations } from 'next-intl';
+import { useCartPricing } from '@/lib/hooks/use-cart-pricing';
 
 export function CheckoutClient() {
   const router = useRouter();
   const { error: showError } = useToast();
-  const { cart, getCartSummary } = useCartStore();
+  const { cart } = useCartStore();
   const { currency, convertPrice } = useCurrencyStore();
   const t = useTranslations('checkout');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [shippingCost, setShippingCost] = useState(0);
-  const [taxSettings, setTaxSettings] = useState<TaxSettings | null>(null);
 
-  // Fetch tax settings
-  useEffect(() => {
-    async function fetchTaxSettings() {
-      const settings = await getTaxSettings();
-      setTaxSettings(settings);
-    }
-    fetchTaxSettings();
-  }, []);
-
-  // Calculate tax when subtotal or currency changes (using useMemo instead of useEffect)
-  // Tax should be calculated on the discounted subtotal, not the full subtotal
-  const taxAmount = useMemo(() => {
-    if (!taxSettings) return 0;
-
-    // First, calculate the subtotal and discount
-    const tempSummary = getCartSummary(currency, 0, 0);
-    const discountedSubtotal = tempSummary.subtotal - tempSummary.discount;
-
-    // Calculate tax on the discounted subtotal
-    return calculateTax(discountedSubtotal, currency, taxSettings);
-  }, [taxSettings, currency, getCartSummary]);
-
-  const cartSummary = getCartSummary(currency, taxAmount, shippingCost);
+  // Use centralized cart pricing hook
+  const { taxAmount, cartSummary } = useCartPricing({
+    shippingCost,
+  });
 
   // Form state
   const [formData, setFormData] = useState({
