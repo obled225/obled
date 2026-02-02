@@ -184,7 +184,7 @@ export function CartSummary({
               {t('subtotalWithItems', { count: cart.itemCount })}
             </span>
             {cartSummary.originalSubtotal &&
-            cartSummary.originalSubtotal > cartSummary.subtotal ? (
+              cartSummary.originalSubtotal > cartSummary.subtotal ? (
               <span className="text-sm text-gray-500">
                 {formatPrice(cartSummary.originalSubtotal, currency)}
               </span>
@@ -207,15 +207,18 @@ export function CartSummary({
           <div className="flex justify-between text-sm">
             <span className="text-gray-600">{t('shipping')}</span>
             <span className="font-medium">
-              {selectedShipping &&
-              (globalFreeShippingActive || shippingCost === 0) ? (
+              {selectedShipping === 'free-shipping' ||
+                (selectedShipping &&
+                  (globalFreeShippingActive || shippingCost === 0)) ? (
                 <span className="text-green-600 font-semibold">
                   {tShipping('free')}
                 </span>
               ) : selectedShipping ? (
                 formatPrice(shippingCost, currency)
               ) : (
-                <span className="text-gray-400">—</span>
+                <span className="text-green-600 font-semibold">
+                  {tShipping('free')}
+                </span>
               )}
             </span>
           </div>
@@ -228,7 +231,14 @@ export function CartSummary({
             </span>
             {cartSummary.tax !== 0 && (
               <span className="font-medium">
-                {formatPrice(cartSummary.tax, currency)}
+                {taxSettings?.taxRates?.[0]?.type === 'percentage' ? (
+                  <>
+                    {formatPrice(cartSummary.tax, currency)} (
+                    {((taxSettings.taxRates[0].rate || 0) * 100).toFixed(1)}%)
+                  </>
+                ) : (
+                  formatPrice(cartSummary.tax, currency)
+                )}
               </span>
             )}
           </div>

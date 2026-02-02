@@ -1138,13 +1138,6 @@ const SHIPPING_AND_TAXES_QUERY = `*[_type == "shippingAndTaxes" && !(_id in path
     enabled,
     amount
   },
-  defaultShipping {
-    price,
-    estimatedDays {
-      minDays,
-      maxDays
-    }
-  },
   shippingOptions[] {
     name,
     estimatedDays {
@@ -1205,20 +1198,11 @@ interface SanityGlobalFreeShippingThreshold {
   amount?: number; // Threshold amount in XOF
 }
 
-interface SanityDefaultShipping {
-  price?: number; // Price in XOF
-  estimatedDays?: {
-    minDays?: number;
-    maxDays?: number;
-  };
-}
-
 interface SanityShippingAndTaxesDocument {
   _id?: string;
   _createdAt?: string;
   _updatedAt?: string;
   globalFreeShippingThreshold?: SanityGlobalFreeShippingThreshold;
-  defaultShipping?: SanityDefaultShipping;
   shippingOptions?: SanityShippingOptionItem[];
   taxSettings?: SanityTaxSettings;
 }
@@ -1281,39 +1265,8 @@ export async function getAllShippingOptions(): Promise<ShippingOption[]> {
 }
 
 /**
- * Create a default shipping option from defaultShipping field
- */
-function createDefaultShippingOption(
-  defaultShipping: SanityDefaultShipping,
-  documentId: string,
-  createdAt: string,
-  updatedAt: string
-): ShippingOption {
-  const minDays = defaultShipping.estimatedDays?.minDays || 5;
-  const maxDays = defaultShipping.estimatedDays?.maxDays || 7;
-  const estimatedDaysDisplay =
-    minDays === maxDays
-      ? `${minDays} business day${minDays !== 1 ? 's' : ''}`
-      : `${minDays}-${maxDays} business days`;
-
-  return {
-    id: `${documentId}-default`,
-    name: 'Standard',
-    estimatedDays: {
-      minDays,
-      maxDays,
-    },
-    estimatedDaysDisplay,
-    price: defaultShipping.price || 1500, // Default to 1500 XOF if not set
-    isActive: true,
-    createdAt: createdAt ? new Date(createdAt) : new Date(),
-    updatedAt: updatedAt ? new Date(updatedAt) : new Date(),
-  };
-}
-
-/**
  * Get active shipping options from Sanity
- * Returns default shipping option if no active options are available
+ * Returns empty array if no active options are available (shipping will be free)
  */
 export async function getActiveShippingOptions(): Promise<ShippingOption[]> {
   try {
@@ -1336,37 +1289,12 @@ export async function getActiveShippingOptions(): Promise<ShippingOption[]> {
         .sort((a, b) => a.estimatedDays.minDays - b.estimatedDays.minDays) ||
       [];
 
-    // If no active options, return default shipping option
-    if (activeOptions.length === 0 && doc?.defaultShipping) {
-      return [
-        createDefaultShippingOption(
-          doc.defaultShipping,
-          doc._id || 'default',
-          doc._createdAt || '',
-          doc._updatedAt || ''
-        ),
-      ];
-    }
-
+    // If no active options, return empty array (shipping will be free)
     return activeOptions;
   } catch (error) {
     console.error('Error fetching active shipping options from Sanity:', error);
-    // Return a fallback default option if there's an error
-    return [
-      {
-        id: 'default-fallback',
-        name: 'Standard',
-        estimatedDays: {
-          minDays: 5,
-          maxDays: 7,
-        },
-        estimatedDaysDisplay: '5-7 business days',
-        price: 1500, // Default to 1500 XOF
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ];
+    // Return empty array if there's an error (shipping will be free)
+    return [];
   }
 }
 

@@ -32,67 +32,6 @@ export default defineType({
       ],
     }),
 
-    defineField({
-      name: 'defaultShipping',
-      title: 'Default shipping option',
-      type: 'object',
-      description: 'This shipping option is used when no active shipping options are configured. It appears only when no shipping options are available.',
-      fields: [
-        {
-          name: 'price',
-          title: 'Price',
-          type: 'number',
-          options: {
-            controls: false,
-          },
-          description: 'Default shipping cost in F CFA (West African CFA Franc). Used when no shipping options are configured.',
-          initialValue: 1500,
-          validation: (Rule) => Rule.required().min(0),
-        },
-        {
-          name: 'estimatedDays',
-          title: 'Estimated Delivery Days',
-          type: 'object',
-          description: 'Delivery time range in days (e.g., min: 5, max: 7 for "5-7 business days")',
-          fields: [
-            {
-              name: 'minDays',
-              title: 'Minimum Days',
-              type: 'number',
-              description: 'Minimum delivery days (e.g., 5)',
-              initialValue: 5,
-              validation: (Rule) => Rule.required().integer().min(1),
-            },
-            {
-              name: 'maxDays',
-              title: 'Maximum Days',
-              type: 'number',
-              description: 'Maximum delivery days (e.g., 7)',
-              initialValue: 7,
-              validation: (Rule) =>
-                Rule.required()
-                  .integer()
-                  .min(1)
-                  .custom((maxDays, context) => {
-                    const minDays = (context.parent as {minDays?: number})?.minDays;
-                    if (
-                      typeof minDays === 'number' &&
-                      minDays > 0 &&
-                      typeof maxDays === 'number' &&
-                      maxDays > 0 &&
-                      maxDays < minDays
-                    ) {
-                      return 'Maximum days must be greater than or equal to minimum days';
-                    }
-                    return true;
-                  }),
-            },
-          ],
-          validation: (Rule) => Rule.required(),
-        },
-      ],
-    }),
-
     // Shipping Options Section
     defineField({
       name: 'shippingOptions',

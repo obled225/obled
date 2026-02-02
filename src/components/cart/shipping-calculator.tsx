@@ -46,6 +46,7 @@ export function ShippingCalculator({
         setShippingOptions(options);
         setGlobalFreeShippingThreshold(globalThreshold);
         // Always auto-select first option if none selected or selected option doesn't exist
+        // If no options available, shipping is free
         if (options.length > 0 && onShippingChange) {
           const isValidSelection =
             selectedShipping &&
@@ -55,6 +56,9 @@ export function ShippingCalculator({
             const price = convertPrice(firstOption.price, currency);
             onShippingChange(firstOption.id, price);
           }
+        } else if (options.length === 0 && onShippingChange) {
+          // No shipping options available, shipping is free
+          onShippingChange('free-shipping', 0);
         }
       } catch (error) {
         console.error('Error fetching shipping data:', error);
@@ -119,6 +123,12 @@ export function ShippingCalculator({
   useEffect(() => {
     // If global threshold is met, always set shipping to 0
     if (globalThresholdMet && onShippingChange) {
+      onShippingChange('free-shipping', 0);
+      return;
+    }
+
+    // If no shipping options available, shipping is free
+    if (availableOptions.length === 0 && onShippingChange) {
       onShippingChange('free-shipping', 0);
       return;
     }
@@ -207,10 +217,45 @@ export function ShippingCalculator({
     );
   }
 
-  // If no options available, this shouldn't happen (getActiveShippingOptions returns default)
-  // But handle it gracefully
+  // If no options available, shipping is free
   if (availableOptions.length === 0) {
-    return null;
+    return (
+      <div className="bg-white border border-gray-200 rounded-md p-6">
+        <div className="flex items-center mb-4">
+          <Truck className="w-5 h-5 text-gray-600 mr-2" />
+          <h3 className="text-lg font-semibold text-gray-900">{t('title')}</h3>
+        </div>
+
+        {/* Free Shipping Message */}
+        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-md">
+          <p className="text-sm text-green-900 font-medium">
+            {t('free')}
+          </p>
+          <p className="text-sm text-green-700 mt-1">
+            {t('noShippingOptionsAvailable') || 'No shipping options configured. Shipping is free.'}
+          </p>
+        </div>
+
+        {/* Additional Information */}
+        <div className="border-t pt-4 mt-4">
+          <div className="bg-gray-50 rounded-md p-5">
+            <div className="text-sm text-gray-700 leading-relaxed space-y-2">
+              <p>{t('shippingInfo')}</p>
+              <ul className="list-none space-y-1.5 mt-3">
+                <li className="flex items-start">
+                  <span className="mr-2">-</span>
+                  <span>{t('shippingInfoContact')}</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2">-</span>
+                  <span>{t('shippingInfoPromoCode')}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -279,11 +324,10 @@ export function ShippingCalculator({
           {availableOptions.map((option) => (
             <label
               key={option.id}
-              className={`block p-4 border rounded-md cursor-pointer transition-colors ${
-                selectedShipping === option.id
+              className={`block p-4 border rounded-md cursor-pointer transition-colors ${selectedShipping === option.id
                   ? 'border-blue-500 bg-blue-50'
                   : 'border-gray-200 hover:border-gray-300'
-              }`}
+                }`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
