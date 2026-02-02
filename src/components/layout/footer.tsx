@@ -38,7 +38,7 @@ export function Footer() {
             </Link>
             <span className="hidden sm:inline mx-2">·</span>
             <Link
-              href="https://github.com/lomiafrica/commerce"
+              href="https://github.com/kysfactory/kysfactory"
               target="_blank"
               rel="noopener noreferrer"
               className="font-normal hover:text-black transition-colors"

@@ -561,7 +561,7 @@
     "fullName": "Full name",
     "email": "Email",
     "phoneNumber": "Phone number",
-    "organization": "Organization / Company",
+    "organization": "Organization",
     "shippingAddress": "Shipping address",
     "city": "City",
     "country": "Country",
@@ -598,6 +598,69 @@
       "continueShopping": "Continue shopping",
       "tryAgain": "Try again",
       "support": "If you have any questions, please contact our support team."
+    }
+  },
+  "admin": {
+    "auth": {
+      "title": "Admin access",
+      "description": "Enter your PIN to access the admin panel",
+      "pin": "PIN",
+      "pinPlaceholder": "Enter PIN",
+      "login": "Login",
+      "authFailed": "Authentication failed. Please try again.",
+      "invalidPin": "Invalid PIN. Please try again."
+    },
+    "header": {
+      "title": "Admin panel",
+      "subtitle": "Manage orders and oversee sales.",
+      "logout": "Logout"
+    },
+    "stats": {
+      "totalOrders": "Total Orders",
+      "totalRevenue": "Total Revenue",
+      "pending": "Pending",
+      "failed": "Failed"
+    },
+    "filters": {
+      "orders": "Orders",
+      "filters": "Filters",
+      "search": "Search...",
+      "refresh": "Refresh",
+      "export": "Export",
+      "paidOnly": "Paid only",
+      "allStatus": "All status",
+      "pending": "Pending",
+      "failed": "Failed"
+    },
+    "table": {
+      "customer": "Customer",
+      "orderNumber": "Order #",
+      "items": "Items",
+      "amount": "Amount",
+      "status": "Status"
+    },
+    "types": {
+      "type": "type",
+      "types": "types"
+    },
+    "empty": {
+      "noOrders": "No orders found",
+      "tryAdjusting": "Try adjusting your filters or search query"
+    },
+    "status": {
+      "paid": "Paid",
+      "pending": "Pending",
+      "failed": "Failed",
+      "processing": "Processing",
+      "shipped": "Shipped",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled"
+    },
+    "time": {
+      "justNow": "Just now",
+      "minutesAgo": "{count}m ago",
+      "hoursAgo": "{count}h ago",
+      "daysAgo": "{count}d ago"
     }
   }
 }

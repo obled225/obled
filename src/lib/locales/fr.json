@@ -603,5 +603,68 @@
       "tryAgain": "Réessayer",
       "support": "Pour toute question, contactez notre équipe support."
     }
+  },
+  "admin": {
+    "auth": {
+      "title": "Accès admin",
+      "description": "Entrez votre code PIN pour accéder au panneau d'administration",
+      "pin": "Code PIN",
+      "pinPlaceholder": "Entrez le code PIN",
+      "login": "Connexion",
+      "authFailed": "Échec de l'authentification. Veuillez réessayer.",
+      "invalidPin": "Code PIN incorrect. Veuillez réessayer."
+    },
+    "header": {
+      "title": "Panneau admin",
+      "subtitle": "Gérer les commandes et suivre les ventes pour KYS Factory.",
+      "logout": "Déconnexion"
+    },
+    "stats": {
+      "totalOrders": "Total commandes",
+      "totalRevenue": "Chiffre d'affaires",
+      "pending": "En attente",
+      "failed": "Échecs"
+    },
+    "filters": {
+      "orders": "Commandes",
+      "filters": "Filtres",
+      "search": "Rechercher...",
+      "refresh": "Actualiser",
+      "export": "Exporter",
+      "paidOnly": "Payées uniquement",
+      "allStatus": "Tous les statuts",
+      "pending": "En attente",
+      "failed": "Échecs"
+    },
+    "table": {
+      "customer": "Client",
+      "orderNumber": "N° commande",
+      "items": "Articles",
+      "amount": "Montant",
+      "status": "Statut"
+    },
+    "types": {
+      "type": "type",
+      "types": "types"
+    },
+    "empty": {
+      "noOrders": "Aucune commande trouvée",
+      "tryAdjusting": "Modifiez vos filtres ou votre recherche"
+    },
+    "status": {
+      "paid": "Payée",
+      "pending": "En attente",
+      "failed": "Échouée",
+      "processing": "En cours",
+      "shipped": "Expédiée",
+      "delivered": "Livrée",
+      "cancelled": "Annulée"
+    },
+    "time": {
+      "justNow": "À l'instant",
+      "minutesAgo": "il y a {count} min",
+      "hoursAgo": "il y a {count} h",
+      "daysAgo": "il y a {count} j"
+    }
   }
 }

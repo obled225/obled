@@ -148,11 +148,10 @@ export function Header({ categories = [], onVisibilityChange }: HeaderProps) {
                   <ShoppingCart className="h-5 w-5 sm:h-5 sm:w-5" />
                   {cartItemCount > 0 && (
                     <Badge
-                      className={`absolute -top-1 -right-1 ${
-                        isMobile
+                      className={`absolute -top-1 -right-1 ${isMobile
                           ? 'h-4 w-4 text-[9px] font-semibold'
                           : 'h-4 w-4 text-[10px]'
-                      } p-0 flex items-center justify-center bg-[#22c55e] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.1)] border-0`}
+                        } p-0 flex items-center justify-center bg-[#22c55e] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.1)] border-0`}
                     >
                       {cartItemCount}
                     </Badge>

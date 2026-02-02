@@ -354,6 +354,14 @@ serve(async (req: Request) => {
 
     console.log('Order created successfully:', orderId);
 
+    // Fetch human-readable order number (KYS-YYYY-XXX) for display in payment UI
+    const { data: orderRow } = await supabase
+      .from('orders')
+      .select('order_number')
+      .eq('id', orderId)
+      .single();
+    const orderNumber = orderRow?.order_number ?? orderId.substring(0, 8);
+
     // --- Create Order Items using validated prices ---
     for (let i = 0; i < payload.cartItems.length; i++) {
       const item = payload.cartItems[i];
@@ -427,9 +435,16 @@ serve(async (req: Request) => {
       customer_country: payload.shippingAddress?.country,
       customer_address: payload.shippingAddress?.address,
       customer_postal_code: payload.shippingAddress?.postalCode,
-      // Optional: Add title and description for the charge
-      title: `Order #${orderId.substring(0, 8)}`,
-      description: `${payload.cartItems.length} item(s): ${payload.cartItems.map(item => item.productTitle).join(', ').substring(0, 100)}`,
+      // Optional: Add title and description for the charge (use human-readable KYS-YYYY-XXX)
+      title: `Order #${orderNumber}`,
+      description: payload.cartItems
+        .map((item) =>
+          item.variantTitle
+            ? `${item.quantity} x ${item.variantTitle} - ${item.productTitle}`
+            : `${item.quantity} x ${item.productTitle}`
+        )
+        .join('\n\n')
+        .substring(0, 200),
       allow_coupon_code:
         payload.allowCouponCode !== undefined
           ? payload.allowCouponCode

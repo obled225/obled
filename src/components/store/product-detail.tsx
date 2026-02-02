@@ -666,7 +666,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
             <Button
               onClick={handleAddToCart}
               disabled={isAddToCartDisabled}
-              className="w-full h-11 sm:h-12 text-sm font-medium bg-gray-600 text-white hover:bg-gray-700 touch-target"
+              className="w-full h-11 sm:h-12 text-sm font-medium bg-[#22c55e] text-white hover:bg-[#1d9d4e] shadow-sm touch-target"
             >
               {isAdding
                 ? t('productDetail.adding')
@@ -692,7 +692,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
               <Link href={`/products/${product.businessPackProduct.slug}`}>
                 <Button
                   variant="outline"
-                  className="w-full h-11 sm:h-12 text-sm font-medium border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition-colors touch-target"
+                  className="w-full h-11 sm:h-12 text-sm font-medium border-amber-600 text-amber-600 hover:bg-amber-600 hover:text-white transition-colors touch-target"
                 >
                   <Package className="h-4 w-4 mr-2" />
                   {t('productDetail.viewBusinessPack')}

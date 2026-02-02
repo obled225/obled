@@ -90,8 +90,11 @@ export function CheckoutClient() {
           productTitle: item.product.name,
           productSlug: item.product.slug,
           variantId: item.selectedVariant?.id,
+          // For packs: send pack label only (e.g. "Pack of 5"). For size/color: "Size - M"
           variantTitle: item.selectedVariant
-            ? `${item.selectedVariant.name} - ${item.selectedVariant.value}`
+            ? item.selectedVariant.packSize
+              ? item.selectedVariant.name
+              : `${item.selectedVariant.name} - ${item.selectedVariant.value}`
             : undefined,
           quantity: item.quantity,
           price: convertedPrice, // Price in selected currency
@@ -174,8 +177,9 @@ export function CheckoutClient() {
         {/* Checkout Form */}
         <div className="lg:col-span-2">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Customer Information */}
+            {/* Customer info & shipping address in one box */}
             <div className="bg-white border border-gray-200 rounded-md p-6">
+              {/* Customer Information */}
               <h2 className="text-lg font-semibold mb-4">
                 {t('yourInformation')}
               </h2>
@@ -224,10 +228,11 @@ export function CheckoutClient() {
                   onChange={handleInputChange}
                 />
               </div>
-            </div>
 
-            {/* Shipping Address */}
-            <div className="bg-white border border-gray-200 rounded-md p-6">
+              {/* Separator */}
+              <hr className="my-6 border-gray-200" />
+
+              {/* Shipping Address */}
               <h2 className="text-lg font-semibold mb-4">
                 {t('shippingAddress')}
               </h2>
@@ -282,10 +287,11 @@ export function CheckoutClient() {
                   onChange={handleInputChange}
                 />
               </div>
-            </div>
 
-            {/* Order Items */}
-            <div className="bg-white border border-gray-200 rounded-md p-6">
+              {/* Separator */}
+              <hr className="my-6 border-gray-200" />
+
+              {/* Your Order */}
               <h2 className="text-lg font-semibold mb-4">{t('yourOrder')}</h2>
               <div className="space-y-4">
                 {cart.items.map((item) => (
@@ -296,8 +302,7 @@ export function CheckoutClient() {
 
             <Button
               type="submit"
-              variant="outline"
-              className="w-full h-11 sm:h-12 text-sm font-medium border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors touch-target"
+              className="w-full h-11 sm:h-12 text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors touch-target"
               disabled={isSubmitting}
             >
               {isSubmitting ? t('processing') : t('proceedToPayment')}
