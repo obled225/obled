@@ -9,7 +9,7 @@ import { useToast } from '@/lib/hooks/use-toast';
 
 export function ContactForm() {
   const tContact = useTranslations('contact');
-  const { success, error } = useToast();
+  const { success, error, warning } = useToast();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -41,10 +41,25 @@ export function ContactForm() {
         );
       }
 
-      success(
-        tContact('form.success.title'),
-        tContact('form.success.description')
-      );
+      // Check if email was sent successfully
+      if (data.emailSent === false && data.emailError) {
+        // Show warning if inquiry was saved but email failed
+        success(
+          tContact('form.success.title'),
+          tContact('form.success.description')
+        );
+        // Also show a warning about email
+        warning(
+          tContact('form.warning.emailNotSentTitle'),
+          tContact('form.warning.emailNotSent')
+        );
+      } else {
+        // Show success message
+        success(
+          tContact('form.success.title'),
+          tContact('form.success.description')
+        );
+      }
 
       // Reset form
       setFormData({

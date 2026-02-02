@@ -439,6 +439,10 @@
         "description": "An error occurred while sending your message. Please try again.",
         "formSubmissionError": "Error submitting form",
         "unexpectedError": "An unexpected error occurred"
+      },
+      "warning": {
+        "emailNotSentTitle": "Confirmation email",
+        "emailNotSent": "The confirmation email could not be sent, but your inquiry has been successfully recorded."
       }
     }
   },

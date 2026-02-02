@@ -442,6 +442,10 @@
         "description": "Une erreur est survenue lors de l'envoi de votre message. Veuillez réessayer.",
         "formSubmissionError": "Erreur lors de l'envoi du formulaire",
         "unexpectedError": "Une erreur est survenue"
+      },
+      "warning": {
+        "emailNotSentTitle": "Email de confirmation",
+        "emailNotSent": "L'email n'a pas pu être envoyé, mais votre demande a bien été enregistrée."
       }
     }
   },
