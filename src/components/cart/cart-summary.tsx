@@ -233,8 +233,10 @@ export function CartSummary({
               <span className="font-medium">
                 {taxSettings?.taxRates?.[0]?.type === 'percentage' ? (
                   <>
-                    {formatPrice(cartSummary.tax, currency)} (
-                    {((taxSettings.taxRates[0].rate || 0) * 100).toFixed(1)}%)
+                    {formatPrice(cartSummary.tax, currency)}{' '}
+                    <span className="text-muted-foreground text-xs">
+                      ({((taxSettings.taxRates[0].rate || 0) * 100).toFixed(1)}%)
+                    </span>
                   </>
                 ) : (
                   formatPrice(cartSummary.tax, currency)

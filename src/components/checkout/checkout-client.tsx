@@ -7,9 +7,11 @@ import { useCurrencyStore } from '@/lib/store/currency-store';
 import { supabase } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/Input';
+import { Label } from '@/components/ui/label';
 import { CartSummary } from '@/components/cart/cart-summary';
 import { CartItem } from '@/components/cart/cart-item';
 import { useToast } from '@/lib/hooks/use-toast';
+import CheckoutPhoneNumberInput from './phone-number-input';
 import {
   getTaxSettings,
   calculateTax,
@@ -66,6 +68,17 @@ export function CheckoutClient() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handlePhoneChange = (value: string | undefined) => {
+    setFormData((prev) => ({ ...prev, userPhone: value || '' }));
+  };
+
+  const handleCountryChange = (countryName: string) => {
+    // Optionally store country name in formData or localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('user_country_name', countryName);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -215,18 +228,18 @@ export function CheckoutClient() {
                   value={formData.userEmail}
                   onChange={handleInputChange}
                 />
-                <Input
-                  name="userPhone"
-                  label={
+                <div className="space-y-2">
+                  <Label>
                     <span>
                       {t('phoneNumber')} <span className="text-red-500">*</span>
                     </span>
-                  }
-                  type="tel"
-                  required
-                  value={formData.userPhone}
-                  onChange={handleInputChange}
-                />
+                  </Label>
+                  <CheckoutPhoneNumberInput
+                    value={formData.userPhone}
+                    onChange={handlePhoneChange}
+                    onCountryChange={handleCountryChange}
+                  />
+                </div>
                 <Input
                   name="userOrganization"
                   label={t('organization')}

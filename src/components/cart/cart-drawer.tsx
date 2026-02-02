@@ -264,7 +264,16 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   {taxSettings?.taxRates?.[0]?.name || t('tax')}
                 </span>
                 <span className="font-medium">
-                  {formatPrice(summary.tax, currency)}
+                  {taxSettings?.taxRates?.[0]?.type === 'percentage' ? (
+                    <>
+                      {formatPrice(summary.tax, currency)}{' '}
+                      <span className="text-muted-foreground text-xs">
+                        ({((taxSettings.taxRates[0].rate || 0) * 100).toFixed(1)}%)
+                      </span>
+                    </>
+                  ) : (
+                    formatPrice(summary.tax, currency)
+                  )}
                 </span>
               </div>
             ) : (

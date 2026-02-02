@@ -625,8 +625,8 @@ export function ProductDetail({ product }: ProductDetailProps) {
                       className={cn(
                         'flex h-10 px-4 items-center justify-center rounded-md border text-sm font-medium transition-colors',
                         selectedPack?.quantity === pack.quantity
-                          ? 'border-gray-900 bg-gray-900 text-white'
-                          : 'border-gray-200 bg-white text-gray-900 hover:border-gray-900'
+                          ? 'border-blue-600 bg-blue-600 text-white'
+                          : 'border-gray-200 bg-white text-gray-900 hover:border-blue-600'
                       )}
                     >
                       {pack.label || `Pack ${pack.quantity}`}
@@ -667,7 +667,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
             <Button
               onClick={handleAddToCart}
               disabled={isAddToCartDisabled}
-              className="w-full h-11 sm:h-12 text-sm font-medium touch-target"
+              className="w-full h-11 sm:h-12 text-sm font-medium bg-gray-600 text-white hover:bg-gray-700 touch-target"
             >
               {isAdding
                 ? t('productDetail.adding')
