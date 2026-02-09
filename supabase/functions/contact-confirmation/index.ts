@@ -9,9 +9,9 @@ import { EmailTemplateEngine } from '../_shared/contact-email.ts';
 
 
 // --- Environment Variables ---
-const supabaseUrl = Deno.env.get('SUPABASE_URL') || Deno.env.get('URL');
+const supabaseUrl = Deno.env.get('SUPABASE_URL');
 const supabaseServiceRoleKey =
-  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || Deno.env.get('SERVICE_ROLE_KEY');
+  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 const resendApiKey = Deno.env.get('RESEND_API_KEY');
 const fromEmail = Deno.env.get('FROM_EMAIL') || 'notifications@contact.kysfactoryciv.com';
 const ownerEmailString = Deno.env.get('OWNER_EMAIL') || 'latelierkysllc@gmail.com';
