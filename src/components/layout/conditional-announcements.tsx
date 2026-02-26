@@ -2,34 +2,28 @@
 
 import { usePathname } from 'next/navigation';
 import { AnnouncementClient } from '@/components/store/announcement-client';
-import { useEffect, useState } from 'react';
-import { getAnnouncements, type Announcement } from '@/lib/sanity/queries';
+import { useMemo } from 'react';
+import type { Announcement } from '@/lib/sanity/queries';
 import { useTranslations } from 'next-intl';
 
-export function ConditionalAnnouncements() {
+const FALLBACK_ANNOUNCEMENT_KEY = 'manufacturer';
+
+export function ConditionalAnnouncements({
+  initialAnnouncements,
+}: {
+  initialAnnouncements?: Announcement[] | null;
+}) {
   const pathname = usePathname();
   const isCheckoutPage = pathname === '/checkout';
   const t = useTranslations('announcements.fallback');
-  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
 
-  useEffect(() => {
-    async function fetchAnnouncements() {
-      const announcementData = await getAnnouncements();
-
-      // Use announcements from Sanity if available, otherwise use translated fallback
-      const fallbackAnnouncements: Announcement[] = [
-        {
-          text: t('manufacturer'),
-          link: '/about',
-        },
-      ];
-
-      const finalAnnouncements =
-        announcementData?.announcements || fallbackAnnouncements;
-      setAnnouncements(finalAnnouncements);
-    }
-    fetchAnnouncements();
-  }, [t]);
+  const announcements = useMemo(() => {
+    const fallback: Announcement[] = [
+      { text: t(FALLBACK_ANNOUNCEMENT_KEY), link: '/about' },
+    ];
+    if (initialAnnouncements?.length) return initialAnnouncements;
+    return fallback;
+  }, [initialAnnouncements, t]);
 
   if (isCheckoutPage) {
     return null;

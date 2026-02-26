@@ -9,50 +9,28 @@ import { ConditionalAnnouncements } from './conditional-announcements';
 import { FloatingAnnouncementClient } from '@/components/store/floating-announcement-client';
 import { Dock } from '@/components/ui/dock';
 import { ProductCategory } from '@/lib/types';
-import { useEffect, useState } from 'react';
-import { getFloatingAnnouncement } from '@/lib/sanity/queries';
+import { useState } from 'react';
+import type { Announcement, FloatingAnnouncementData } from '@/lib/sanity/queries';
 
 interface PageLayoutProps {
   children: ReactNode;
   categories?: ProductCategory[];
   showAboutInNav?: boolean;
+  announcements?: Announcement[] | null;
+  floatingAnnouncement?: FloatingAnnouncementData | null;
 }
 
 export function PageLayout({
   children,
   categories,
   showAboutInNav = true,
+  announcements,
+  floatingAnnouncement,
 }: PageLayoutProps) {
   const pathname = usePathname();
   const isCheckoutPage = pathname === '/checkout';
   const isAdminPage = pathname?.startsWith('/admin');
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
-  const [announcement, setAnnouncement] = useState<{
-    text:
-      | string
-      | Array<{
-          _type: 'block';
-          children: Array<{
-            _type: 'span';
-            text: string;
-            marks?: string[];
-          }>;
-        }>;
-    isActive: boolean;
-  } | null>(null);
-
-  useEffect(() => {
-    async function fetchAnnouncement() {
-      const announcementData = await getFloatingAnnouncement();
-
-      // Only set if there's an active announcement from Sanity
-      // getFloatingAnnouncement() already filters by isActive, so if it returns data, it's active
-      if (announcementData?.isActive) {
-        setAnnouncement(announcementData);
-      }
-    }
-    fetchAnnouncement();
-  }, []);
 
   return (
     <CartProvider>
@@ -64,11 +42,13 @@ export function PageLayout({
             onVisibilityChange={setIsHeaderVisible}
           />
         )}
-        {!isAdminPage && <ConditionalAnnouncements />}
+        {!isAdminPage && (
+          <ConditionalAnnouncements initialAnnouncements={announcements} />
+        )}
         <div className="flex-1">{children}</div>
         {!isAdminPage && <Footer />}
-        {!isCheckoutPage && !isAdminPage && announcement && (
-          <FloatingAnnouncementClient announcement={announcement} />
+        {!isCheckoutPage && !isAdminPage && floatingAnnouncement && (
+          <FloatingAnnouncementClient announcement={floatingAnnouncement} />
         )}
         {!isAdminPage && <Dock isHeaderVisible={isHeaderVisible} />}
       </div>
