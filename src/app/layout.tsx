@@ -9,12 +9,7 @@ import { TranslationProvider } from '@/lib/translations/provider';
 import { MetaPixel } from '@/components/analytics/meta-pixel';
 import { Analytics } from '@vercel/analytics/next';
 import { siteUrl } from '@/lib/utils/config';
-import {
-  getHeaderCategories,
-  getShowAboutInNav,
-  getAnnouncements,
-  getFloatingAnnouncement,
-} from '@/lib/sanity/queries';
+import { getHeaderCategories, getShowAboutInNav } from '@/lib/sanity/queries';
 
 const poppins = Poppins({
   variable: '--font-poppins',
@@ -152,13 +147,10 @@ export default async function RootLayout({
     ],
   };
 
-  const [categories, showAboutInNav, announcementBarData, floatingAnnouncement] =
-    await Promise.all([
-      getHeaderCategories(),
-      getShowAboutInNav(),
-      getAnnouncements(),
-      getFloatingAnnouncement(),
-    ]);
+  const [categories, showAboutInNav] = await Promise.all([
+    getHeaderCategories(),
+    getShowAboutInNav(),
+  ]);
 
   const localBusinessSchema = {
     '@context': 'https://schema.org',
@@ -210,12 +202,7 @@ export default async function RootLayout({
           <TranslationProvider>
             <MetaPixel />
             <Analytics />
-            <PageLayout
-              categories={categories}
-              showAboutInNav={showAboutInNav}
-              announcements={announcementBarData?.announcements}
-              floatingAnnouncement={floatingAnnouncement}
-            >
+            <PageLayout categories={categories} showAboutInNav={showAboutInNav}>
               {children}
             </PageLayout>
             <Toaster />
