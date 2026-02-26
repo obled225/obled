@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
-import { getMetadataBaseUrl } from '@/lib/utils/metadata-base-url';
+import { siteUrl } from '@/lib/utils/config';
 import { getShopProducts, getAllCategories } from '@/lib/sanity/queries';
 import HomeClient from './home-client';
 
@@ -9,19 +9,18 @@ const homeDescription =
   'Boutique de vêtements et accessoires conçus à Abidjan. Nouveautés et classiques inspirés du Nouchi pour le monde.';
 
 export async function generateMetadata(): Promise<Metadata> {
-  const baseUrl = await getMetadataBaseUrl();
   return {
     title: homeTitle,
     description: homeDescription,
     openGraph: {
       type: 'website',
-      url: baseUrl,
+      url: siteUrl,
       siteName: "O'bled",
       title: homeTitle,
       description: homeDescription,
       images: [
         {
-          url: '/banner.png',
+          url: `${siteUrl}/banner.png`,
           width: 1200,
           height: 630,
           alt: homeTitle,
@@ -32,11 +31,11 @@ export async function generateMetadata(): Promise<Metadata> {
       card: 'summary_large_image',
       title: homeTitle,
       description: homeDescription,
-      images: ['/banner.png'],
+      images: [`${siteUrl}/banner.png`],
       creator: '@obled225',
     },
     alternates: {
-      canonical: baseUrl,
+      canonical: siteUrl,
     },
   };
 }
