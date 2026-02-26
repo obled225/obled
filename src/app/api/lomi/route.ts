@@ -45,7 +45,7 @@ export async function POST(request: Request) {
 
   // --- Environment Variables ---
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabaseAPIKey = process.env.SUPABASE_API_KEY;
   const lomiWebhookSecret = process.env.LOMI_WEBHOOK_SECRET;
 
   console.log('🔧 Environment check:');
@@ -53,16 +53,16 @@ export async function POST(request: Request) {
     `  - NEXT_PUBLIC_SUPABASE_URL: ${supabaseUrl ? '✅ Set' : '❌ Missing'}`
   );
   console.log(
-    `  - SUPABASE_SERVICE_ROLE_KEY: ${supabaseServiceKey ? '✅ Set' : '❌ Missing'}`
+    `  - SUPABASE_API_KEY: ${supabaseAPIKey ? '✅ Set' : '❌ Missing'}`
   );
   console.log(
     `  - LOMI_WEBHOOK_SECRET: ${lomiWebhookSecret ? '✅ Set' : '❌ Missing'}`
   );
 
   // Check for required environment variables
-  if (!supabaseUrl || !supabaseServiceKey || !lomiWebhookSecret) {
+  if (!supabaseUrl || !supabaseAPIKey || !lomiWebhookSecret) {
     console.error(
-      'lomi. Webhook: Missing critical environment variables. Check NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, LOMI_WEBHOOK_SECRET.'
+      'lomi. Webhook: Missing critical environment variables. Check NEXT_PUBLIC_SUPABASE_URL, SUPABASE_API_KEY, LOMI_WEBHOOK_SECRET.'
     );
     return new Response(
       JSON.stringify({ error: 'Missing required environment variables' }),
@@ -74,7 +74,7 @@ export async function POST(request: Request) {
   }
 
   // Initialize Supabase client
-  const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+  const supabase = createClient(supabaseUrl, supabaseAPIKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 
@@ -267,7 +267,7 @@ export async function POST(request: Request) {
         const emailResponse = await fetch(functionUrl, {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${supabaseServiceKey}`,
+            Authorization: `Bearer ${supabaseAPIKey}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ order_id: orderId }),

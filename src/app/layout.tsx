@@ -7,6 +7,7 @@ import { getMessages, getLocale } from 'next-intl/server';
 import { PageLayout } from '@/components/layout/page-layout';
 import { TranslationProvider } from '@/lib/translations/provider';
 import { MetaPixel } from '@/components/analytics/meta-pixel';
+import { Analytics } from '@vercel/analytics/next';
 import { siteUrl } from '@/lib/utils/config';
 import { getHeaderCategories } from '@/lib/sanity/queries';
 
@@ -197,6 +198,7 @@ export default async function RootLayout({
         <NextIntlClientProvider messages={messages}>
           <TranslationProvider>
             <MetaPixel />
+            <Analytics />
             <PageLayout categories={categories}>{children}</PageLayout>
             <Toaster />
           </TranslationProvider>

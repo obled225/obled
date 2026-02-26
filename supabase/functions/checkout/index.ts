@@ -13,14 +13,14 @@ import {
 
 // Initialize Supabase client
 const supabaseUrl = Deno.env.get('SUPABASE_URL');
-const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+const supabaseAPIKey = Deno.env.get('SUPABASE_API_KEY');
 
-if (!supabaseUrl || !supabaseServiceRoleKey) {
+if (!supabaseUrl || !supabaseAPIKey) {
   console.error(
-    'Supabase URL or Service Role Key is not set. Ensure SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are defined in Edge Function environment variables.'
+    'Supabase URL or API Key is not set. Ensure SUPABASE_URL and SUPABASE_API_KEY are defined in Edge Function environment variables.'
   );
 }
-const supabase = createClient(supabaseUrl || '', supabaseServiceRoleKey || '');
+const supabase = createClient(supabaseUrl || '', supabaseAPIKey || '');
 
 // lomi. API Config
 const LOMI_SECRET_KEY = Deno.env.get('LOMI_SECRET_KEY');
@@ -72,11 +72,11 @@ serve(async (req: Request) => {
     return new Response('ok', { headers: corsHeaders });
   }
 
-  if (!supabaseUrl || !supabaseServiceRoleKey) {
+  if (!supabaseUrl || !supabaseAPIKey) {
     return new Response(
       JSON.stringify({
         error:
-          'Supabase environment variables not configured for the function.',
+          'Supabase URL or API Key is not set. Ensure SUPABASE_URL and SUPABASE_API_KEY are defined in Edge Function environment variables.',
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

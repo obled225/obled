@@ -10,8 +10,8 @@ import { EmailTemplateEngine } from '../_shared/order-email.ts';
 
 // --- Environment Variables ---
 const supabaseUrl = Deno.env.get('SUPABASE_URL');
-const supabaseServiceRoleKey =
-  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+const supabaseAPIKey =
+  Deno.env.get('SUPABASE_API_KEY');
 const resendApiKey = Deno.env.get('RESEND_API_KEY');
 const fromEmail = Deno.env.get('FROM_EMAIL') || 'notifications@orders.obled225.com';
 const ownerEmailString = Deno.env.get('OWNER_EMAIL') || 'contact@obled.com';
@@ -24,11 +24,11 @@ if (!supabaseUrl || supabaseUrl.trim() === '') {
   throw new Error('SUPABASE_URL environment variable is required');
 }
 
-if (!supabaseServiceRoleKey || supabaseServiceRoleKey.trim() === '') {
+if (!supabaseAPIKey || supabaseAPIKey.trim() === '') {
   console.error(
-    'SUPABASE_SERVICE_ROLE_KEY environment variable is missing or empty'
+    'SUPABASE_API_KEY environment variable is missing or empty'
   );
-  throw new Error('SUPABASE_SERVICE_ROLE_KEY environment variable is required');
+  throw new Error('SUPABASE_API_KEY environment variable is required');
 }
 
 if (!resendApiKey || resendApiKey.trim() === '') {
@@ -45,7 +45,7 @@ serve(async (req: Request) => {
   let orderIdFromRequest: string | null = null;
 
   try {
-    const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
+    const supabase = createClient(supabaseUrl, supabaseAPIKey);
     const resend = new Resend(resendApiKey);
 
     const body = await req.json();
@@ -333,7 +333,7 @@ serve(async (req: Request) => {
       try {
         const supabaseForErrorFallback = createClient(
           supabaseUrl!,
-          supabaseServiceRoleKey!
+          supabaseAPIKey!
         );
         await supabaseForErrorFallback.rpc('update_email_dispatch_status', {
           p_order_id: orderIdFromRequest,
