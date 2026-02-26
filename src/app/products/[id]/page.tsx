@@ -5,6 +5,9 @@ import { useTranslations } from 'next-intl';
 import { getProductBySlug } from '@/lib/sanity/queries';
 import { ProductDetail } from '@/components/store/product-detail';
 
+// next-intl uses headers() for getLocale(); opt into dynamic rendering so static build doesn't fail
+export const dynamic = 'force-dynamic';
+
 export async function generateStaticParams() {
   // Generate static params for all products
   // This will be populated when products are available
