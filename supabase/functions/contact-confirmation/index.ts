@@ -13,10 +13,10 @@ const supabaseUrl = Deno.env.get('SUPABASE_URL');
 const supabaseServiceRoleKey =
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 const resendApiKey = Deno.env.get('RESEND_API_KEY');
-const fromEmail = Deno.env.get('FROM_EMAIL') || 'notifications@contact.kysfactoryciv.com';
-const ownerEmailString = Deno.env.get('OWNER_EMAIL') || 'latelierkysllc@gmail.com';
+const fromEmail = Deno.env.get('FROM_EMAIL') || 'notifications@contact.obled225.com';
+const ownerEmailString = Deno.env.get('OWNER_EMAIL') || 'contact@obled.com';
 const ownerEmails = ownerEmailString.split(',').map(email => email.trim()).filter(email => email.length > 0);
-const replyEmail = Deno.env.get('REPLY_EMAIL') || 'latelierkysllc@gmail.com';
+const replyEmail = Deno.env.get('REPLY_EMAIL') || 'contact@obled.com';
 
 // --- Environment Validation ---
 if (!supabaseUrl || supabaseUrl.trim() === '') {
@@ -175,10 +175,10 @@ serve(async (req: Request) => {
     // --- 5. Send Emails with Resend ---
     // Send to customer
     const { data: customerEmailData, error: customerEmailError } = await resend.emails.send({
-      from: `KYS Factory <${fromEmail}>`,
+      from: `O'bled <${fromEmail}>`,
       to: inquiryData.email,
       reply_to: replyEmail,
-      subject: 'Confirmation de réception - KYS Factory',
+      subject: 'Confirmation de réception - O\'bled',
       html: customerEmailHtml,
     });
 
@@ -210,7 +210,7 @@ serve(async (req: Request) => {
 
     // Send to owner(s)
     const { data: ownerEmailData, error: ownerEmailError } = await resend.emails.send({
-      from: `KYS Factory <${fromEmail}>`,
+      from: `O'bled <${fromEmail}>`,
       to: ownerEmails,
       reply_to: replyEmail,
       subject: `Nouvelle demande de contact de ${inquiryData.name}`,

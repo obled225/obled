@@ -1,17 +1,14 @@
 import { useState, useEffect } from 'react';
-import {
-  getTaxSettings,
-  type TaxSettings,
-} from '@/lib/sanity/queries';
+import { getTaxSettings, type TaxSettings } from '@/lib/sanity/queries';
 
 /**
  * Custom hook to fetch tax settings from Sanity
- * 
+ *
  * This is a simpler hook for components that only need tax settings
  * (e.g., to display "All taxes included" message)
- * 
+ *
  * For components that need full cart pricing calculations, use useCartPricing instead.
- * 
+ *
  * @returns Tax settings and loading state
  */
 export function useTaxSettings(): {

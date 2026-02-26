@@ -459,7 +459,7 @@ serve(async (req: Request) => {
       metadata: {
         internal_order_id: orderId,
         customer_id: customerId,
-        app_source: 'kysfactory_store',
+        app_source: 'obled225_store',
         item_count: payload.cartItems.length,
         total_shipping_cost: shippingFee,
         total_tax: taxAmount,

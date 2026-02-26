@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -33,10 +33,11 @@ export default function PaymentSuccessPage() {
             {/* Icon */}
             <div className="mb-4 flex justify-center">
               <div
-                className={`rounded-full p-2.5 ${isSuccess
-                  ? 'bg-green-50 dark:bg-green-950/20'
-                  : 'bg-orange-50 dark:bg-orange-950/20'
-                  }`}
+                className={`rounded-full p-2.5 ${
+                  isSuccess
+                    ? 'bg-green-50 dark:bg-green-950/20'
+                    : 'bg-orange-50 dark:bg-orange-950/20'
+                }`}
               >
                 {isSuccess ? (
                   <CheckCircle2 className="h-9 w-9 sm:h-10 sm:w-10 text-green-500" />
@@ -53,9 +54,7 @@ export default function PaymentSuccessPage() {
 
             {/* Description */}
             <p className="text-sm sm:text-base text-foreground/80 mb-4 sm:mb-5">
-              {isSuccess
-                ? t('description')
-                : t('descriptionUnknown')}
+              {isSuccess ? t('description') : t('descriptionUnknown')}
             </p>
 
             {/* Order Info */}
@@ -87,9 +86,7 @@ export default function PaymentSuccessPage() {
             {/* Action Buttons */}
             <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-5">
               <Link href="/" className="block w-full">
-                <Button className="w-full">
-                  {t('continueShopping')}
-                </Button>
+                <Button className="w-full">{t('continueShopping')}</Button>
               </Link>
               {!isSuccess && (
                 <Link href="/checkout" className="block w-full">
@@ -101,9 +98,7 @@ export default function PaymentSuccessPage() {
             </div>
 
             {/* Support Message */}
-            <p className="text-xs text-muted-foreground">
-              {t('support')}
-            </p>
+            <p className="text-xs text-muted-foreground">{t('support')}</p>
           </div>
         </div>
       </div>

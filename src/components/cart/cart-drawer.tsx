@@ -7,7 +7,7 @@ import {
   SheetTitle,
   SheetDescription,
 } from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { ShoppingCart, Plus, Minus, Trash2 } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cart-store';
 import { useCurrencyStore } from '@/lib/store/currency-store';
@@ -136,11 +136,11 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                                 p.quantity === item.selectedVariant?.packSize
                             ) as
                               | {
-                                quantity: number;
-                                label?: string;
-                                price?: number;
-                                originalPrice?: number;
-                              }
+                                  quantity: number;
+                                  label?: string;
+                                  price?: number;
+                                  originalPrice?: number;
+                                }
                               | undefined;
                             originalPriceXOF = pack?.originalPrice;
                           } else {
@@ -215,7 +215,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">{t('subtotal')}</span>
               {summary.originalSubtotal &&
-                summary.originalSubtotal > summary.subtotal ? (
+              summary.originalSubtotal > summary.subtotal ? (
                 <span className="text-sm text-gray-500">
                   {formatPrice(summary.originalSubtotal, currency)}
                 </span>

@@ -10,7 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const isFrench = locale === 'fr';
 
   return {
-    title: 'KYS Factory',
+    title: "O'bled",
     description: isFrench
       ? 'Fabricant textile local à Abidjan spécialisé dans la production de t-shirts vierges de haute qualité pour professionnels.'
       : 'Local textile manufacturer in Abidjan specialized in high-quality blank t-shirt production for professionals.',

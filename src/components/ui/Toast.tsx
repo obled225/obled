@@ -2,7 +2,7 @@
 
 import { X } from 'lucide-react';
 import { Toast as ToastType } from '@/lib/hooks/use-toast';
-import { Button } from './button';
+import { Button } from './Button';
 
 interface ToastProps extends ToastType {
   onRemove: (id: string) => void;

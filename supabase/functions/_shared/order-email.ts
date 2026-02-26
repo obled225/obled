@@ -1,4 +1,4 @@
-// Email template engine for KYS Factory order emails
+// Email template engine for O'bled order emails
 // Simplified version inspired by Lomi email engine
 
 // Base layout template (reusing from contact-email.ts)
@@ -353,7 +353,7 @@ export const customerOrderConfirmationTemplate = `<div class="transaction-card">
     </p>
     <p class="greeting-text" style="margin-top: 24px;">
       Cordialement,<br>
-      L'équipe KYS Factory
+      L'équipe O'bled
     </p>
   </div>
 </div>`;

@@ -12,8 +12,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: isFrench ? 'À Propos' : 'About',
     description: isFrench
-      ? 'KYS Factory est un fabricant textile basé à Abidjan, spécialisé dans la production de t-shirts vierges de haute qualité pour professionnels.'
-      : 'KYS Factory is a textile manufacturer based in Abidjan, specialized in high-quality blank t-shirt production for professionals.',
+      ? "O'bled est un fabricant textile basé à Abidjan, spécialisé dans la production de t- shirts vierges de haute qualité pour professionnels."
+      : "O'bled is a textile manufacturer based in Abidjan, specialized in high - quality blank t - shirt production for professionals.",
     openGraph: {
       url: `${siteUrl}/about`,
     },

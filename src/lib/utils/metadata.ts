@@ -38,7 +38,7 @@ export function generatePageMetadata({
       title,
       description,
       url,
-      siteName: 'Kys Factory',
+      siteName: "O'bled",
       images: [
         {
           url: `${siteUrl}/icon.webp`,
@@ -55,7 +55,7 @@ export function generatePageMetadata({
       title,
       description,
       images: [`${siteUrl}/icon.webp`],
-      creator: '@kysfactoryciv',
+      creator: '@obled225',
     },
     alternates: {
       canonical: url,

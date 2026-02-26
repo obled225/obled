@@ -24,15 +24,15 @@ export function PageLayout({ children, categories }: PageLayoutProps) {
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [announcement, setAnnouncement] = useState<{
     text:
-    | string
-    | Array<{
-      _type: 'block';
-      children: Array<{
-        _type: 'span';
-        text: string;
-        marks?: string[];
-      }>;
-    }>;
+      | string
+      | Array<{
+          _type: 'block';
+          children: Array<{
+            _type: 'span';
+            text: string;
+            marks?: string[];
+          }>;
+        }>;
     isActive: boolean;
   } | null>(null);
 

@@ -98,7 +98,7 @@ export function AboutClient({
                 controls={!isMobile}
                 preload="metadata"
                 playsInline
-                aria-label="About KYS Factory video"
+                aria-label="About O'bled video"
                 onEnded={handleVideoEnd}
               >
                 <source src={heroVideoUrl} type="video/mp4" />
@@ -330,19 +330,19 @@ export function AboutClient({
                     },
                     {
                       key: 'instagram',
-                      href: 'https://instagram.com/kysfactoryciv',
+                      href: 'https://instagram.com/obled225',
                       icon: InstagramIcon,
                       bgColor: '#E4405F',
                       label: 'Instagram',
-                      value: '@kysfactoryciv',
+                      value: '@obled225',
                     },
                     {
                       key: 'email',
-                      href: 'mailto:contact@kysfactory.com',
+                      href: 'mailto:contact@obled225.com',
                       icon: Mail,
                       bgColor: '#3b82f6',
                       label: 'Email',
-                      value: 'contact@kysfactory.com',
+                      value: 'contact@obled225.com',
                     },
                   ].map((method) => {
                     const IconComponent = method.icon;

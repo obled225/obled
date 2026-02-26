@@ -5,9 +5,9 @@ import {schemaTypes} from './schemaTypes'
 
 export default defineConfig({
   name: 'default',
-  title: 'kysfactoryciv.com',
+  title: 'obled225.com',
 
-  projectId: '5wmpnjef',
+  projectId: 'qievls6g',
   dataset: 'production',
 
   plugins: [structureTool(), visionTool()],

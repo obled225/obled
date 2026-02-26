@@ -34,7 +34,7 @@ export async function generateMetadata({
     title: product.name,
     description: Array.isArray(product.description)
       ? product.description.join(' ')
-      : product.description || `${product.name} - KYS Factory`,
+      : product.description || `${product.name} - O'bled`,
     openGraph: {
       images: product.image ? [product.image] : [],
     },

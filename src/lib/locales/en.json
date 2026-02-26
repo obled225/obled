@@ -175,14 +175,14 @@
     }
   },
   "footer": {
-    "copyright": "© 2026, KYS Factory — All rights reserved.",
+    "copyright": "© 2026, O'bled — All rights reserved.",
     "terms": "Privacy Policy",
     "openSource": "This store is open-source"
   },
   "terms": {
     "title": "Privacy Policy",
     "lastUpdated": "Last updated: December 27, 2025",
-    "intro": "This privacy policy explains how KYS Factory (the \"Site\", \"we\", \"our\" or \"us\") collects, uses and discloses your personal information when you visit, use our services or make a purchase on kysfactoryciv.com (the \"Site\") or otherwise communicate with us concerning the Site (collectively, the \"Services\"). For the purposes of this privacy policy, \"you\", \"your\" and \"yours\" refer to you as a user of the Services, whether you are a customer, website visitor or any other person whose information we have collected in accordance with this privacy policy.",
+    "intro": "This privacy policy explains how O'bled (the \"Site\", \"we\", \"our\" or \"us\") collects, uses and discloses your personal information when you visit, use our services or make a purchase on obled225.com (the \"Site\") or otherwise communicate with us concerning the Site (collectively, the \"Services\"). For the purposes of this privacy policy, \"you\", \"your\" and \"yours\" refer to you as a user of the Services, whether you are a customer, website visitor or any other person whose information we have collected in accordance with this privacy policy.",
     "acceptance": "Please read this privacy policy carefully. By using and accessing the Services, you accept the collection, use and disclosure of your information as described in this privacy policy. If you do not accept this privacy policy, please do not use or access the Services.",
     "modifications": {
       "title": "Modifications to this privacy policy",
@@ -331,7 +331,7 @@
     },
     "contact": {
       "title": "Contact",
-      "content": "If you have questions about our privacy practices or this privacy policy, or if you wish to exercise any of the rights available to you, please call us or email us at latelierkysllc@gmail.com or contact us at Riviéra Palmeraie, Abidjan, CI."
+      "content": "If you have questions about our privacy practices or this privacy policy, or if you wish to exercise any of the rights available to you, please call us or email us at contact@obled.com or contact us at Riviéra Palmeraie, Abidjan, CI."
     }
   },
   "about": {
@@ -345,7 +345,7 @@
     "whoWeAre": {
       "title": "WHO ARE WE ?",
       "subtitle": "A manufacturer, close to its customers",
-      "content": "KYS Factory is a textile manufacturer based in Abidjan (Riviera Palmeraie), specialized in the production of high-quality blank t-shirts for brands, businesses and professionals in Côte d'Ivoire and around the world."
+      "content": "O'bled is a textile manufacturer based in Abidjan (Riviera Palmeraie), specialized in the production of high-quality blank t-shirts for brands, businesses and professionals in Côte d'Ivoire and around the world."
     },
     "b2b": {
       "title": "BUSINESS SOLUTIONS",
@@ -384,7 +384,7 @@
     },
     "support": {
       "title": "Human & professional support",
-      "intro": "Our approach is based on exchange, listening and advice. At KYS Factory, you are not an order number, you are a partner.",
+      "intro": "Our approach is based on exchange, listening and advice. At O'bled, you are not an order number, you are a partner.",
       "content": "We support you at every stage:",
       "services": [
         "Choice of textiles adapted to your project",
@@ -412,11 +412,11 @@
       },
       "instagram": {
         "title": "Instagram",
-        "value": "@kysfactoryciv"
+        "value": "@obled225"
       },
       "email": {
         "title": "Email",
-        "value": "contact@kysfactory.com"
+        "value": "contact@obled225.com"
       }
     },
     "form": {
@@ -461,7 +461,7 @@
     },
     "whoWeAre": {
       "question": "Who are we?",
-      "answer": "KYS Factory, based in Abidjan, manufactures blank t-shirts, polo shirts and other textile products with artisanal know-how and ethics. We work with schools, brands, companies, both local and international."
+      "answer": "O'bled, based in Abidjan, manufactures blank t-shirts, polo shirts and other textile products with artisanal know-how and ethics. We work with schools, brands, companies, both local and international."
     },
     "location": {
       "question": "Where are you located?",
@@ -531,7 +531,7 @@
   },
   "announcements": {
     "fallback": {
-      "manufacturer": "KYS FACTORY manufacturer & supplier of blank t-shirts",
+      "manufacturer": "O'BLED manufacturer & supplier of blank t-shirts",
       "businessOffers": "Offers for brands and businesses"
     }
   },

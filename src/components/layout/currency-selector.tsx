@@ -2,7 +2,7 @@
 
 import { useCurrencyStore } from '@/lib/store/currency-store';
 import { useTranslations } from 'next-intl';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export function CurrencySelector() {

@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { Product } from '@/lib/types';
 import { useCartStore } from '@/lib/store/cart-store';
 import { useCurrencyStore } from '@/lib/store/currency-store';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { formatPrice } from '@/lib/utils/format';
 import { Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';

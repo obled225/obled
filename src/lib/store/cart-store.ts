@@ -243,7 +243,7 @@ const createCartStore = () =>
         },
       }),
       {
-        name: 'kysfactory-cart',
+        name: 'obled225-cart',
         storage: createJSONStorage(() => {
           // Check if we're in browser environment
           if (typeof window !== 'undefined') {

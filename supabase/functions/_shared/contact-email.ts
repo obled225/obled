@@ -1,4 +1,4 @@
-// Email template engine for KYS Factory contact emails
+// Email template engine for O'bled contact emails
 // Simplified version inspired by Lomi email engine
 
 // Base layout template
@@ -223,7 +223,7 @@ export const customerConfirmationTemplate = `<div class="transaction-card">
     </p>
     <p class="greeting-text" style="margin-top: 24px;">
       Cordialement,<br>
-      L'équipe KYS Factory
+      L'équipe O'bled
     </p>
   </div>
 </div>`;
@@ -294,7 +294,7 @@ export class EmailTemplateEngine {
       .replace(/\{\{\{message\}\}\}/g, messageHtml);
 
     return baseLayout
-      .replace(/\{\{title\}\}/g, 'Confirmation de réception - KYS Factory')
+      .replace(/\{\{title\}\}/g, 'Confirmation de réception - O\'bled')  
       .replace(/\{\{\{body\}\}\}/g, body);
   }
 
@@ -346,7 +346,7 @@ export class EmailTemplateEngine {
       .replace(/<!-- Details will be inserted here -->/g, detailRows);
 
     return baseLayout
-      .replace(/\{\{title\}\}/g, 'Nouvelle demande de contact - KYS Factory')
+      .replace(/\{\{title\}\}/g, 'Nouvelle demande de contact - O\'bled')
       .replace(/\{\{\{body\}\}\}/g, body);
   }
 }

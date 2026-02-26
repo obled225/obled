@@ -37,17 +37,17 @@ interface CartPricingResult {
 
 /**
  * Custom hook to centralize cart pricing calculations
- * 
+ *
  * This hook handles:
  * - Fetching tax settings from Sanity
  * - Calculating tax on discounted subtotal
  * - Getting complete cart summary
- * 
+ *
  * This eliminates duplication across components like:
  * - cart-summary.tsx
  * - checkout-client.tsx
  * - cart-drawer.tsx
- * 
+ *
  * @param options - Configuration options
  * @returns Cart pricing data and loading state
  */
@@ -106,7 +106,7 @@ export function useCartPricing(
   const cartSummary = useMemo(() => {
     return getCartSummary(currency, taxAmount, shippingCost);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- cartSnapshot triggers recalc when cart items/quantity change
-  }, [getCartSummary, currency, taxAmount, shippingCost, cartSnapshot]);  
+  }, [getCartSummary, currency, taxAmount, shippingCost, cartSnapshot]);
 
   return {
     taxSettings,

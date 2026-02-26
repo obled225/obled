@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Poppins, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
-import { Toaster } from '@/components/ui/toaster';
+import { Toaster } from '@/components/ui/Toaster';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getLocale } from 'next-intl/server';
 import { PageLayout } from '@/components/layout/page-layout';
@@ -26,8 +26,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const isFrench = locale === 'fr';
 
   const title = isFrench
-    ? "KYS Factory | Fournisseur de t-shirts vierges made in Côte d'Ivoire"
-    : "KYS Factory | Blank t-shirts manufacturer made in Côte d'Ivoire";
+    ? "O'bled | Fournisseur de t-shirts vierges made in Côte d'Ivoire"
+    : "O'bled | Blank t-shirts manufacturer made in Côte d'Ivoire";
 
   const description = isFrench
     ? 'Fabricant textile local à Abidjan spécialisé dans la production de t-shirts vierges de haute qualité pour professionnels.'
@@ -41,13 +41,17 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(siteUrl),
     title: {
       default: title,
-      template: '%s | KYS Factory',
+      template: "%s | O'bled",
     },
     description,
     keywords,
-    authors: [{ name: 'KYS Factory' }],
-    creator: 'KYS Factory',
-    publisher: 'KYS Factory',
+    authors: [
+      {
+        name: "O'bled",
+      },
+    ],
+    creator: "O'bled",
+    publisher: "O'bled",
     formatDetection: {
       email: false,
       address: false,
@@ -73,7 +77,7 @@ export async function generateMetadata(): Promise<Metadata> {
       locale: locale === 'fr' ? 'fr_FR' : 'en_US',
       alternateLocale: locale === 'fr' ? 'en_US' : 'fr_FR',
       url: siteUrl,
-      siteName: 'KYS Factory',
+      siteName: "O'bled",
       title,
       description,
       images: [
@@ -90,7 +94,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description,
       images: [`${siteUrl}/banner.png`],
-      creator: '@kysfactoryciv',
+      creator: '@obled225',
     },
     alternates: {
       languages: {
@@ -128,7 +132,7 @@ export default async function RootLayout({
   const organizationSchema = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'KYS Factory',
+    name: "O'bled",
     url: siteUrl,
     logo: `${siteUrl}/icon.webp`,
     contactPoint: {
@@ -138,7 +142,7 @@ export default async function RootLayout({
       areaServed: 'Worldwide',
       availableLanguage: ['French', 'English'],
     },
-    sameAs: ['https://www.instagram.com/kysfactoryciv'],
+    sameAs: ['https://www.instagram.com/obled225'],
   };
 
   const categories = await getHeaderCategories();
@@ -147,11 +151,11 @@ export default async function RootLayout({
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
     '@id': `${siteUrl}#business`,
-    name: 'KYS Factory',
+    name: "O'bled",
     image: `${siteUrl}/icon.webp`,
     url: siteUrl,
     telephone: '+225-07-13-51-64-17',
-    email: 'contact@kysfactory.com',
+    email: 'contact@obled225.com',
     address: {
       '@type': 'PostalAddress',
       streetAddress: 'Riviéra Palmeraie',

@@ -1,2 +1,2 @@
 export const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL || 'https://kysfactoryciv.com';
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://obled225.com';

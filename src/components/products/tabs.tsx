@@ -1,7 +1,7 @@
 'use client';
 
 import { Truck, RotateCcw, Shield } from 'lucide-react';
-import Accordion from '@/components/ui/accordion';
+import Accordion from '@/components/ui/Accordion';
 import { Product } from '@/lib/types';
 import { PortableText } from '@/components/ui/portable-text';
 import { useTranslations } from 'next-intl';

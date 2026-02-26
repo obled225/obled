@@ -6,8 +6,8 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Search, ShoppingCart, Menu, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Button } from '@/components/ui/button';
-import Modal from '@/components/ui/modal';
+import { Button } from '@/components/ui/Button';
+import Modal from '@/components/ui/Modal';
 import { CurrencySelector } from './currency-selector';
 import { CartDrawer } from '@/components/cart/cart-drawer';
 import { Badge } from '@/components/ui/badge';
@@ -105,7 +105,7 @@ export function Header({ categories = [], onVisibilityChange }: HeaderProps) {
           <Link href="/" className="shrink-0">
             <Image
               src="/icon.webp"
-              alt="KYS Factory"
+              alt="O'bled"
               width={550}
               height={150}
               className="h-28 sm:h-24 md:h-28 lg:h-32 w-auto"
@@ -148,10 +148,11 @@ export function Header({ categories = [], onVisibilityChange }: HeaderProps) {
                   <ShoppingCart className="h-5 w-5 sm:h-5 sm:w-5" />
                   {cartItemCount > 0 && (
                     <Badge
-                      className={`absolute -top-1 -right-1 ${isMobile
+                      className={`absolute -top-1 -right-1 ${
+                        isMobile
                           ? 'h-4 w-4 text-[9px] font-semibold'
                           : 'h-4 w-4 text-[10px]'
-                        } p-0 flex items-center justify-center bg-[#22c55e] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.1)] border-0`}
+                      } p-0 flex items-center justify-center bg-[#22c55e] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.1)] border-0`}
                     >
                       {cartItemCount}
                     </Badge>

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '@/lib/supabase/client';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/label';
 import {
@@ -418,7 +418,9 @@ export default function AdminClient() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
             <Card className="rounded-sm border-border bg-card">
               <CardContent className="p-2 sm:p-3">
-                <div className="text-xs text-muted-foreground">{t('stats.totalOrders')}</div>
+                <div className="text-xs text-muted-foreground">
+                  {t('stats.totalOrders')}
+                </div>
                 <div className="text-xl sm:text-2xl font-bold text-foreground">
                   {stats.total_orders}
                 </div>
@@ -426,7 +428,9 @@ export default function AdminClient() {
             </Card>
             <Card className="rounded-sm border-border bg-card">
               <CardContent className="p-2 sm:p-3">
-                <div className="text-xs text-muted-foreground">{t('stats.totalRevenue')}</div>
+                <div className="text-xs text-muted-foreground">
+                  {t('stats.totalRevenue')}
+                </div>
                 <div className="text-xl sm:text-2xl font-bold text-foreground">
                   {stats.total_revenue.toLocaleString()} XOF
                 </div>
@@ -434,7 +438,9 @@ export default function AdminClient() {
             </Card>
             <Card className="rounded-sm border-border bg-card">
               <CardContent className="p-2 sm:p-3">
-                <div className="text-xs text-muted-foreground">{t('stats.pending')}</div>
+                <div className="text-xs text-muted-foreground">
+                  {t('stats.pending')}
+                </div>
                 <div className="text-xl sm:text-2xl font-bold text-foreground">
                   {stats.pending_orders}
                 </div>
@@ -442,7 +448,9 @@ export default function AdminClient() {
             </Card>
             <Card className="rounded-sm border-border bg-card">
               <CardContent className="p-2 sm:p-3">
-                <div className="text-xs text-muted-foreground">{t('stats.failed')}</div>
+                <div className="text-xs text-muted-foreground">
+                  {t('stats.failed')}
+                </div>
                 <div className="text-xl sm:text-2xl font-bold text-foreground">
                   {stats.failed_orders}
                 </div>
@@ -480,10 +488,11 @@ export default function AdminClient() {
                     variant="ghost"
                     size="sm"
                     onClick={() => setStatusFilter('paid')}
-                    className={`rounded-sm text-xs sm:text-sm ${statusFilter === 'paid'
-                      ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                      : 'bg-muted text-muted-foreground hover:text-foreground'
-                      }`}
+                    className={`rounded-sm text-xs sm:text-sm ${
+                      statusFilter === 'paid'
+                        ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                        : 'bg-muted text-muted-foreground hover:text-foreground'
+                    }`}
                   >
                     <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                     {t('filters.paidOnly')}
@@ -492,10 +501,11 @@ export default function AdminClient() {
                     variant="ghost"
                     size="sm"
                     onClick={() => setStatusFilter('all')}
-                    className={`rounded-sm text-xs sm:text-sm ${statusFilter === 'all'
-                      ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                      : 'bg-muted text-muted-foreground hover:text-foreground'
-                      }`}
+                    className={`rounded-sm text-xs sm:text-sm ${
+                      statusFilter === 'all'
+                        ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                        : 'bg-muted text-muted-foreground hover:text-foreground'
+                    }`}
                   >
                     {t('filters.allStatus')}
                   </Button>
@@ -503,10 +513,11 @@ export default function AdminClient() {
                     variant="ghost"
                     size="sm"
                     onClick={() => setStatusFilter('pending')}
-                    className={`rounded-sm text-xs sm:text-sm ${statusFilter === 'pending'
-                      ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                      : 'bg-muted text-muted-foreground hover:text-foreground'
-                      }`}
+                    className={`rounded-sm text-xs sm:text-sm ${
+                      statusFilter === 'pending'
+                        ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                        : 'bg-muted text-muted-foreground hover:text-foreground'
+                    }`}
                   >
                     <Clock className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                     {t('filters.pending')}
@@ -515,10 +526,11 @@ export default function AdminClient() {
                     variant="ghost"
                     size="sm"
                     onClick={() => setStatusFilter('failed')}
-                    className={`rounded-sm text-xs sm:text-sm ${statusFilter === 'failed'
-                      ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                      : 'bg-muted text-muted-foreground hover:text-foreground'
-                      }`}
+                    className={`rounded-sm text-xs sm:text-sm ${
+                      statusFilter === 'failed'
+                        ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                        : 'bg-muted text-muted-foreground hover:text-foreground'
+                    }`}
                   >
                     <X className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                     {t('filters.failed')}
@@ -556,7 +568,9 @@ export default function AdminClient() {
                       <RefreshCw
                         className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`}
                       />
-                      <span className="ml-2 sm:hidden">{t('filters.refresh')}</span>
+                      <span className="ml-2 sm:hidden">
+                        {t('filters.refresh')}
+                      </span>
                     </Button>
                     <Button
                       onClick={downloadCSV}
@@ -566,7 +580,9 @@ export default function AdminClient() {
                       disabled={loading}
                     >
                       <Download className="h-4 w-4" />
-                      <span className="ml-2 sm:hidden">{t('filters.export')}</span>
+                      <span className="ml-2 sm:hidden">
+                        {t('filters.export')}
+                      </span>
                     </Button>
                   </div>
                 </div>
@@ -648,7 +664,9 @@ export default function AdminClient() {
                           </div>
                           <div className="text-xs text-muted-foreground">
                             {order.item_count}{' '}
-                            {order.item_count === 1 ? t('types.type') : t('types.types')}
+                            {order.item_count === 1
+                              ? t('types.type')
+                              : t('types.types')}
                           </div>
                         </TableCell>
 

@@ -52,7 +52,7 @@ export const useCurrencyStore = create<CurrencyStore>()(
       },
     }),
     {
-      name: 'kysfactory-currency',
+      name: 'obled225-currency',
       storage: createJSONStorage(() => {
         // Check if we're in browser environment
         if (typeof window !== 'undefined') {

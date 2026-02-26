@@ -64,7 +64,7 @@ export async function POST(request: Request) {
     // Trigger email dispatch
     let emailSent = false;
     let emailError: string | null = null;
-    
+
     try {
       const functionUrl = `${supabaseUrl}/functions/v1/contact-confirmation`;
 
@@ -85,7 +85,10 @@ export async function POST(request: Request) {
           const errorText = await emailResponse.text();
           errorData = { error: errorText };
         }
-        emailError = errorData.error || errorData.message || 'Erreur lors de l\'envoi de l\'email de confirmation';
+        emailError =
+          errorData.error ||
+          errorData.message ||
+          "Erreur lors de l'envoi de l'email de confirmation";
         console.error(
           `Error triggering contact-confirmation for ${inquiry.id}:`,
           {
@@ -101,7 +104,10 @@ export async function POST(request: Request) {
         );
       }
     } catch (fetchError) {
-      const errorMessage = fetchError instanceof Error ? fetchError.message : 'Erreur de connexion';
+      const errorMessage =
+        fetchError instanceof Error
+          ? fetchError.message
+          : 'Erreur de connexion';
       emailError = `Erreur lors de l'envoi de l'email: ${errorMessage}`;
       console.error(
         `Exception calling contact-confirmation for ${inquiry.id}:`,

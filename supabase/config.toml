@@ -1,5 +1,5 @@
 # A string used to distinguish different Supabase projects on the same host. Defaults to the working directory name.
-project_id = "kysfactory"
+project_id = "obled225"
 
 [api]
 enabled = true

@@ -38,7 +38,7 @@ export function Footer() {
             </Link>
             <span className="hidden sm:inline mx-2">·</span>
             <Link
-              href="https://github.com/kysfactory/kysfactory"
+              href="https://github.com/obled225/obled"
               target="_blank"
               rel="noopener noreferrer"
               className="font-normal hover:text-black transition-colors"
@@ -65,7 +65,7 @@ export function Footer() {
               <WhatsAppIcon className="w-5 h-5 sm:w-5 sm:h-5" fill="black" />
             </Link>
             <Link
-              href="https://www.instagram.com/kysfactoryciv/"
+              href="https://www.instagram.com/obled225/"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-foreground transition-colors"
@@ -74,7 +74,7 @@ export function Footer() {
               <InstagramIcon className="w-5 h-5 sm:w-5 sm:h-5" />
             </Link>
             <Link
-              href="https://www.facebook.com/people/KYS-Factory/61572203992802/"
+              href="https://www.facebook.com/people/Obled225/61572203992802/"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-foreground transition-colors"
@@ -83,7 +83,7 @@ export function Footer() {
               <FacebookIcon className="w-5 h-5 sm:w-5 sm:h-5" />
             </Link>
             <Link
-              href="https://www.linkedin.com/company/kys-factory/"
+              href="https://www.linkedin.com/company/obled225/"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-foreground transition-colors"

@@ -2,14 +2,12 @@
 
 import Link from 'next/link';
 import { useState, useEffect, useMemo } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { useCartStore } from '@/lib/store/cart-store';
 import { useCurrencyStore } from '@/lib/store/currency-store';
 import { formatPrice } from '@/lib/utils/format';
 import { ShippingCalculator } from './shipping-calculator';
-import {
-  getGlobalFreeShippingThreshold,
-} from '@/lib/sanity/queries';
+import { getGlobalFreeShippingThreshold } from '@/lib/sanity/queries';
 import { useTranslations } from 'next-intl';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCartPricing } from '@/lib/hooks/use-cart-pricing';
@@ -169,7 +167,7 @@ export function CartSummary({
               {t('subtotalWithItems', { count: cart.itemCount })}
             </span>
             {cartSummary.originalSubtotal &&
-              cartSummary.originalSubtotal > cartSummary.subtotal ? (
+            cartSummary.originalSubtotal > cartSummary.subtotal ? (
               <span className="text-sm text-gray-500">
                 {formatPrice(cartSummary.originalSubtotal, currency)}
               </span>
@@ -193,8 +191,8 @@ export function CartSummary({
             <span className="text-gray-600">{t('shipping')}</span>
             <span className="font-medium">
               {selectedShipping === 'free-shipping' ||
-                (selectedShipping &&
-                  (globalFreeShippingActive || shippingCost === 0)) ? (
+              (selectedShipping &&
+                (globalFreeShippingActive || shippingCost === 0)) ? (
                 <span className="text-green-600 font-semibold">
                   {tShipping('free')}
                 </span>

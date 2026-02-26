@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { Product, ProductCategory } from '@/lib/types';
-import Modal from '@/components/ui/modal';
+import Modal from '@/components/ui/Modal';
 import { useIsMobile } from '@/lib/hooks/use-is-mobile';
 
 export type SortOption =

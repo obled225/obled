@@ -6,7 +6,7 @@ import { useCartStore } from '@/lib/store/cart-store';
 import { useCurrencyStore } from '@/lib/store/currency-store';
 import { supabase } from '@/lib/supabase/client';
 import { FunctionsHttpError } from '@supabase/supabase-js';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/label';
 import { CartSummary } from '@/components/cart/cart-summary';

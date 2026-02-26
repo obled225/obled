@@ -107,7 +107,7 @@ const CartDropdown = () => {
                               {formatPrice(
                                 (basePrice +
                                   (item.selectedVariant?.priceModifier || 0)) *
-                                item.quantity,
+                                  item.quantity,
                                 currency
                               )}
                             </p>

@@ -175,14 +175,14 @@
     }
   },
   "footer": {
-    "copyright": "© 2026, KYS Factory - Tous droits réservés.",
+    "copyright": "© 2026, O'bled - Tous droits réservés.",
     "terms": "Politique de confidentialité",
     "openSource": "Cette boutique est open-source"
   },
   "terms": {
     "title": "Politique de confidentialité",
     "lastUpdated": "Dernière mise à jour : 27 décembre 2025",
-    "intro": "Cette politique de confidentialité explique comment KYS Factory (le « Site », « nous », « notre » ou « nos ») collecte, utilise et divulgue vos informations personnelles lorsque vous visitez, utilisez nos services ou effectuez un achat sur kysfactoryciv.com (le « Site » ) ou communiquez autrement avec nous au sujet du Site (conjointement, les « Services »). Aux fins de la présente politique de confidentialité, « vous », « votre » et « vos » vous désignent en tant qu'utilisateur des Services, que vous soyez un client, un visiteur du site web ou une autre personne dont nous avons collecté les informations conformément à la présente politique de confidentialité.",
+    "intro": "Cette politique de confidentialité explique comment O'bled (le « Site », « nous », « notre » ou « nos ») collecte, utilise et divulgue vos informations personnelles lorsque vous visitez, utilisez nos services ou effectuez un achat sur obled225.com (le « Site » ) ou communiquez autrement avec nous au sujet du Site (conjointement, les « Services »). Aux fins de la présente politique de confidentialité, « vous », « votre » et « vos » vous désignent en tant qu'utilisateur des Services, que vous soyez un client, un visiteur du site web ou une autre personne dont nous avons collecté les informations conformément à la présente politique de confidentialité.",
     "acceptance": "Veuillez lire attentivement la présente politique de confidentialité. En utilisant les Services et en y accédant, vous acceptez la collecte, l'utilisation et la divulgation de vos informations comme décrit dans la présente politique de confidentialité. Si vous n'acceptez pas la présente politique de confidentialité, veuillez ne pas utiliser les Services ou y accéder.",
     "modifications": {
       "title": "Modifications de la présente politique de confidentialité",
@@ -334,7 +334,7 @@
     },
     "contact": {
       "title": "Contact",
-      "content": "Si vous avez des questions sur nos pratiques en matière de confidentialité ou cette politique de confidentialité, ou si vous souhaitez exercer l'un des droits dont vous disposez, veuillez nous appeler ou nous envoyer un e-mail à l'adresse latelierkysllc@gmail.com ou nous contacter au Riviéra Palmeraie, Abidjan, CI."
+      "content": "Si vous avez des questions sur nos pratiques en matière de confidentialité ou cette politique de confidentialité, ou si vous souhaitez exercer l'un des droits dont vous disposez, veuillez nous appeler ou nous envoyer un e-mail à l'adresse contact@obled.com ou nous contacter au Riviéra Palmeraie, Abidjan, CI."
     }
   },
   "about": {
@@ -348,7 +348,7 @@
     "whoWeAre": {
       "title": "QUI SOMMES-NOUS ?",
       "subtitle": "Un fabricant proche de ses clients",
-      "content": "KYS Factory est un fabricant textile basé à Abidjan (Riviera Palmeraie), spécialisé dans la production de t-shirts vierges de haute qualité pour marques, entreprises et professionnels en Côte d'Ivoire et dans le monde."
+      "content": "O'bled est un fabricant textile basé à Abidjan (Riviera Palmeraie), spécialisé dans la production de t-shirts vierges de haute qualité pour marques, entreprises et professionnels en Côte d'Ivoire et dans le monde."
     },
     "b2b": {
       "title": "SOLUTIONS POUR ENTREPRISES",
@@ -387,7 +387,7 @@
     },
     "support": {
       "title": "Un accompagnement humain & professionnel",
-      "intro": "Notre approche repose sur l'échange, l'écoute et le conseil. Chez KYS Factory, vous n'êtes pas un numéro de commande, vous êtes un partenaire.",
+      "intro": "Notre approche repose sur l'échange, l'écoute et le conseil. Chez O'bled, vous n'êtes pas un numéro de commande, vous êtes un partenaire.",
       "content": "Nous vous accompagnons à chaque étape :",
       "services": [
         "Choix des textiles adaptés à votre projet",
@@ -415,11 +415,11 @@
       },
       "instagram": {
         "title": "Instagram",
-        "value": "@kysfactoryciv"
+        "value": "@obled225"
       },
       "email": {
         "title": "Email",
-        "value": "contact@kysfactory.com"
+        "value": "contact@obled225.com"
       }
     },
     "form": {
@@ -464,7 +464,7 @@
     },
     "whoWeAre": {
       "question": "Qui sommes-nous ?",
-      "answer": "KYS Factory, basé à Abidjan, fabrique des t-shirts vierges, polos et autres produits textiles avec un savoir-faire artisanal et éthique. Nous travaillons avec des écoles, marques, entreprises, aussi bien locales qu'internationales."
+      "answer": "O'bled, basé à Abidjan, fabrique des t-shirts vierges, polos et autres produits textiles avec un savoir-faire artisanal et éthique. Nous travaillons avec des écoles, marques, entreprises, aussi bien locales qu'internationales."
     },
     "location": {
       "question": "Où êtes-vous situé ?",
@@ -483,8 +483,8 @@
       "answer": "Absolument. Commander un échantillon est le meilleur moyen de tester notre qualité. Nous le recommandons vivement si vous hésitez entre plusieurs coupes, tissus ou couleurs."
     },
     "visits": {
-      "question": "Est-il possible de visiter l'atelier ?",
-      "answer": "Non, l'atelier ne prend pas encore de visites pour le moment."
+      "question": "Est-il possible de visiter la boutique ?",
+      "answer": "Non, la boutique ne prend pas encore de visites pour le moment."
     },
     "fabrics": {
       "question": "Quels tissus utilisez-vous pour vos t-shirts ?",
@@ -534,7 +534,7 @@
   },
   "announcements": {
     "fallback": {
-      "manufacturer": "KYS FACTORY fabricant & fournisseur de t-shirts vierges",
+      "manufacturer": "O'BLED fabricant & fournisseur de t-shirts vierges",
       "businessOffers": "Offres marques et entreprises"
     }
   },
@@ -617,7 +617,7 @@
     },
     "header": {
       "title": "Panneau admin",
-      "subtitle": "Gérer les commandes et suivre les ventes pour KYS Factory.",
+      "subtitle": "Gérer les commandes et suivre les ventes pour O'bled.",
       "logout": "Déconnexion"
     },
     "stats": {
