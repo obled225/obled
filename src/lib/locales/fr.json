@@ -327,8 +327,8 @@
   },
   "about": {
     "title": "TU GNAN ON TE BOUAI",
-    "subtitle": "Fabriqué en Côte d'Ivoire 🇨🇮 — Vêtements | Accessoires | Inspiré du Nouchi vers le monde 🌎",
-    "description": "Porter O'bled c'est pas juste un habit. C'est notre langage, notre fierté, notre manière de montrer au monde ce qui est propre à nous."
+    "subtitle": "D'Abidjan pour le monde. Conçu et fabriqué en Côte d'Ivoire.",
+    "description": "Porter O'bled, c'est notre langage et notre fierté, une façon de montrer au monde ce qui nous anime."
   },
   "contact": {
     "title": "Contact",
@@ -393,7 +393,7 @@
     },
     "whoWeAre": {
       "question": "Qui sommes-nous ?",
-      "answer": "O'bled est une marque basée à Abidjan. Nous créons des vêtements et accessoires inspirés de la culture Nouchi, pour la Côte d'Ivoire et le monde."
+      "answer": "Une marque abidjanaise. Nos pièces s'inspirent du Nouchi et sont fabriquées localement en Côte d'Ivoire."
     },
     "location": {
       "question": "Où êtes-vous situé ?",
@@ -401,7 +401,7 @@
     },
     "products": {
       "question": "Quels types de produits proposez-vous ?",
-      "answer": "Nous proposons des vêtements et accessoires — inspirés de la culture Nouchi et fabriqués en Côte d'Ivoire."
+      "answer": "Vêtements et accessoires — conçus par nous et fabriqués en Côte d'Ivoire."
     },
     "productionTime": {
       "question": "Quel est le délai de livraison ?",

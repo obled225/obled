@@ -138,10 +138,7 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
                 name: relatedDoc.categories[0].title || '',
                 description: relatedDoc.categories[0].description,
               }
-            : {
-                id: 'uncategorized',
-                name: 'Uncategorized',
-              };
+            : undefined;
 
           return {
             id: relatedDoc._id || '',
@@ -169,16 +166,13 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
         })
     : undefined;
 
-  const category: ProductCategory = doc.categories?.[0]
+  const category: ProductCategory | undefined = doc.categories?.[0]
     ? {
         id: doc.categories[0]._id || doc.categories[0].slug?.current || '',
         name: doc.categories[0].title || '',
         description: doc.categories[0].description,
       }
-    : {
-        id: 'uncategorized',
-        name: 'Uncategorized',
-      };
+    : undefined;
 
   // Ensure we have at least one valid image URL
   const primaryImage = images[0] || null;
@@ -579,15 +573,13 @@ const ABOUT_PAGE_QUERY = `*[_type == "about" && !(_id in path("drafts.**"))][0] 
   }
 }`;
 
-// GROQ query to get gallery page content
-const GALLERY_PAGE_QUERY = `*[_type == "gallery" && !(_id in path("drafts.**"))][0] {
+// GROQ query to get gallery page content (most recently updated published gallery)
+const GALLERY_PAGE_QUERY = `*[_type == "gallery" && !(_id in path("drafts.**"))] | order(_updatedAt desc)[0] {
   _id,
-  title,
-  subtitle,
   "images": images[] {
-    "asset": image.asset->,
-    aspectRatio,
-    caption
+    "asset": asset->,
+    "width": asset->.metadata.dimensions.width,
+    "height": asset->.metadata.dimensions.height
   }
 }`;
 
@@ -642,13 +634,12 @@ export interface AboutPageData {
 
 export interface GalleryImageItem {
   asset?: Record<string, unknown>;
-  aspectRatio?: string;
+  width?: number;
+  height?: number;
   caption?: string;
 }
 
 export interface GalleryPageData {
-  title?: string;
-  subtitle?: string;
   images?: GalleryImageItem[];
 }
 

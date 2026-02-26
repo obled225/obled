@@ -324,8 +324,8 @@
   },
   "about": {
     "title": "O'BLED",
-    "subtitle": "Made in Côte d'Ivoire 🇨🇮 — Clothing | Accessories | Inspired from Nouchi to the world 🌎",
-    "description": "Wearing O'bled is not just a habit. It's our language, our pride, our way of showing the world what is unique to us."
+    "subtitle": "From Abidjan to the world. Designed and made in Côte d'Ivoire.",
+    "description": "Wearing O'bled is our language and our pride — a way to show the world what moves us."
   },
   "contact": {
     "title": "Contact",
@@ -390,7 +390,7 @@
     },
     "whoWeAre": {
       "question": "Who are we?",
-      "answer": "O'bled is a brand based in Abidjan, Côte d'Ivoire. We create clothing and accessories inspired by Nouchi culture, for Côte d'Ivoire and the world."
+      "answer": "We're an Abidjan-based brand. Our pieces draw on Nouchi culture and are made locally in Côte d'Ivoire."
     },
     "location": {
       "question": "Where are you located?",
@@ -398,7 +398,7 @@
     },
     "products": {
       "question": "What types of products do you offer?",
-      "answer": "We offer clothing and accessories — inspired by Nouchi, made in Côte d'Ivoire."
+      "answer": "Clothing and accessories — designed in-house and made in Côte d'Ivoire."
     },
     "productionTime": {
       "question": "What is the delivery time?",
@@ -458,7 +458,7 @@
   "gallery": {
     "title": "Gallery",
     "subtitle": "Our world, our style.",
-    "empty": "No images yet. Add images from Sanity Studio to show them here."
+    "empty": "No images yet."
   },
   "checkout": {
     "title": "Checkout",

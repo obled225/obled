@@ -104,7 +104,7 @@ export function AboutClient({
             </p>
           )}
           {displayHeroDescription && (
-            <p className="text-base sm:text-lg text-foreground/70 mb-8 max-w-2xl mx-auto whitespace-pre-line">
+            <p className="text-base sm:text-lg text-foreground/70 mb-8 max-w-2xl text-left whitespace-pre-line">
               {displayHeroDescription}
             </p>
           )}

@@ -67,7 +67,7 @@ export default defineType({
           name: 'text',
           title: 'Announcement text',
           type: 'array',
-          description: 'The text to display in the floating announcement. Highlight promo codes to make them bold.',
+          description: 'The text to display in the floating announcement. Highlight promo codes to make them bold. Leave empty if you only use the static header announcements.',
           of: [
             {
               type: 'block',
@@ -79,7 +79,6 @@ export default defineType({
               },
             },
           ],
-          validation: (Rule) => Rule.required(),
         }),
         defineField({
           name: 'isActive',

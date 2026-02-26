@@ -77,9 +77,11 @@ export default function RelatedProducts({
                   </h3>
 
                   <div className="flex items-center justify-between gap-2">
-                    <p className="text-sm text-gray-600">
-                      {product.category.name}
-                    </p>
+                    {product.category?.name ? (
+                      <p className="text-sm text-gray-600">
+                        {product.category.name}
+                      </p>
+                    ) : null}
                     <div className="flex items-center space-x-2">
                       {displayOriginalPrice &&
                         displayOriginalPrice > displayPrice && (

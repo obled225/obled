@@ -6,7 +6,12 @@ import { getGalleryPage } from '@/lib/sanity/queries';
 import { getSanityImageUrl } from '@/lib/sanity/client';
 import type { GalleryImageItem } from '@/lib/sanity/queries';
 
-type GalleryImage = { url: string; aspectRatio?: string; caption?: string };
+type GalleryImage = {
+  url: string;
+  width?: number;
+  height?: number;
+  caption?: string;
+};
 
 function transformGalleryImages(
   images: GalleryImageItem[] | undefined
@@ -20,8 +25,8 @@ function transformGalleryImages(
     if (!url) continue;
     result.push({
       url,
-      aspectRatio: item.aspectRatio ?? '1:1',
-      caption: item.caption,
+      width: item.width,
+      height: item.height,
     });
   }
   return result;
@@ -49,11 +54,5 @@ export default async function GalleryPage() {
   const data = await getGalleryPage();
   const images = transformGalleryImages(data?.images);
 
-  return (
-    <GalleryClient
-      title={data?.title}
-      subtitle={data?.subtitle}
-      images={images}
-    />
-  );
+  return <GalleryClient images={images} />;
 }

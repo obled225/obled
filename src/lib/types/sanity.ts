@@ -166,7 +166,7 @@ export interface Product {
     available: boolean;
   }>;
   description?: PortableTextBlock[];
-  category: ProductCategory;
+  category?: ProductCategory;
   inStock: boolean;
   grammage?: string; // Fabric weight (e.g., '180', '200')
   material?: string; // Material composition (e.g., '100% coton', '100% coton PK')

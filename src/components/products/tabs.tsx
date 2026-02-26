@@ -48,10 +48,12 @@ const ProductInfoTab = ({ product }: ProductTabsProps) => {
     <div className="py-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
         <div className="flex flex-col gap-y-4">
-          <div>
-            <span className="font-semibold">{t('category')}</span>
-            <p className="text-gray-700">{product.category.name || '-'}</p>
-          </div>
+          {product.category?.name ? (
+            <div>
+              <span className="font-semibold">{t('category')}</span>
+              <p className="text-gray-700">{product.category.name}</p>
+            </div>
+          ) : null}
         </div>
         <div className="flex flex-col gap-y-4">
           <div>

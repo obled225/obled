@@ -188,36 +188,6 @@ export default defineType({
       ],
     }),
     defineField({
-      name: 'grammage',
-      title: 'Grammage',
-      type: 'string',
-      description: 'Fabric weight (e.g., 180 g/m², 200 g/m²) for filtering purposes.',
-      options: {
-        list: [
-          {title: '160 g/m²', value: '160'},
-          { title: '180 g/m²', value: '180' },
-          { title: '190 g/m²', value: '190' },
-          {title: '200 g/m²', value: '200'},
-          {title: '220 g/m²', value: '220'},
-          {title: '240 g/m²', value: '250'},
-        ],
-      },
-    }),
-    defineField({
-      name: 'material',
-      title: 'Material',
-      type: 'string',
-      description: 'Fabric composition (e.g., 100% coton, 100% coton PK) for filtering purposes as well.',
-      options: {
-        list: [
-          {title: '100% coton', value: '100% coton'},
-          {title: '100% coton PK', value: '100% coton PK'},
-          {title: 'Coton/Polyester', value: 'Coton/Polyester'},
-          {title: 'Autre', value: 'Autre'},
-        ],
-      },
-    }),
-    defineField({
       name: 'categories',
       title: 'Categories',
       type: 'array',

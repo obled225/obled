@@ -170,9 +170,9 @@ export function ProductCard({ product, isFirst = false }: ProductCardProps) {
           {product.name}
         </h3>
         <div className="mt-2 flex items-center justify-between gap-2">
-          <p className="text-sm text-gray-600">
-            {product.category?.name || ''}
-          </p>
+          {product.category?.name ? (
+            <p className="text-sm text-gray-600">{product.category.name}</p>
+          ) : null}
           <div className="flex items-center space-x-2">
             {displayOriginalPrice && displayOriginalPrice > displayPrice && (
               <span className="text-sm text-gray-500 line-through">

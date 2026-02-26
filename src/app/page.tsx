@@ -6,9 +6,9 @@ import HomeClient from './home-client';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "O'bled",
+    title: "O'bled | Découvrez nos pièces",
     description:
-      "TU GNAN ON TE BOUAI — Porter O'bled c'est pas juste un habit. Fabriqué en Côte d'Ivoire 🇨🇮 • Vêtements | Accessoires | Inspiré du Nouchi vers le monde 🌎",
+      'Boutique de vêtements et accessoires conçus à Abidjan. Nouveautés et classiques, livrés chez vous.',
     openGraph: {
       url: siteUrl,
     },

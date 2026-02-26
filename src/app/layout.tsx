@@ -27,14 +27,14 @@ export async function generateMetadata(): Promise<Metadata> {
   const isFrench = locale === 'fr';
 
   const title = isFrench
-    ? "O'bled | Vêtements & Accessoires — Inspiré du Nouchi vers le monde"
-    : "O'bled | Clothing & Accessories — Nouchi-inspired to the world";
+    ? "O'bled | Vêtements & Accessoires"
+    : "O'bled | Clothing & Accessories";
 
   const description =
-    "TU GNAN ON TE BOUAI — Porter O'bled c'est pas juste un habit. C'est notre langage, notre fierté. Fabriqué en Côte d'Ivoire 🇨🇮 • Vêtements | Accessoires | Inspiré du Nouchi vers le monde 🌎";
+    "Porter O'bled c'est pas juste un habit. C'est notre langage, notre fierté. Vêtements et accessoires inspirés du Nouchi et fabriqués entièrement en Côte d'Ivoire.";
 
   const keywords =
-    "O'bled, vêtements Côte d'Ivoire, vêtements Abidjan, marque ivoirienne, Nouchi, culture ivoirienne, vêtements made in Côte d'Ivoire, accessoires Abidjan, mode Abidjan, textile Côte d'Ivoire, TU GNAN ON TE BOUAI, tout pour la culture, héritage création";
+    "O'bled, vêtements Côte d'Ivoire, vêtements Abidjan, marque ivoirienne, Nouchi, culture ivoirienne, vêtements made in Côte d'Ivoire, accessoires Abidjan, mode Abidjan, textile Côte d'Ivoire, Inspiré du Nouchi vers le monde, Nouchi-inspired to the world, tout pour la culture, héritage création";
 
   return {
     metadataBase: new URL(siteUrl),
