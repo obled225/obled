@@ -3,6 +3,7 @@
     "nav": {
       "home": "Store",
       "about": "About us",
+      "gallery": "Gallery",
       "faq": "FAQ"
     },
     "search": {
@@ -453,6 +454,11 @@
     "shippingInfo": "Shipping in Abidjan is handled by our partner Yango Delivery. We use DHL and UPS for international shipments.",
     "shippingInfoContact": "We will reach out to you as soon as possible to confirm shipping details with you if needed.",
     "shippingInfoPromoCode": "You will be able to add a promo code directly at checkout time."
+  },
+  "gallery": {
+    "title": "Gallery",
+    "subtitle": "Our world, our style.",
+    "empty": "No images yet. Add images from Sanity Studio to show them here."
   },
   "checkout": {
     "title": "Checkout",

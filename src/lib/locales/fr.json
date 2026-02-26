@@ -3,6 +3,7 @@
     "nav": {
       "home": "Boutique",
       "about": "À propos",
+      "gallery": "Galerie",
       "faq": "FAQ"
     },
     "search": {
@@ -457,6 +458,11 @@
     "shippingInfo": "Les livraisons à Abidjan sont gérées par notre partenaire Yango Delivery. Nous utilisons DHL et UPS pour les expéditions internationales.",
     "shippingInfoContact": "Nous vous contacterons dès que possible pour confirmer les détails de livraison avec vous si nécessaire.",
     "shippingInfoPromoCode": "Vous pourrez ajouter un code promo directement au moment du paiement."
+  },
+  "gallery": {
+    "title": "Galerie",
+    "subtitle": "Notre univers, notre style.",
+    "empty": "Aucune image pour l'instant. Ajoutez des images depuis le Studio Sanity pour les afficher ici."
   },
   "checkout": {
     "title": "Commande",

@@ -93,6 +93,7 @@ export function Header({
       badgeColor: c.badgeColor,
     })) || []),
     ...(showAboutInNav ? [{ href: '/about', label: t('nav.about') }] : []),
+    { href: '/gallery', label: t('nav.gallery') },
     { href: '/faq', label: t('nav.faq') },
   ];
 

@@ -579,6 +579,18 @@ const ABOUT_PAGE_QUERY = `*[_type == "about" && !(_id in path("drafts.**"))][0] 
   }
 }`;
 
+// GROQ query to get gallery page content
+const GALLERY_PAGE_QUERY = `*[_type == "gallery" && !(_id in path("drafts.**"))][0] {
+  _id,
+  title,
+  subtitle,
+  "images": images[] {
+    "asset": image.asset->,
+    aspectRatio,
+    caption
+  }
+}`;
+
 // GROQ query to get announcement bar content
 const ANNOUNCEMENT_BAR_QUERY = `*[_type == "announcements" && !(_id in path("drafts.**"))][0] {
   _id,
@@ -628,6 +640,18 @@ export interface AboutPageData {
   sections?: AboutSection[];
 }
 
+export interface GalleryImageItem {
+  asset?: Record<string, unknown>;
+  aspectRatio?: string;
+  caption?: string;
+}
+
+export interface GalleryPageData {
+  title?: string;
+  subtitle?: string;
+  images?: GalleryImageItem[];
+}
+
 export interface Announcement {
   text: PortableTextBlock[] | string;
   link?: string;
@@ -653,6 +677,20 @@ export async function getAboutPage(): Promise<AboutPageData | null> {
     return doc;
   } catch (error) {
     console.error('Error fetching about page from Sanity:', error);
+    return null;
+  }
+}
+
+/**
+ * Get gallery page content from Sanity
+ */
+export async function getGalleryPage(): Promise<GalleryPageData | null> {
+  try {
+    const doc = await sanityClient.fetch(GALLERY_PAGE_QUERY);
+    if (!doc) return null;
+    return doc;
+  } catch (error) {
+    console.error('Error fetching gallery page from Sanity:', error);
     return null;
   }
 }
