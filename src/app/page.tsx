@@ -20,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: homeDescription,
       images: [
         {
-          url: `${siteUrl}/banner.png`,
+          url: '/banner.png',
           width: 1200,
           height: 630,
           alt: homeTitle,
@@ -31,7 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: 'summary_large_image',
       title: homeTitle,
       description: homeDescription,
-      images: [`${siteUrl}/banner.png`],
+      images: ['/banner.png'],
       creator: '@obled225',
     },
     alternates: {
