@@ -462,7 +462,8 @@
   "gallery": {
     "title": "Galerie",
     "subtitle": "Notre univers, notre style.",
-    "empty": "Aucune image pour l'instant. Ajoutez des images depuis le Studio Sanity pour les afficher ici."
+    "empty": "Aucune image pour l'instant. Ajoutez des images depuis le Studio Sanity pour les afficher ici.",
+    "imageError": "Image indisponible"
   },
   "checkout": {
     "title": "Commande",

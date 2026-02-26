@@ -104,8 +104,11 @@ export function Header({
     >
       <div className="mx-auto max-w-[1245px]">
         <div className="flex items-center justify-between py-4">
-          {/* Logo */}
-          <Link href="/" className="shrink-0">
+          {/* Left spacer for balance */}
+          <div className="flex-1 min-w-0" />
+
+          {/* Logo - centered */}
+          <Link href="/" className="shrink-0 flex justify-center">
             <Image
               src="/icon.webp"
               alt="O'bled"
@@ -117,7 +120,7 @@ export function Header({
           </Link>
 
           {/* Right side actions */}
-          <div className="flex items-center gap-2 sm:gap-2">
+          <div className="flex-1 flex items-center justify-end gap-2 sm:gap-2 min-w-0">
             {/* Currency Selector - hidden on very small screens, shown in mobile menu */}
             {!isCheckoutPage && (
               <div className="hidden sm:block">

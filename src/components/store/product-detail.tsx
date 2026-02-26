@@ -6,7 +6,6 @@ import {
   Plus,
   Share2,
   ZoomIn,
-  Ruler,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
@@ -16,7 +15,6 @@ import { useCartStore } from '@/lib/store/cart-store';
 import { useCurrencyStore } from '@/lib/store/currency-store';
 import { useToast } from '@/lib/hooks/use-toast';
 import { cn } from '@/lib/actions/utils';
-import { SizeGuideModalWrapper } from './size-guide-modal';
 import { ShareModalWrapper } from './share-modal';
 import { PortableText } from '@/components/ui/portable-text';
 import { useTranslations } from 'next-intl';
@@ -70,7 +68,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
   }, [selectedColor, product.colors, product.images, product.image]);
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
-  const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isFullscreenGalleryOpen, setIsFullscreenGalleryOpen] = useState(false);
 
@@ -541,20 +538,8 @@ export function ProductDetail({ product }: ProductDetailProps) {
             </div>
           )}
 
-          {/* Size Guide & Share Buttons */}
+          {/* Share Button */}
           <div className="flex items-center justify-center sm:justify-end gap-3 sm:gap-4 pt-6 sm:pt-8 border-t border-gray-200">
-            <Button
-              variant="ghost"
-              className="h-10 px-2 sm:px-3 gap-2 text-xs sm:text-sm touch-target"
-              onClick={() => setIsSizeGuideOpen(true)}
-              aria-label={t('productDetail.sizeGuide')}
-            >
-              <Ruler className="h-4 w-4 sm:h-5 sm:w-5" />
-              <span className="hidden sm:inline">
-                {t('productDetail.sizeGuide')}
-              </span>
-            </Button>
-            <div className="h-6 w-px bg-gray-300" />
             <Button
               variant="ghost"
               className="h-10 px-2 sm:px-3 gap-2 text-xs sm:text-sm touch-target"
@@ -569,12 +554,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
           </div>
         </div>
       </div>
-
-      {/* Size Guide Modal */}
-      <SizeGuideModalWrapper
-        isOpen={isSizeGuideOpen}
-        onClose={() => setIsSizeGuideOpen(false)}
-      />
 
       {/* Share Modal */}
       <ShareModalWrapper

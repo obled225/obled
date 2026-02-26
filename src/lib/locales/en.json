@@ -436,7 +436,7 @@
   },
   "announcements": {
     "fallback": {
-      "manufacturer": "O'BLED • Inspired from Nouchi to the world 🌎"
+      "manufacturer": "Made in Côte d'Ivoire 🇨🇮 • Inspired from Nouchi to the world 🌎"
     }
   },
   "shipping": {
@@ -458,7 +458,8 @@
   "gallery": {
     "title": "Gallery",
     "subtitle": "Our world, our style.",
-    "empty": "No images yet."
+    "empty": "No images yet.",
+    "imageError": "Image unavailable"
   },
   "checkout": {
     "title": "Checkout",
