@@ -9,6 +9,7 @@ import { TranslationProvider } from '@/lib/translations/provider';
 import { MetaPixel } from '@/components/analytics/meta-pixel';
 import { Analytics } from '@vercel/analytics/next';
 import { siteUrl } from '@/lib/utils/config';
+import { getMetadataBaseUrl } from '@/lib/utils/metadata-base-url';
 import { getHeaderCategories, getShowAboutInNav } from '@/lib/sanity/queries';
 
 const poppins = Poppins({
@@ -23,7 +24,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getLocale();
+  const [locale, baseUrl] = await Promise.all([getLocale(), getMetadataBaseUrl()]);
   const isFrench = locale === 'fr';
 
   const title = isFrench
@@ -37,7 +38,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "O'bled, vêtements Côte d'Ivoire, vêtements Abidjan, marque ivoirienne, Nouchi, culture ivoirienne, vêtements made in Côte d'Ivoire, accessoires Abidjan, mode Abidjan, textile Côte d'Ivoire, Inspiré du Nouchi vers le monde, Nouchi-inspired to the world, tout pour la culture, héritage création";
 
   return {
-    metadataBase: new URL(siteUrl),
+    metadataBase: new URL(baseUrl),
     title: {
       default: title,
       template: "%s | O'bled",
@@ -75,13 +76,13 @@ export async function generateMetadata(): Promise<Metadata> {
       type: 'website',
       locale: locale === 'fr' ? 'fr_FR' : 'en_US',
       alternateLocale: locale === 'fr' ? 'en_US' : 'fr_FR',
-      url: siteUrl,
+      url: baseUrl,
       siteName: "O'bled",
       title,
       description,
       images: [
         {
-          url: `${siteUrl}/banner.png`,
+          url: '/banner.png',
           width: 1200,
           height: 630,
           alt: title,
@@ -92,14 +93,14 @@ export async function generateMetadata(): Promise<Metadata> {
       card: 'summary_large_image',
       title,
       description,
-      images: [`${siteUrl}/banner.png`],
+      images: ['/banner.png'],
       creator: '@obled225',
     },
     alternates: {
       languages: {
-        'fr-FR': `${siteUrl}/fr`,
-        'en-US': `${siteUrl}/en`,
-        'x-default': siteUrl,
+        'fr-FR': `${baseUrl}/fr`,
+        'en-US': `${baseUrl}/en`,
+        'x-default': baseUrl,
       },
     },
     robots: {
