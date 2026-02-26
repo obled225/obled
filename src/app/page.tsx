@@ -4,13 +4,35 @@ import { siteUrl } from '@/lib/utils/config';
 import { getShopProducts, getAllCategories } from '@/lib/sanity/queries';
 import HomeClient from './home-client';
 
+const homeTitle = "O'bled";
+const homeDescription =
+  'Boutique de vêtements et accessoires conçus à Abidjan. Nouveautés et classiques inspirés du Nouchi pour le monde.';
+
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "O'bled | Découvrez nos pièces",
-    description:
-      'Boutique de vêtements et accessoires conçus à Abidjan. Nouveautés et classiques, livrés chez vous.',
+    title: homeTitle,
+    description: homeDescription,
     openGraph: {
+      type: 'website',
       url: siteUrl,
+      siteName: "O'bled",
+      title: homeTitle,
+      description: homeDescription,
+      images: [
+        {
+          url: `${siteUrl}/banner.png`,
+          width: 1200,
+          height: 630,
+          alt: homeTitle,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: homeTitle,
+      description: homeDescription,
+      images: [`${siteUrl}/banner.png`],
+      creator: '@obled225',
     },
     alternates: {
       canonical: siteUrl,
