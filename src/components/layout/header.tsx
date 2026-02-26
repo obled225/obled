@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Search, ShoppingCart, Menu, X } from 'lucide-react';
+import { ShoppingCart, Menu } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
 import Modal from '@/components/ui/Modal';
@@ -20,6 +20,7 @@ import { ProductCategory } from '@/lib/types';
 
 interface HeaderProps {
   categories?: ProductCategory[];
+  showAboutInNav?: boolean;
   onVisibilityChange?: (isVisible: boolean) => void;
 }
 
@@ -37,10 +38,13 @@ function hasBadge(
   return !!(link.badgeText && link.badgeColor);
 }
 
-export function Header({ categories = [], onVisibilityChange }: HeaderProps) {
+export function Header({
+  categories = [],
+  showAboutInNav = true,
+  onVisibilityChange,
+}: HeaderProps) {
   const t = useTranslations('header');
   const pathname = usePathname();
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const cartItemCount = useCartStore((state) => state.cart.itemCount);
@@ -82,15 +86,13 @@ export function Header({ categories = [], onVisibilityChange }: HeaderProps) {
 
   const navLinks: NavLink[] = [
     { href: '/', label: t('nav.home') },
-    { href: '/business', label: t('nav.business') },
-    // Dynamic Categories inserted here
     ...(categories?.map((c) => ({
       href: `/c/${c.id}`,
       label: c.name,
       badgeText: c.badgeText,
       badgeColor: c.badgeColor,
     })) || []),
-    { href: '/about', label: t('nav.about') },
+    ...(showAboutInNav ? [{ href: '/about', label: t('nav.about') }] : []),
     { href: '/faq', label: t('nav.faq') },
   ];
 
@@ -108,7 +110,7 @@ export function Header({ categories = [], onVisibilityChange }: HeaderProps) {
               alt="O'bled"
               width={550}
               height={150}
-              className="h-28 sm:h-24 md:h-28 lg:h-32 w-auto"
+              className="h-28 sm:h-24 md:h-28 lg:h-32 w-auto invert"
               priority
             />
           </Link>
@@ -120,19 +122,6 @@ export function Header({ categories = [], onVisibilityChange }: HeaderProps) {
               <div className="hidden sm:block">
                 <CurrencySelector />
               </div>
-            )}
-
-            {/* Search - hidden on mobile and checkout page */}
-            {!isMobile && !isCheckoutPage && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9 sm:h-10 sm:w-10"
-                onClick={() => setIsSearchOpen(!isSearchOpen)}
-                aria-label={t('search.ariaLabel')}
-              >
-                <Search className="h-4 w-4 sm:h-5 sm:w-5" />
-              </Button>
             )}
 
             {/* Cart - hidden on checkout page */}
@@ -215,29 +204,6 @@ export function Header({ categories = [], onVisibilityChange }: HeaderProps) {
             ))}
           </ul>
         </nav>
-
-        {/* Search bar - only on desktop and not on checkout */}
-        {isSearchOpen && !isMobile && !isCheckoutPage && (
-          <div className="border-t border-border py-3 sm:py-4 px-4 sm:px-6 lg:px-8">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder={t('search.placeholder')}
-                className="w-full rounded-md border border-input bg-background px-3 sm:px-4 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                autoFocus
-              />
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute right-0 top-0 h-full w-10"
-                onClick={() => setIsSearchOpen(false)}
-                aria-label={t('search.closeAriaLabel')}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Mobile Menu Modal - Bottom Sheet */}

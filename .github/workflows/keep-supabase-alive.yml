@@ -1,0 +1,27 @@
+# Ping Supabase periodically so the project doesn't pause due to inactivity
+# (Free tier projects pause after ~7 days without traffic)
+name: Keep Supabase alive
+
+on:
+  schedule:
+    # Run every 4 hours
+    - cron: "0 */4 * * *"
+  workflow_dispatch: # Allow manual run from Actions tab
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase
+        run: |
+          resp=$(curl -s -o /dev/null -w "%{http_code}" \
+            -L -X GET "${{ secrets.SUPABASE_URL }}/rest/v1/" \
+            -H "apikey: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}" \
+            -H "Content-Type: application/json")
+          if [ "$resp" = "200" ] || [ "$resp" = "404" ]; then
+            echo "Supabase responded with $resp - project is awake."
+          else
+            echo "Unexpected response: $resp"
+            exit 1
+          fi

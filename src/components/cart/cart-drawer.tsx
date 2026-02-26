@@ -97,55 +97,25 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     <div className="grid gap-1">
                       <h3 className="font-medium line-clamp-2 text-base sm:text-sm">
                         {item.product.name}
-                        {item.selectedVariant?.packSize && (
-                          <span className="text-muted-foreground font-normal">
-                            {' · '}
-                            {item.selectedVariant.name}
-                          </span>
-                        )}
                       </h3>
-                      {item.selectedVariant &&
-                        !item.selectedVariant.packSize && (
-                          <p className="text-sm sm:text-xs text-muted-foreground">
-                            {`${item.selectedVariant.name}${item.selectedVariant.value ? `: ${item.selectedVariant.value}` : ''}`}
-                          </p>
-                        )}
+                      {item.selectedVariant && (
+                        <p className="text-sm sm:text-xs text-muted-foreground">
+                          {`${item.selectedVariant.name}${item.selectedVariant.value ? `: ${item.selectedVariant.value}` : ''}`}
+                        </p>
+                      )}
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
                       <div className="flex flex-col gap-1">
-                        {/* Get pack original price if it's a pack variant */}
                         {(() => {
-                          // All prices are in XOF, convert to selected currency
                           const basePriceXOF = item.product.price || 0;
                           const variantPriceXOF =
                             item.selectedVariant?.priceModifier || 0;
-                          const packPriceXOF = basePriceXOF + variantPriceXOF;
-                          const packPrice = convertPrice(
-                            packPriceXOF,
+                          const unitPriceXOF = basePriceXOF + variantPriceXOF;
+                          const unitPrice = convertPrice(
+                            unitPriceXOF,
                             currency
                           );
-
-                          // Find original price for pack if it exists
-                          let originalPriceXOF: number | undefined;
-                          if (
-                            item.selectedVariant?.packSize &&
-                            item.product.businessPacks
-                          ) {
-                            const pack = item.product.businessPacks.find(
-                              (p) =>
-                                p.quantity === item.selectedVariant?.packSize
-                            ) as
-                              | {
-                                  quantity: number;
-                                  label?: string;
-                                  price?: number;
-                                  originalPrice?: number;
-                                }
-                              | undefined;
-                            originalPriceXOF = pack?.originalPrice;
-                          } else {
-                            originalPriceXOF = item.product.originalPrice;
-                          }
+                          const originalPriceXOF = item.product.originalPrice;
                           const originalPrice = originalPriceXOF
                             ? convertPrice(originalPriceXOF, currency)
                             : undefined;
@@ -153,18 +123,13 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                           return (
                             <div className="flex flex-col gap-0.5">
                               <div className="flex items-center gap-2 flex-wrap">
-                                {originalPrice && originalPrice > packPrice && (
+                                {originalPrice && originalPrice > unitPrice && (
                                   <span className="text-sm sm:text-xs text-muted-foreground line-through">
                                     {formatPrice(originalPrice, currency)}
                                   </span>
                                 )}
                                 <span className="text-base sm:text-sm font-semibold">
-                                  {formatPrice(packPrice, currency)}
-                                  {item.selectedVariant?.packSize && (
-                                    <span className="text-xs text-muted-foreground ml-1 font-normal">
-                                      {t('pack')}
-                                    </span>
-                                  )}
+                                  {formatPrice(unitPrice, currency)}
                                 </span>
                               </div>
                             </div>

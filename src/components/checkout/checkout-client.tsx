@@ -91,11 +91,8 @@ export function CheckoutClient() {
           productTitle: item.product.name,
           productSlug: item.product.slug,
           variantId: item.selectedVariant?.id,
-          // For packs: send pack label only (e.g. "Pack of 5"). For size/color: "Size - M"
           variantTitle: item.selectedVariant
-            ? item.selectedVariant.packSize
-              ? item.selectedVariant.name
-              : `${item.selectedVariant.name} - ${item.selectedVariant.value}`
+            ? `${item.selectedVariant.name} - ${item.selectedVariant.value}`
             : undefined,
           quantity: item.quantity,
           price: convertedPrice, // Price in selected currency

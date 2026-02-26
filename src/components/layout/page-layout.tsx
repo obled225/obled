@@ -15,9 +15,14 @@ import { getFloatingAnnouncement } from '@/lib/sanity/queries';
 interface PageLayoutProps {
   children: ReactNode;
   categories?: ProductCategory[];
+  showAboutInNav?: boolean;
 }
 
-export function PageLayout({ children, categories }: PageLayoutProps) {
+export function PageLayout({
+  children,
+  categories,
+  showAboutInNav = true,
+}: PageLayoutProps) {
   const pathname = usePathname();
   const isCheckoutPage = pathname === '/checkout';
   const isAdminPage = pathname?.startsWith('/admin');
@@ -55,6 +60,7 @@ export function PageLayout({ children, categories }: PageLayoutProps) {
         {!isAdminPage && (
           <Header
             categories={categories}
+            showAboutInNav={showAboutInNav}
             onVisibilityChange={setIsHeaderVisible}
           />
         )}

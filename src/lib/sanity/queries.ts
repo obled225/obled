@@ -31,42 +31,8 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
       .filter((url): url is string => url !== null && url !== '') || [];
 
   // Get price (always in XOF)
-  // Map from new schema field names: currentPrice -> price, basePrice -> originalPrice
-  // For business products, use the minimum pack price instead of currentPrice (which is hidden)
-  let price = doc.currentPrice || 0;
-  let originalPrice = doc.basePrice;
-
-  // For business products with packs, calculate price from the minimum pack price
-  // Note: At this point, doc.businessPacks has the raw Sanity structure with currentPrice/basePrice
-  if (
-    doc.isBusinessProduct &&
-    doc.businessPacks &&
-    doc.businessPacks.length > 0
-  ) {
-    // Type assertion: GROQ query returns currentPrice/basePrice, not price/originalPrice
-    const rawPacks = doc.businessPacks as Array<{
-      quantity: number;
-      label?: string;
-      currentPrice?: number;
-      basePrice?: number;
-    }>;
-
-    const packPrices = rawPacks
-      .map((pack) => pack.currentPrice)
-      .filter((p): p is number => p !== undefined && p !== null && p > 0);
-
-    if (packPrices.length > 0) {
-      price = Math.min(...packPrices);
-      // For original price, use the minimum basePrice from packs
-      const packOriginalPrices = rawPacks
-        .map((pack) => pack.basePrice)
-        .filter((p): p is number => p !== undefined && p !== null && p > 0);
-
-      if (packOriginalPrices.length > 0) {
-        originalPrice = Math.min(...packOriginalPrices);
-      }
-    }
-  }
+  const price = doc.currentPrice || 0;
+  const originalPrice = doc.basePrice;
 
   // Transform colors array
   const colors = (doc.colors || []).map((color) => {
@@ -191,7 +157,6 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
             soldOut: !relatedDoc.inStock,
             inStock: relatedDoc.inStock || false,
             category: relatedCategory,
-            isBusinessProduct: false,
             featured: false,
             bestSeller: false,
             createdAt: relatedDoc._createdAt
@@ -202,18 +167,6 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
               : new Date(),
           } as Product;
         })
-    : undefined;
-
-  // Handle businessPackProduct reference (link to business pack version)
-  const businessPackProduct = doc.businessPackProduct
-    ? {
-        id: doc.businessPackProduct._id || '',
-        name: doc.businessPackProduct.name || '',
-        slug:
-          typeof doc.businessPackProduct.slug === 'string'
-            ? doc.businessPackProduct.slug
-            : doc.businessPackProduct.slug?.current || '',
-      }
     : undefined;
 
   const category: ProductCategory = doc.categories?.[0]
@@ -247,25 +200,10 @@ function transformSanityProduct(doc: SanityProductExpanded): Product {
     category,
     variant,
     relatedProducts,
-    businessPackProduct,
-    isBusinessProduct: doc.isBusinessProduct || false,
     featured: doc.featured || false,
     bestSeller: doc.bestSeller || false,
     grammage: doc.grammage,
     material: doc.material,
-    businessPacks: doc.businessPacks?.map(
-      (pack: {
-        quantity: number;
-        label?: string;
-        currentPrice?: number;
-        basePrice?: number;
-      }) => ({
-        quantity: pack.quantity,
-        label: pack.label,
-        price: pack.currentPrice,
-        originalPrice: pack.basePrice,
-      })
-    ),
     createdAt: doc._createdAt ? new Date(doc._createdAt) : new Date(),
     updatedAt: doc._updatedAt ? new Date(doc._updatedAt) : new Date(),
   };
@@ -278,14 +216,6 @@ const ALL_PRODUCTS_QUERY = `*[_type == "products" && !(_id in path("drafts.**"))
   _updatedAt,
   name,
   "slug": slug.current,
-  isBusinessProduct,
-
-  businessPacks[] {
-    quantity,
-    label,
-    currentPrice,
-    basePrice
-  },
   featured,
   bestSeller,
   currentPrice,
@@ -313,14 +243,14 @@ const ALL_PRODUCTS_QUERY = `*[_type == "products" && !(_id in path("drafts.**"))
     name,
     "slug": slug.current
   },
-    "relatedProducts": relatedProducts[]->{
-      _id,
-      _createdAt,
-      _updatedAt,
-      name,
-      "slug": slug.current,
-      currentPrice,
-      basePrice,
+  "relatedProducts": relatedProducts[]->{
+    _id,
+    _createdAt,
+    _updatedAt,
+    name,
+    "slug": slug.current,
+    currentPrice,
+    basePrice,
     inStock,
     "images": images[].asset->,
     "categories": categories[]->{
@@ -329,11 +259,6 @@ const ALL_PRODUCTS_QUERY = `*[_type == "products" && !(_id in path("drafts.**"))
       title,
       description
     }
-  },
-  "businessPackProduct": businessPackProduct->{
-    _id,
-    name,
-    "slug": slug.current
   }
 }`;
 
@@ -344,13 +269,6 @@ const PRODUCT_BY_SLUG_QUERY = `*[_type == "products" && slug.current == $slug &&
   _updatedAt,
   name,
   "slug": slug.current,
-  isBusinessProduct,
-  businessPacks[] {
-    quantity,
-    label,
-    currentPrice,
-    basePrice
-  },
   featured,
   bestSeller,
   currentPrice,
@@ -378,14 +296,14 @@ const PRODUCT_BY_SLUG_QUERY = `*[_type == "products" && slug.current == $slug &&
     name,
     "slug": slug.current
   },
-    "relatedProducts": relatedProducts[]->{
-      _id,
-      _createdAt,
-      _updatedAt,
-      name,
-      "slug": slug.current,
-      currentPrice,
-      basePrice,
+  "relatedProducts": relatedProducts[]->{
+    _id,
+    _createdAt,
+    _updatedAt,
+    name,
+    "slug": slug.current,
+    currentPrice,
+    basePrice,
     inStock,
     "images": images[].asset->,
     "categories": categories[]->{
@@ -394,11 +312,6 @@ const PRODUCT_BY_SLUG_QUERY = `*[_type == "products" && slug.current == $slug &&
       title,
       description
     }
-  },
-  "businessPackProduct": businessPackProduct->{
-    _id,
-    name,
-    "slug": slug.current
   }
 }`;
 
@@ -409,7 +322,6 @@ const PRODUCTS_BY_CATEGORY_QUERY = `*[_type == "products" && $categoryId in cate
   _updatedAt,
   name,
   "slug": slug.current,
-  isBusinessProduct,
   featured,
   bestSeller,
   currentPrice,
@@ -437,14 +349,14 @@ const PRODUCTS_BY_CATEGORY_QUERY = `*[_type == "products" && $categoryId in cate
     name,
     "slug": slug.current
   },
-    "relatedProducts": relatedProducts[]->{
-      _id,
-      _createdAt,
-      _updatedAt,
-      name,
-      "slug": slug.current,
-      currentPrice,
-      basePrice,
+  "relatedProducts": relatedProducts[]->{
+    _id,
+    _createdAt,
+    _updatedAt,
+    name,
+    "slug": slug.current,
+    currentPrice,
+    basePrice,
     inStock,
     "images": images[].asset->,
     "categories": categories[]->{
@@ -453,11 +365,6 @@ const PRODUCTS_BY_CATEGORY_QUERY = `*[_type == "products" && $categoryId in cate
       title,
       description
     }
-  },
-  "businessPackProduct": businessPackProduct->{
-    _id,
-    name,
-    "slug": slug.current
   }
 }`;
 
@@ -468,7 +375,6 @@ const FEATURED_PRODUCTS_QUERY = `*[_type == "products" && featured == true && !(
   _updatedAt,
   name,
   "slug": slug.current,
-  isBusinessProduct,
   featured,
   bestSeller,
   currentPrice,
@@ -496,14 +402,14 @@ const FEATURED_PRODUCTS_QUERY = `*[_type == "products" && featured == true && !(
     name,
     "slug": slug.current
   },
-    "relatedProducts": relatedProducts[]->{
-      _id,
-      _createdAt,
-      _updatedAt,
-      name,
-      "slug": slug.current,
-      currentPrice,
-      basePrice,
+  "relatedProducts": relatedProducts[]->{
+    _id,
+    _createdAt,
+    _updatedAt,
+    name,
+    "slug": slug.current,
+    currentPrice,
+    basePrice,
     inStock,
     "images": images[].asset->,
     "categories": categories[]->{
@@ -512,11 +418,6 @@ const FEATURED_PRODUCTS_QUERY = `*[_type == "products" && featured == true && !(
       title,
       description
     }
-  },
-  "businessPackProduct": businessPackProduct->{
-    _id,
-    name,
-    "slug": slug.current
   }
 }`;
 
@@ -534,139 +435,14 @@ export async function getAllProducts(): Promise<Product[]> {
 }
 
 /**
- * Get products for shop page (excluding business products)
+ * Get products for shop page
  */
 export async function getShopProducts(): Promise<Product[]> {
   try {
-    const query = `*[_type == "products" && isBusinessProduct != true && !(_id in path("drafts.**"))] | order(_createdAt desc) {
-      _id,
-      _createdAt,
-      _updatedAt,
-      name,
-      "slug": slug.current,
-      isBusinessProduct,
-      featured,
-      bestSeller,
-      currentPrice,
-      basePrice,
-      description,
-      inStock,
-      grammage,
-      material,
-      "images": images[].asset->,
-      "categories": categories[]->{
-        _id,
-        "slug": slug.current,
-        title,
-        description,
-        "image": image.asset->
-      },
-      colors[] {
-        name,
-        value,
-        available,
-        "image": image.asset->
-      },
-      sizes,
-    "relatedProducts": relatedProducts[]->{
-      _id,
-      _createdAt,
-      _updatedAt,
-      name,
-      "slug": slug.current,
-      currentPrice,
-      basePrice,
-        inStock,
-        "images": images[].asset->,
-        "categories": categories[]->{
-          _id,
-          "slug": slug.current,
-          title,
-          description
-        }
-      },
-      "businessPackProduct": businessPackProduct->{
-        _id,
-        name,
-        "slug": slug.current
-      }
-    }`;
-    const docs = await sanityClient.fetch(query);
+    const docs = await sanityClient.fetch(ALL_PRODUCTS_QUERY);
     return docs.map(transformSanityProduct);
   } catch (error) {
     console.error('Error fetching shop products from Sanity:', error);
-    return [];
-  }
-}
-
-/**
- * Get products for business page (only business products)
- */
-export async function getBusinessProducts(): Promise<Product[]> {
-  try {
-    const query = `*[_type == "products" && isBusinessProduct == true && !(_id in path("drafts.**"))] | order(_createdAt desc) {
-      _id,
-      _createdAt,
-      _updatedAt,
-      name,
-      "slug": slug.current,
-      isBusinessProduct,
-      featured,
-      bestSeller,
-      businessPacks[] {
-        quantity,
-        label,
-        currentPrice,
-        basePrice
-      },
-      currentPrice,
-      basePrice,
-      description,
-      inStock,
-      grammage,
-      material,
-      "images": images[].asset->,
-      "categories": categories[]->{
-        _id,
-        "slug": slug.current,
-        title,
-        description,
-        "image": image.asset->
-      },
-      colors[] {
-        name,
-        value,
-        available,
-        "image": image.asset->
-      },
-      sizes,
-    "relatedProducts": relatedProducts[]->{
-      _id,
-      _createdAt,
-      _updatedAt,
-      name,
-      "slug": slug.current,
-      currentPrice,
-      basePrice,
-        inStock,
-        "images": images[].asset->,
-        "categories": categories[]->{
-          _id,
-          "slug": slug.current,
-          title,
-          description
-        }
-      },
-      "businessPackProduct": businessPackProduct->{
-        _id,
-        name,
-        "slug": slug.current
-      }
-    }`;
-    const docs = await sanityClient.fetch(query);
-    return docs.map(transformSanityProduct);
-  } catch (error) {
-    console.error('Error fetching business products from Sanity:', error);
     return [];
   }
 }
@@ -734,13 +510,8 @@ export async function getProductById(id: string): Promise<Product | null> {
       _updatedAt,
       name,
       "slug": slug.current,
-      isBusinessProduct,
-      businessPacks[] {
-        quantity,
-        label,
-        currentPrice,
-        basePrice
-      },
+      featured,
+      bestSeller,
       currentPrice,
       basePrice,
       description,
@@ -762,14 +533,14 @@ export async function getProductById(id: string): Promise<Product | null> {
         "image": image.asset->
       },
       sizes,
-    "relatedProducts": relatedProducts[]->{
-      _id,
-      _createdAt,
-      _updatedAt,
-      name,
-      "slug": slug.current,
-      currentPrice,
-      basePrice,
+      "relatedProducts": relatedProducts[]->{
+        _id,
+        _createdAt,
+        _updatedAt,
+        name,
+        "slug": slug.current,
+        currentPrice,
+        basePrice,
         inStock,
         "images": images[].asset->,
         "categories": categories[]->{
@@ -778,11 +549,6 @@ export async function getProductById(id: string): Promise<Product | null> {
           title,
           description
         }
-      },
-      "businessPackProduct": businessPackProduct->{
-        _id,
-        name,
-        "slug": slug.current
       }
     }`;
     const doc = await sanityClient.fetch(query, { id });
@@ -798,22 +564,18 @@ export async function getProductById(id: string): Promise<Product | null> {
 const ABOUT_PAGE_QUERY = `*[_type == "about" && !(_id in path("drafts.**"))][0] {
   _id,
   "heroVideoUrl": heroVideo.asset->url,
-  sectionImages[] {
-    image {
-      _id,
-      asset->{
-        _id,
-        url,
-        metadata {
-          dimensions {
-            width,
-            height
-          }
-        }
-      }
-    },
-    caption,
-    position
+  heroTitle,
+  heroSubtitle,
+  heroDescription,
+  "sections": sections | order(order asc) {
+    title,
+    subtitle,
+    body,
+    order,
+    "images": images[] {
+      "asset": image.asset->,
+      caption
+    }
   }
 }`;
 
@@ -839,27 +601,31 @@ const FLOATING_ANNOUNCEMENT_QUERY = `*[_type == "announcements" && !(_id in path
   }
 }`;
 
-export interface AboutSectionImage {
-  image: {
+export interface AboutSectionImageItem {
+  asset?: {
     _id?: string;
-    asset?: {
-      _id?: string;
-      url?: string;
-      metadata?: {
-        dimensions?: {
-          width?: number;
-          height?: number;
-        };
-      };
+    url?: string;
+    metadata?: {
+      dimensions?: { width?: number; height?: number };
     };
   };
   caption?: string;
-  position: string;
+}
+
+export interface AboutSection {
+  title: string;
+  subtitle?: string;
+  body?: PortableTextBlock[];
+  order?: number;
+  images?: AboutSectionImageItem[];
 }
 
 export interface AboutPageData {
   heroVideoUrl?: string;
-  sectionImages?: AboutSectionImage[];
+  heroTitle?: string;
+  heroSubtitle?: string;
+  heroDescription?: string;
+  sections?: AboutSection[];
 }
 
 export interface Announcement {
@@ -958,6 +724,22 @@ export async function getAllCategories(): Promise<ProductCategory[]> {
 }
 
 /**
+ * Get "show About in nav" from Settings (shippingAndTaxes document).
+ * Defaults to true if no document or field not set.
+ */
+export async function getShowAboutInNav(): Promise<boolean> {
+  try {
+    const doc = await sanityClient.fetch<{ showAboutInNav?: boolean }>(
+      `*[_type == "shippingAndTaxes" && !(_id in path("drafts.**"))][0] { showAboutInNav }`
+    );
+    return doc?.showAboutInNav !== false;
+  } catch (error) {
+    console.error('Error fetching showAboutInNav from Sanity:', error);
+    return true;
+  }
+}
+
+/**
  * Get categories for the header (max 3, showInHeader=true, only categories with products)
  */
 export async function getHeaderCategories(): Promise<ProductCategory[]> {
@@ -985,7 +767,7 @@ export async function getHeaderCategories(): Promise<ProductCategory[]> {
           badgeColor?: string;
         }) => {
           // Check if this category has any products (excluding business products)
-          const productCountQuery = `count(*[_type == "products" && $categoryId in categories[]._ref && isBusinessProduct != true && !(_id in path("drafts.**"))])`;
+          const productCountQuery = `count(*[_type == "products" && $categoryId in categories[]._ref && !(_id in path("drafts.**"))])`;
           const count = await sanityClient.fetch(productCountQuery, {
             categoryId: cat._id,
           });
@@ -1059,14 +841,13 @@ export async function getProductsByCategorySlug(
 
     if (!categoryId) return [];
 
-    // Get products by category _id, excluding business products (consistent with shop page)
-    const query = `*[_type == "products" && $categoryId in categories[]._ref && isBusinessProduct != true && !(_id in path("drafts.**"))] | order(_createdAt desc) {
+    // Get products by category _id
+    const query = `*[_type == "products" && $categoryId in categories[]._ref && !(_id in path("drafts.**"))] | order(_createdAt desc) {
       _id,
       _createdAt,
       _updatedAt,
       name,
       "slug": slug.current,
-      isBusinessProduct,
       featured,
       bestSeller,
       currentPrice,
@@ -1095,14 +876,14 @@ export async function getProductsByCategorySlug(
         name,
         "slug": slug.current
       },
-    "relatedProducts": relatedProducts[]->{
-      _id,
-      _createdAt,
-      _updatedAt,
-      name,
-      "slug": slug.current,
-      currentPrice,
-      basePrice,
+      "relatedProducts": relatedProducts[]->{
+        _id,
+        _createdAt,
+        _updatedAt,
+        name,
+        "slug": slug.current,
+        currentPrice,
+        basePrice,
         inStock,
         "images": images[].asset->,
         "categories": categories[]->{
@@ -1111,11 +892,6 @@ export async function getProductsByCategorySlug(
           title,
           description
         }
-      },
-      "businessPackProduct": businessPackProduct->{
-        _id,
-        name,
-        "slug": slug.current
       }
     }`;
     const docs = await sanityClient.fetch(query, { categoryId });

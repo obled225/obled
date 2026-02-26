@@ -9,7 +9,7 @@ import { TranslationProvider } from '@/lib/translations/provider';
 import { MetaPixel } from '@/components/analytics/meta-pixel';
 import { Analytics } from '@vercel/analytics/next';
 import { siteUrl } from '@/lib/utils/config';
-import { getHeaderCategories } from '@/lib/sanity/queries';
+import { getHeaderCategories, getShowAboutInNav } from '@/lib/sanity/queries';
 
 const poppins = Poppins({
   variable: '--font-poppins',
@@ -27,16 +27,14 @@ export async function generateMetadata(): Promise<Metadata> {
   const isFrench = locale === 'fr';
 
   const title = isFrench
-    ? "O'bled | Fournisseur de t-shirts vierges made in Côte d'Ivoire"
-    : "O'bled | Blank t-shirts manufacturer made in Côte d'Ivoire";
+    ? "O'bled | Vêtements & Accessoires — Inspiré du Nouchi vers le monde"
+    : "O'bled | Clothing & Accessories — Nouchi-inspired to the world";
 
-  const description = isFrench
-    ? 'Fabricant textile local à Abidjan spécialisé dans la production de t-shirts vierges de haute qualité pour professionnels.'
-    : 'Local textile manufacturer in Abidjan specialized in high-quality blank t-shirt production for professionals.';
+  const description =
+    "TU GNAN ON TE BOUAI — Porter O'bled c'est pas juste un habit. C'est notre langage, notre fierté. Fabriqué en Côte d'Ivoire 🇨🇮 • Vêtements | Accessoires | Inspiré du Nouchi vers le monde 🌎";
 
-  // Combined keywords in both French and English for better SEO coverage
   const keywords =
-    "fabricant textile Abidjan, textile manufacturer Abidjan, t-shirt vierge Côte d'Ivoire, blank t-shirt Côte d'Ivoire, production textile locale, local textile production, t-shirt blank Abidjan, B2B textile, fabrication textile Côte d'Ivoire, textile manufacturing Côte d'Ivoire, t-shirt made in Côte d'Ivoire, atelier textile Abidjan, textile workshop Abidjan, production textile flexible, flexible textile production, marque textile Abidjan, textile brand Abidjan, t-shirt oversized, t-shirt coton 100%, 100% cotton t-shirt, production textile rapide, fast textile production, livraison internationale, international shipping, Africa textile, textile Afrique, worldwide shipping";
+    "O'bled, vêtements Côte d'Ivoire, vêtements Abidjan, marque ivoirienne, Nouchi, culture ivoirienne, vêtements made in Côte d'Ivoire, accessoires Abidjan, mode Abidjan, textile Côte d'Ivoire, TU GNAN ON TE BOUAI, tout pour la culture, héritage création";
 
   return {
     metadataBase: new URL(siteUrl),
@@ -135,31 +133,36 @@ export default async function RootLayout({
     '@type': 'Organization',
     name: "O'bled",
     url: siteUrl,
-    logo: `${siteUrl}/icon.webp`,
+    logo: `${siteUrl}/icon.png`,
     contactPoint: {
       '@type': 'ContactPoint',
-      telephone: '+225-07-13-51-64-17',
+      telephone: '+225-07-78-03-41-42',
       contactType: 'Customer Service',
       areaServed: 'Worldwide',
       availableLanguage: ['French', 'English'],
     },
-    sameAs: ['https://www.instagram.com/obled225'],
+    sameAs: [
+      'https://www.instagram.com/obled225',
+      'https://www.facebook.com/Obled225',
+    ],
   };
 
-  const categories = await getHeaderCategories();
+  const [categories, showAboutInNav] = await Promise.all([
+    getHeaderCategories(),
+    getShowAboutInNav(),
+  ]);
 
   const localBusinessSchema = {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
     '@id': `${siteUrl}#business`,
     name: "O'bled",
-    image: `${siteUrl}/icon.webp`,
+    image: `${siteUrl}/icon.png`,
     url: siteUrl,
-    telephone: '+225-07-13-51-64-17',
+    telephone: '+225-07-78-03-41-42',
     email: 'contact@obled225.com',
     address: {
       '@type': 'PostalAddress',
-      streetAddress: 'Riviéra Palmeraie',
       addressLocality: 'Abidjan',
       addressCountry: 'CI',
     },
@@ -199,7 +202,9 @@ export default async function RootLayout({
           <TranslationProvider>
             <MetaPixel />
             <Analytics />
-            <PageLayout categories={categories}>{children}</PageLayout>
+            <PageLayout categories={categories} showAboutInNav={showAboutInNav}>
+              {children}
+            </PageLayout>
             <Toaster />
           </TranslationProvider>
         </NextIntlClientProvider>

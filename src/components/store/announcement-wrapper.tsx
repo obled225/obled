@@ -10,11 +10,7 @@ export async function AnnouncementWrapper() {
   const fallbackAnnouncements = [
     {
       text: t('manufacturer'),
-      href: '/about',
-    },
-    {
-      text: t('businessOffers'),
-      href: '/business',
+      link: '/about',
     },
   ];
 

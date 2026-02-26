@@ -2,8 +2,7 @@
   "header": {
     "nav": {
       "home": "Boutique",
-      "business": "Offres Pro (B2B)",
-      "about": "À propos / Contact",
+      "about": "À propos",
       "faq": "FAQ"
     },
     "search": {
@@ -24,7 +23,6 @@
       "checkout": "Commander",
       "taxesIncluded": "Toutes taxes comprises",
       "summary": "Résumé du panier et commande",
-      "pack": "par pack",
       "tax": "Taxe",
       "noImage": "Aucune image",
       "decreaseQuantity": "Diminuer la quantité",
@@ -57,17 +55,12 @@
       "title": "Notre boutique est en cours de configuration",
       "description": "Nous n'avons pas encore de produits disponibles, mais nous travaillons dur pour les ajouter bientôt !"
     },
-    "emptyBusiness": {
-      "title": "Aucun pack disponible pour le moment",
-      "description": "Nous préparons actuellement nos offres professionnelles."
-    },
     "emptyCategory": {
       "title": "Aucun produit dans cette catégorie",
       "description": "Nous n'avons pas encore de produits dans cette catégorie, mais revenez bientôt !"
     },
     "outOfStock": "Rupture de stock",
     "from": "À partir de",
-    "pack": "Pack",
     "productNotFound": {
       "title": "Produit introuvable",
       "description": "Le produit que vous recherchez n'existe pas ou a été supprimé.",
@@ -83,8 +76,6 @@
       "buyNow": "Acheter maintenant",
       "sizeGuide": "Guide des tailles",
       "share": "Partager",
-      "viewBusinessPack": "Voir le pack professionnel",
-      "businessPackAvailable": "Commandes en gros disponibles",
       "viewVariant": "Voir",
       "relatedProducts": "Produits associés",
       "taxesIncluded": "Toutes taxes comprises",
@@ -133,10 +124,6 @@
       "size": "TAILLE",
       "chest": "Poitrine",
       "length": "Longueur"
-    },
-    "sections": {
-      "allProducts": "Tous les produits",
-      "ourPacks": "Nos packs"
     },
     "noImage": "Aucune image",
     "noImagesAvailable": "Aucune image disponible",
@@ -334,72 +321,13 @@
     },
     "contact": {
       "title": "Contact",
-      "content": "Si vous avez des questions sur nos pratiques en matière de confidentialité ou cette politique de confidentialité, ou si vous souhaitez exercer l'un des droits dont vous disposez, veuillez nous appeler ou nous envoyer un e-mail à l'adresse contact@obled.com ou nous contacter au Riviéra Palmeraie, Abidjan, CI."
+      "content": "Si vous avez des questions sur nos pratiques en matière de confidentialité ou cette politique de confidentialité, ou si vous souhaitez exercer l'un des droits dont vous disposez, contactez-nous à contact@obled225.com ou via les coordonnées indiquées sur notre site."
     }
   },
   "about": {
-    "title": "Votre fabricant textile de référence, made in Côte d'Ivoire",
-    "subtitle": "Une production locale pour marques & entreprises à Abidjan",
-    "description": "Un partenaire fiable, flexible et réactif.",
-    "cta": {
-      "seePacks": "Voir les packs",
-      "orderWhatsApp": "Commander via WhatsApp"
-    },
-    "whoWeAre": {
-      "title": "QUI SOMMES-NOUS ?",
-      "subtitle": "Un fabricant proche de ses clients",
-      "content": "O'bled est un fabricant textile basé à Abidjan (Riviera Palmeraie), spécialisé dans la production de t-shirts vierges de haute qualité pour marques, entreprises et professionnels en Côte d'Ivoire et dans le monde."
-    },
-    "b2b": {
-      "title": "SOLUTIONS POUR ENTREPRISES",
-      "subtitle": "T-shirts vierges de haute qualité pour professionnels",
-      "content": "Nos packs de t-shirts vierges de haute qualité sont conçus pour :",
-      "targets": [
-        "Marques de vêtements",
-        "PME & entreprises",
-        "Associations & événements",
-        "Revendeurs"
-      ],
-      "cta": "Découvrir les packs B2B"
-    },
-    "production": {
-      "title": "NOTRE PRODUCTION",
-      "subtitle": "Un savoir-faire local au service de vos projets",
-      "content": "Notre atelier regroupe une équipe de couturiers, artisans et techniciens passionnés. Chaque pièce est confectionnée avec rigueur, soin et professionnalisme.",
-      "projects": [
-        "Collections pour jeunes marques",
-        "Tenues corporate pour entreprises",
-        "Textiles événementiels (festivals, campagnes, salons)",
-        "Produits pour ONG, associations ou écoles"
-      ],
-      "strength": "Notre force : une fabrication flexible et réactive, à partir d'1 pièce."
-    },
-    "responsiveness": {
-      "title": "Une réactivité à la hauteur de vos projets",
-      "content": "Nous savons que vos délais sont souvent serrés. C'est pourquoi nous avons conçu notre atelier pour répondre rapidement, avec :",
-      "features": [
-        "Des délais de production dès 5 jours selon les volumes",
-        "Une capacité de production locale , sans dépendance à l'importation",
-        "Une gestion souple des séries petites et moyennes",
-        "Une communication fluide à chaque étape du projet"
-      ],
-      "urgency": "Vous avez un impératif de date ? Nous adaptons notre organisation pour livrer à temps."
-    },
-    "support": {
-      "title": "Un accompagnement humain & professionnel",
-      "intro": "Notre approche repose sur l'échange, l'écoute et le conseil. Chez O'bled, vous n'êtes pas un numéro de commande, vous êtes un partenaire.",
-      "content": "Nous vous accompagnons à chaque étape :",
-      "services": [
-        "Choix des textiles adaptés à votre projet",
-        "Conseils sur les finitions, les tailles, les quantités",
-        "Prototypes et tests avant production",
-        "Suivi personnalisé jusqu'à la livraison"
-      ]
-    },
-    "commitment": {
-      "title": "Un engagement local fort",
-      "content": "En produisant localement en Côte d'Ivoire, nous valorisons le savoir-faire régional, soutenons l'économie locale et réduisons notre empreinte logistique. Notre ambition est claire : proposer une alternative fiable et professionnelle aux marques et entreprises d'Afrique de l'Ouest."
-    }
+    "title": "TU GNAN ON TE BOUAI",
+    "subtitle": "Fabriqué en Côte d'Ivoire 🇨🇮 — Vêtements | Accessoires | Inspiré du Nouchi vers le monde 🌎",
+    "description": "Porter O'bled c'est pas juste un habit. C'est notre langage, notre fierté, notre manière de montrer au monde ce qui est propre à nous."
   },
   "contact": {
     "title": "Contact",
@@ -407,11 +335,11 @@
     "methods": {
       "whatsapp": {
         "title": "WhatsApp",
-        "value": "+225 07 13 51 64 17"
+        "value": "+225 07 78 03 41 42"
       },
       "phone": {
         "title": "Téléphone",
-        "value": "+225 07 13 51 64 17"
+        "value": "+225 07 78 03 41 42"
       },
       "instagram": {
         "title": "Instagram",
@@ -455,48 +383,32 @@
     "howToOrder": {
       "question": "Comment commander ?",
       "answer": [
-        "Simple, facile et efficace :",
-        "Choisissez votre pack",
+        "Simple et facile :",
+        "Parcourez la boutique et choisissez vos articles",
         "Ajoutez au panier et procédez au paiement",
-        "Notre équipe vous contacte en cas de besoin",
+        "Nous vous contactons en cas de besoin",
         "Livraison à l'adresse précisée lors de la commande"
       ]
     },
     "whoWeAre": {
       "question": "Qui sommes-nous ?",
-      "answer": "O'bled, basé à Abidjan, fabrique des t-shirts vierges, polos et autres produits textiles avec un savoir-faire artisanal et éthique. Nous travaillons avec des écoles, marques, entreprises, aussi bien locales qu'internationales."
+      "answer": "O'bled est une marque basée à Abidjan. Nous créons des vêtements et accessoires inspirés de la culture Nouchi, pour la Côte d'Ivoire et le monde."
     },
     "location": {
       "question": "Où êtes-vous situé ?",
-      "answer": "Nous sommes basés à Abidjan, à la Riviera Palmeraie, dans notre atelier de production entièrement équipé."
+      "answer": "Nous sommes basés à Abidjan, Côte d'Ivoire."
     },
     "products": {
       "question": "Quels types de produits proposez-vous ?",
-      "answer": "Nous produisons des t-shirts blanks (vierges) de qualité premium, prêts à être personnalisés. Nous proposons également un service de personnalisation textile (DTF, sérigraphie, broderie) sur demande."
+      "answer": "Nous proposons des vêtements et accessoires — inspirés de la culture Nouchi et fabriqués en Côte d'Ivoire."
     },
     "productionTime": {
-      "question": "Quel est le délai de production ?",
-      "answer": "T-shirts blanks : 3 à 4 jours ouvrables\nT-shirts personnalisés : à partir de 10 jours ouvrables (selon la technique et la quantité)"
-    },
-    "samples": {
-      "question": "Puis-je commander un échantillon avant de lancer une production ?",
-      "answer": "Absolument. Commander un échantillon est le meilleur moyen de tester notre qualité. Nous le recommandons vivement si vous hésitez entre plusieurs coupes, tissus ou couleurs."
+      "question": "Quel est le délai de livraison ?",
+      "answer": "Les commandes sont traitées sous quelques jours ouvrables. Les délais de livraison dépendent de votre lieu et de l'option choisie au checkout."
     },
     "visits": {
-      "question": "Est-il possible de visiter la boutique ?",
-      "answer": "Non, la boutique ne prend pas encore de visites pour le moment."
-    },
-    "fabrics": {
-      "question": "Quels tissus utilisez-vous pour vos t-shirts ?",
-      "answer": "Nous travaillons principalement avec du coton 100 %, du coton peigné et différents mélanges selon les besoins. Tous nos tissus sont sélectionnés pour leur durabilité et leur confort."
-    },
-    "services": {
-      "question": "Quels services proposez-vous en plus de la production de blanks ?",
-      "answer": [
-        "Personnalisation textile (DTF, broderie, sérigraphie)",
-        "Création de coupes sur mesure",
-        "Prototypage pour marques naissantes"
-      ]
+      "question": "Est-il possible de vous rendre visite ?",
+      "answer": "Nous ne prenons pas encore de visites pour le moment."
     },
     "minimumOrder": {
       "question": "Quel est le minimum de commande ?",
@@ -511,20 +423,12 @@
       "answer": "Oui, nous expédions vers plusieurs pays d'Afrique et d'Europe. Les frais et délais varient selon la destination. Contactez-nous pour un devis personnalisé."
     },
     "brandLaunch": {
-      "question": "Puis-je lancer ma marque avec vous ?",
-      "answer": "C'est notre cœur de métier. Nous accompagnons les créateurs de marque, du premier échantillon jusqu'à la production en série. Si vous avez une idée, nous avons les moyens de la concrétiser."
-    },
-    "cuts": {
-      "question": "Quelles sont les coupes disponibles ?",
-      "answer": "Nous proposons des coupes oversized, standard et oversized boxy cut. D'autres formats sont disponibles sur demande. Vous pouvez également créer votre propre coupe."
-    },
-    "fileFormats": {
-      "question": "Quels formats de fichiers acceptez-vous pour les visuels personnalisés ?",
-      "answer": "Nous recommandons les fichiers PNG (fond transparent), AI ou PDF vectorisé. Une vérification est toujours effectuée avant le lancement de la production."
+      "question": "Puis-je collaborer avec O'bled ?",
+      "answer": "Nous sommes ouverts aux collaborations et aux idées. Contactez-nous pour en discuter."
     },
     "quality": {
       "question": "Quels sont vos engagements qualité ?",
-      "answer": "Nous appliquons des contrôles qualité rigoureux à chaque étape de la production. Notre objectif est de livrer un produit final impeccable, prêt à être porté ou commercialisé."
+      "answer": "Nous visons la qualité pour que vous receviez des produits dont vous êtes fiers."
     }
   },
   "notFound": {
@@ -534,8 +438,7 @@
   },
   "announcements": {
     "fallback": {
-      "manufacturer": "O'BLED fabricant & fournisseur de t-shirts vierges",
-      "businessOffers": "Offres marques et entreprises"
+      "manufacturer": "Fabriqué en Côte d'Ivoire 🇨🇮 • Inspiré du Nouchi vers le monde 🌎"
     }
   },
   "shipping": {

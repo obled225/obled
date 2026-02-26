@@ -41,7 +41,7 @@ export function generatePageMetadata({
       siteName: "O'bled",
       images: [
         {
-          url: `${siteUrl}/icon.webp`,
+          url: `${siteUrl}/icon.png`,
           width: 1200,
           height: 630,
           alt: title,
@@ -54,7 +54,7 @@ export function generatePageMetadata({
       card: 'summary_large_image',
       title,
       description,
-      images: [`${siteUrl}/icon.webp`],
+      images: [`${siteUrl}/icon.png`],
       creator: '@obled225',
     },
     alternates: {

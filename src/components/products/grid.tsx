@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 interface ProductGridProps {
   products: Product[];
   loading?: boolean;
-  emptyStateKey?: 'empty' | 'emptyBusiness' | 'emptyCategory';
+  emptyStateKey?: 'empty' | 'emptyCategory';
 }
 
 export function ProductGrid({

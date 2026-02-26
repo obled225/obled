@@ -2,8 +2,7 @@
   "header": {
     "nav": {
       "home": "Store",
-      "business": "For businesses (B2B)",
-      "about": "About / Contact",
+      "about": "About us",
       "faq": "FAQ"
     },
     "search": {
@@ -24,7 +23,6 @@
       "checkout": "Checkout",
       "taxesIncluded": "All taxes included",
       "summary": "Cart summary and checkout",
-      "pack": "per pack",
       "tax": "Tax",
       "noImage": "No image",
       "decreaseQuantity": "Decrease quantity",
@@ -57,17 +55,12 @@
       "title": "Our store is still being set up",
       "description": "We don't have any products available yet, but we're working hard to add them soon!"
     },
-    "emptyBusiness": {
-      "title": "No packs available at the moment",
-      "description": "We're currently preparing our offers."
-    },
     "emptyCategory": {
       "title": "No products in this category",
       "description": "We don't have any products in this category yet, but check back soon!"
     },
     "outOfStock": "Out of stock",
     "from": "From",
-    "pack": "Pack",
     "productNotFound": {
       "title": "Product not found",
       "description": "The product you're looking for doesn't exist or has been removed.",
@@ -83,8 +76,6 @@
       "buyNow": "Buy now",
       "sizeGuide": "Size guide",
       "share": "Share",
-      "viewBusinessPack": "View business pack",
-      "businessPackAvailable": "Bulk orders available",
       "viewVariant": "View",
       "relatedProducts": "Related Products",
       "taxesIncluded": "All taxes included",
@@ -133,10 +124,6 @@
       "size": "Size",
       "chest": "Chest",
       "length": "Length"
-    },
-    "sections": {
-      "allProducts": "All products",
-      "ourPacks": "Our packs"
     },
     "noImage": "No image",
     "noImagesAvailable": "No images available",
@@ -331,72 +318,13 @@
     },
     "contact": {
       "title": "Contact",
-      "content": "If you have questions about our privacy practices or this privacy policy, or if you wish to exercise any of the rights available to you, please call us or email us at contact@obled.com or contact us at Riviéra Palmeraie, Abidjan, CI."
+      "content": "If you have questions about our privacy practices or this privacy policy, or if you wish to exercise any of the rights available to you, please contact us at contact@obled225.com or via the contact details on our website."
     }
   },
   "about": {
-    "title": "Your reference textile manufacturer, made in Côte d'Ivoire",
-    "subtitle": "A local production for brands & businesses in Abidjan",
-    "description": "A reliable, flexible and responsive partner.",
-    "cta": {
-      "seePacks": "See the packs",
-      "orderWhatsApp": "Order via WhatsApp"
-    },
-    "whoWeAre": {
-      "title": "WHO ARE WE ?",
-      "subtitle": "A manufacturer, close to its customers",
-      "content": "O'bled is a textile manufacturer based in Abidjan (Riviera Palmeraie), specialized in the production of high-quality blank t-shirts for brands, businesses and professionals in Côte d'Ivoire and around the world."
-    },
-    "b2b": {
-      "title": "BUSINESS SOLUTIONS",
-      "subtitle": "High-quality blank t-shirts for professionals",
-      "content": "Our packs of premium quality blank t-shirts are designed for:",
-      "targets": [
-        "Fashion brands",
-        "SMEs & businesses",
-        "Associations & events",
-        "Resellers"
-      ],
-      "cta": "Discover B2B packs"
-    },
-    "production": {
-      "title": "OUR PRODUCTION",
-      "subtitle": "Local expertise at the service of your projects",
-      "content": "Our workshop brings together a team of passionate tailors, artisans and technicians. Each piece is crafted with rigor, care and professionalism.",
-      "projects": [
-        "Collections for emerging brands",
-        "Corporate uniforms for businesses",
-        "Event textiles (festivals, campaigns, trade shows)",
-        "Products for NGOs, associations or schools"
-      ],
-      "strength": "Our strength: flexible and responsive manufacturing, from 1 piece."
-    },
-    "responsiveness": {
-      "title": "Responsiveness worthy of your projects",
-      "content": "We know that your deadlines are often tight. That's why we designed our workshop to respond quickly, with:",
-      "features": [
-        "Production deadlines from 5 days depending on volumes",
-        "Local production capacity, without import dependency",
-        "Flexible management of small and medium series",
-        "Fluid communication at every stage of the project"
-      ],
-      "urgency": "You have a date constraint? We adapt our organization to deliver on time."
-    },
-    "support": {
-      "title": "Human & professional support",
-      "intro": "Our approach is based on exchange, listening and advice. At O'bled, you are not an order number, you are a partner.",
-      "content": "We support you at every stage:",
-      "services": [
-        "Choice of textiles adapted to your project",
-        "Advice on finishes, sizes, quantities",
-        "Prototypes and tests before production",
-        "Personalized follow-up until delivery"
-      ]
-    },
-    "commitment": {
-      "title": "Strong local commitment",
-      "content": "By producing locally in Côte d'Ivoire, we value regional know-how, support the local economy and reduce our logistics footprint. Our ambition is clear: to offer a reliable and professional alternative to brands and businesses in West Africa."
-    }
+    "title": "O'BLED",
+    "subtitle": "Made in Côte d'Ivoire 🇨🇮 — Clothing | Accessories | Inspired from Nouchi to the world 🌎",
+    "description": "Wearing O'bled is not just a habit. It's our language, our pride, our way of showing the world what is unique to us."
   },
   "contact": {
     "title": "Contact",
@@ -404,11 +332,11 @@
     "methods": {
       "whatsapp": {
         "title": "WhatsApp",
-        "value": "+225 07 13 51 64 17"
+        "value": "+225 07 78 03 41 42"
       },
       "phone": {
         "title": "Phone",
-        "value": "+225 07 13 51 64 17"
+        "value": "+225 07 78 03 41 42"
       },
       "instagram": {
         "title": "Instagram",
@@ -452,48 +380,32 @@
     "howToOrder": {
       "question": "How to order?",
       "answer": [
-        "Simple, easy and effective:",
-        "Choose your pack",
+        "Simple and easy:",
+        "Browse the store and choose your items",
         "Add to cart and proceed to checkout",
-        "Our team contacts you if needed",
+        "We contact you if needed",
         "Delivery to the address specified when ordering"
       ]
     },
     "whoWeAre": {
       "question": "Who are we?",
-      "answer": "O'bled, based in Abidjan, manufactures blank t-shirts, polo shirts and other textile products with artisanal know-how and ethics. We work with schools, brands, companies, both local and international."
+      "answer": "O'bled is a brand based in Abidjan, Côte d'Ivoire. We create clothing and accessories inspired by Nouchi culture, for Côte d'Ivoire and the world."
     },
     "location": {
       "question": "Where are you located?",
-      "answer": "We are based in Abidjan, at Riviera Palmeraie, in our fully equipped production workshop."
+      "answer": "We are based in Abidjan, Côte d'Ivoire."
     },
     "products": {
       "question": "What types of products do you offer?",
-      "answer": "We produce premium quality blank t-shirts, ready to be customized. We also offer textile customization services (DTF, screen printing, embroidery) on demand."
+      "answer": "We offer clothing and accessories — inspired by Nouchi, made in Côte d'Ivoire."
     },
     "productionTime": {
-      "question": "What is the production lead time?",
-      "answer": "Blank t-shirts: 3 to 4 business days\nCustomized t-shirts: from 10 business days (depending on technique and quantity)"
-    },
-    "samples": {
-      "question": "Can I order a sample before launching production?",
-      "answer": "Absolutely. Ordering a sample is the best way to test our quality. We strongly recommend it if you hesitate between several cuts, fabrics or colors."
+      "question": "What is the delivery time?",
+      "answer": "Orders are processed within a few business days. Delivery times depend on your location and the shipping option chosen at checkout."
     },
     "visits": {
-      "question": "Is it possible to visit the workshop?",
-      "answer": "No, the workshop does not yet accept visits at the moment."
-    },
-    "fabrics": {
-      "question": "What fabrics do you use for your t-shirts?",
-      "answer": "We mainly work with 100% cotton, combed cotton and various blends according to needs. All our fabrics are selected for their durability and comfort."
-    },
-    "services": {
-      "question": "What services do you offer in addition to blank production?",
-      "answer": [
-        "Textile customization (DTF, embroidery, screen printing)",
-        "Custom cut creation",
-        "Prototyping for emerging brands"
-      ]
+      "question": "Is it possible to visit in person?",
+      "answer": "We do not accept in-person visits for the moment."
     },
     "minimumOrder": {
       "question": "What is the minimum order?",
@@ -508,20 +420,12 @@
       "answer": "Yes, we ship to several countries in Africa and Europe. Costs and deadlines vary depending on the destination. Contact us for a personalized quote."
     },
     "brandLaunch": {
-      "question": "Can I launch my brand with you?",
-      "answer": "It's our core business. We support brand creators, from the first sample to series production. If you have an idea, we have the means to make it happen."
-    },
-    "cuts": {
-      "question": "What cuts are available?",
-      "answer": "We offer oversized, standard and oversized boxy cut. Other formats are available on request. You can also create your own cut."
-    },
-    "fileFormats": {
-      "question": "What file formats do you accept for custom visuals?",
-      "answer": "We recommend PNG files (transparent background), AI or vectorized PDF. A verification is always performed before launching production."
+      "question": "Can I collaborate with O'bled?",
+      "answer": "We are always open to collaborations and ideas. Get in touch with us to discuss."
     },
     "quality": {
       "question": "What are your quality commitments?",
-      "answer": "We apply rigorous quality controls at every stage of production. Our goal is to deliver a flawless final product, ready to be worn or marketed."
+      "answer": "We focus on quality so you receive products you are proud to wear."
     }
   },
   "notFound": {
@@ -531,8 +435,7 @@
   },
   "announcements": {
     "fallback": {
-      "manufacturer": "O'BLED manufacturer & supplier of blank t-shirts",
-      "businessOffers": "Offers for brands and businesses"
+      "manufacturer": "O'BLED • Inspired from Nouchi to the world 🌎"
     }
   },
   "shipping": {

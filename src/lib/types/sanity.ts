@@ -82,20 +82,6 @@ export interface SanityProductExpanded extends Omit<
       description?: string;
     }>;
   }>;
-  businessPackProduct?: {
-    _id: string;
-    name?: string;
-    slug?: {
-      current?: string;
-    };
-  };
-  isBusinessProduct?: boolean;
-  businessPacks?: Array<{
-    quantity: number;
-    label?: string;
-    price?: number; // Current selling price in XOF (mapped from currentPrice)
-    originalPrice?: number; // Base price in XOF (mapped from basePrice, shown with strikethrough)
-  }>;
   featured?: boolean;
   bestSeller?: boolean;
   grammage?: string; // Fabric weight (e.g., '180', '200')
@@ -190,18 +176,6 @@ export interface Product {
     slug: string;
   };
   relatedProducts?: Product[];
-  businessPackProduct?: {
-    id: string;
-    name: string;
-    slug: string;
-  };
-  isBusinessProduct: boolean;
-  businessPacks?: Array<{
-    quantity: number;
-    label?: string;
-    price?: number; // Current selling price in XOF (mapped from currentPrice)
-    originalPrice?: number; // Base price in XOF (mapped from basePrice, shown with strikethrough)
-  }>;
   featured?: boolean;
   bestSeller?: boolean;
   createdAt: Date;
@@ -213,7 +187,6 @@ export interface ProductVariant {
   name: string;
   value: string;
   priceModifier: number; // Price modifier in XOF
-  packSize?: number;
 }
 
 export interface ProductCategory {

@@ -219,7 +219,7 @@ export const customerConfirmationTemplate = `<div class="transaction-card">
     </div>
     
     <p class="greeting-text" style="margin-top: 20px;">
-      Si vous avez des questions urgentes, n'hésitez pas à nous contacter directement via WhatsApp au <a href="https://wa.me/22507135164117" class="support-link">+225 07 13 51 64 17</a>.
+      Si vous avez des questions urgentes, n'hésitez pas à nous contacter directement via WhatsApp au <a href="https://wa.me/2250778034142" class="support-link">+225 0778034142</a>.
     </p>
     <p class="greeting-text" style="margin-top: 24px;">
       Cordialement,<br>

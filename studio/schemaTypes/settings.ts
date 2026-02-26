@@ -6,6 +6,13 @@ export default defineType({
   type: 'document',
   fields: [
     defineField({
+      name: 'showAboutInNav',
+      title: 'Show About in navigation',
+      type: 'boolean',
+      description: 'When enabled, the About / Contact link appears in the header. When disabled, it is hidden.',
+      initialValue: true,
+    }),
+    defineField({
       name: 'globalFreeShippingThreshold',
       title: 'Free shipping threshold',
       type: 'object',

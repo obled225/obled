@@ -11,8 +11,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: 'FAQ',
     description: isFrench
-      ? 'Réponses à vos questions sur nos t-shirts vierges, délais de production, services de personnalisation et livraisons.'
-      : 'Answers to your questions about our blank t-shirts, production lead times, customization services and shipping.',
+      ? 'Réponses à vos questions sur nos produits, commandes, livraison et plus.'
+      : 'Answers to your questions about our products, orders, delivery and more.',
     openGraph: {
       url: `${siteUrl}/faq`,
     },
@@ -32,16 +32,11 @@ export default async function FaqPage() {
     'location',
     'products',
     'productionTime',
-    'samples',
     'visits',
-    'fabrics',
-    'services',
     'minimumOrder',
     'localDelivery',
     'internationalShipping',
     'brandLaunch',
-    'cuts',
-    'fileFormats',
     'quality',
   ];
 

@@ -9,73 +9,119 @@ export default defineType({
       name: 'heroVideo',
       title: 'Hero video',
       type: 'file',
-      description: 'Optional video to display at the top of the about page',
+      description: 'Optional video at the top of the about page',
       options: {
         accept: 'video/*',
       },
     }),
     defineField({
-      name: 'sectionImages',
-      title: 'Section images',
+      name: 'heroTitle',
+      title: 'Hero title',
+      type: 'string',
+      description: 'Main title below the hero (e.g. brand tagline)',
+    }),
+    defineField({
+      name: 'heroSubtitle',
+      title: 'Hero subtitle',
+      type: 'string',
+      description: 'Short line under the title (e.g. Fabriqué en Côte d’Ivoire 🇨🇮)',
+    }),
+    defineField({
+      name: 'heroDescription',
+      title: 'Hero description',
+      type: 'text',
+      description: 'Paragraph under the subtitle. Supports multiple lines.',
+      rows: 4,
+    }),
+    defineField({
+      name: 'sections',
+      title: 'Page sections',
       type: 'array',
-      description: 'Images to display in different sections of the about page',
+      description: 'Add and order sections. Each section has a title, optional subtitle, rich text body and optional images.',
       of: [
         {
           type: 'object',
           fields: [
             defineField({
-              name: 'image',
-              title: 'Image',
-              type: 'image',
-              options: {
-                hotspot: true,
-              },
+              name: 'title',
+              title: 'Section title',
+              type: 'string',
               validation: (Rule) => Rule.required(),
             }),
             defineField({
-              name: 'caption',
-              title: 'Caption',
+              name: 'subtitle',
+              title: 'Subtitle',
               type: 'string',
-              description: 'Optional caption for the image',
             }),
             defineField({
-              name: 'position',
-              title: 'Section position',
-              type: 'string',
-              description: 'Which section should this image appear in?',
-              options: {
-                list: [
-                  {title: 'Who are we?', value: 'whoWeAre'},
-                  {title: 'B2B solutions', value: 'b2b'},
-                  {title: 'Production', value: 'production'},
-                  {title: 'Responsiveness', value: 'responsiveness'},
-                  {title: 'Support', value: 'support'},
-                  {title: 'Commitment', value: 'commitment'},
-                ],
-              },
-              validation: (Rule) => Rule.required(),
+              name: 'body',
+              title: 'Content',
+              type: 'array',
+              of: [
+                {
+                  type: 'block',
+                  marks: {
+                    decorators: [
+                      {title: 'Strong', value: 'strong'},
+                      {title: 'Emphasis', value: 'em'},
+                    ],
+                    annotations: [],
+                  },
+                  styles: [
+                    {title: 'Normal', value: 'normal'},
+                    {title: 'H2', value: 'h2'},
+                    {title: 'H3', value: 'h3'},
+                    {title: 'Bullet', value: 'bullet'},
+                    {title: 'Number', value: 'number'},
+                  ],
+                },
+              ],
+            }),
+            defineField({
+              name: 'images',
+              title: 'Images',
+              type: 'array',
+              of: [
+                {
+                  type: 'object',
+                  fields: [
+                    {
+                      name: 'image',
+                      title: 'Image',
+                      type: 'image',
+                      options: {hotspot: true},
+                      validation: (Rule) => Rule.required(),
+                    },
+                    {
+                      name: 'caption',
+                      title: 'Caption',
+                      type: 'string',
+                    },
+                  ],
+                  preview: {
+                    select: {media: 'image', title: 'caption'},
+                    prepare({media, title}) {
+                      return {title: title || 'Image', media}
+                    },
+                  },
+                },
+              ],
+            }),
+            defineField({
+              name: 'order',
+              title: 'Order',
+              type: 'number',
+              description: 'Lower numbers appear first',
+              initialValue: 0,
             }),
           ],
           preview: {
-            select: {
-              title: 'caption',
-              media: 'image',
-              position: 'position',
-            },
-            prepare({title, media, position}) {
-              const positionLabels: Record<string, string> = {
-                whoWeAre: 'Who We Are',
-                b2b: 'B2B solutions',
-                production: 'Production',
-                responsiveness: 'Responsiveness',
-                support: 'Support',
-                commitment: 'Commitment',
-              };
+            select: {title: 'title', order: 'order'},
+            prepare({title, order}) {
               return {
-                title: title || 'Untitled Image',
-                subtitle: positionLabels[position] || position,
-                media,
-              };
+                title: title || 'Untitled section',
+                subtitle: order !== undefined ? `Order: ${order}` : undefined,
+              }
             },
           },
         },
@@ -89,7 +135,7 @@ export default defineType({
     prepare() {
       return {
         title: 'About (page)',
-        subtitle: 'Hero video and section images',
+        subtitle: 'Hero and sections',
       }
     },
   },

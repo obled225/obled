@@ -6,7 +6,6 @@ import { useLocaleSwitcher } from '@/lib/translations/locale-switcher';
 import {
   InstagramIcon,
   FacebookIcon,
-  LinkedInIcon,
   WhatsAppIcon,
 } from '@/components/ui/icons';
 
@@ -56,7 +55,7 @@ export function Footer() {
           {/* Social icons - right aligned on mobile, same vertical position */}
           <div className="flex items-center justify-end gap-3 sm:gap-4 pt-2 sm:pt-0">
             <Link
-              href="https://wa.me/22507135164117"
+              href="https://wa.me/2250778034142"
               target="_blank"
               rel="noopener noreferrer"
               className="opacity-70 hover:opacity-100 transition-opacity"
@@ -74,22 +73,13 @@ export function Footer() {
               <InstagramIcon className="w-5 h-5 sm:w-5 sm:h-5" />
             </Link>
             <Link
-              href="https://www.facebook.com/people/Obled225/61572203992802/"
+              href="https://www.facebook.com/Obled225"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-foreground transition-colors"
               aria-label="Facebook"
             >
               <FacebookIcon className="w-5 h-5 sm:w-5 sm:h-5" />
-            </Link>
-            <Link
-              href="https://www.linkedin.com/company/obled225/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-foreground transition-colors"
-              aria-label="LinkedIn"
-            >
-              <LinkedInIcon className="w-5 h-5 sm:w-5 sm:h-5" />
             </Link>
           </div>
         </div>

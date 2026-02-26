@@ -7,7 +7,6 @@ import {
   Share2,
   ZoomIn,
   Ruler,
-  Package,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
@@ -24,7 +23,6 @@ import { useTranslations } from 'next-intl';
 import { FullscreenGallery } from '@/components/products/fullscreen-gallery';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import RelatedProducts from '@/components/products/related';
 import { normalizeColorName } from '@/lib/utils/color';
 import { useTaxSettings } from '@/lib/hooks/use-tax-settings';
@@ -53,11 +51,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
   );
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
-
-  // Business Pack Selection - default to first pack if available
-  const [selectedPack, setSelectedPack] = useState<
-    NonNullable<Product['businessPacks']>[number] | null
-  >((product.isBusinessProduct && product.businessPacks?.[0]) || null);
 
   // Get color image if available, otherwise use main images
   // Make it reactive so it updates when selectedColor changes
@@ -119,66 +112,14 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
   // All prices are in XOF, convert to selected currency
   const basePriceXOF = product.price || 0;
-
-  // Get pack price for selected currency
-  const getPackPrice = (pack: {
-    quantity: number;
-    label?: string;
-    price?: number;
-    originalPrice?: number;
-  }) => {
-    const packPriceXOF = pack.price || basePriceXOF * pack.quantity;
-    return convertPrice(packPriceXOF, currency);
-  };
-
-  // Get pack original price for selected currency (if available)
-  const getPackOriginalPrice = (pack: {
-    quantity: number;
-    label?: string;
-    price?: number;
-    originalPrice?: number;
-  }) => {
-    const originalPriceXOF = pack.originalPrice;
-    return originalPriceXOF
-      ? convertPrice(originalPriceXOF, currency)
-      : undefined;
-  };
-
   const baseDisplayPrice = convertPrice(basePriceXOF, currency);
-  const packDisplayPrice = selectedPack
-    ? getPackPrice(selectedPack)
-    : baseDisplayPrice;
-
-  const packOriginalPrice = selectedPack
-    ? getPackOriginalPrice(selectedPack)
+  const baseOriginalPrice = product.originalPrice
+    ? convertPrice(product.originalPrice, currency)
     : undefined;
 
-  // Base price (before quantity multiplication)
-  const basePrice = packDisplayPrice;
-  const baseOriginalPriceXOF = packOriginalPrice
-    ? (
-        selectedPack as {
-          quantity: number;
-          label?: string;
-          price?: number;
-          originalPrice?: number;
-        } | null
-      )?.originalPrice
-      ? (
-          selectedPack as {
-            quantity: number;
-            label?: string;
-            price?: number;
-            originalPrice?: number;
-          }
-        ).originalPrice
-      : product.originalPrice
-    : product.originalPrice;
-  const baseOriginalPrice = baseOriginalPriceXOF
-    ? convertPrice(baseOriginalPriceXOF, currency)
-    : undefined;
+  const basePrice = baseDisplayPrice;
 
-  // Display price multiplied by quantity (for both packs and non-packs)
+  // Display price multiplied by quantity
   const displayPrice = basePrice * quantity;
   const displayOriginalPrice = baseOriginalPrice
     ? baseOriginalPrice * quantity
@@ -252,43 +193,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
     setIsAdding(true);
     try {
-      // For business products with packs, always use a pack
-      if (
-        product.isBusinessProduct &&
-        product.businessPacks &&
-        product.businessPacks.length > 0 &&
-        selectedPack
-      ) {
-        // All prices are in XOF
-        const packPriceXOF =
-          (
-            selectedPack as {
-              quantity: number;
-              label?: string;
-              price?: number;
-              originalPrice?: number;
-            }
-          ).price || basePriceXOF * selectedPack.quantity;
-
-        // Calculate price modifier: pack price minus base unit price (in XOF)
-        // The cart calculates: (basePrice + modifier) * quantity
-        // For packs: (basePrice + (packPrice - basePrice)) * quantity = packPrice * quantity
-        // This ensures 1 pack shows as packPrice, not basePrice * packSize
-        const priceModifier = packPriceXOF - basePriceXOF;
-
-        const variant = {
-          id: `pack-${selectedPack.quantity}`,
-          name: selectedPack.label || `Pack ${selectedPack.quantity}`,
-          value: String(selectedPack.quantity),
-          priceModifier: priceModifier,
-          packSize: selectedPack.quantity,
-        };
-
-        // Add packs, not units (quantity = number of packs, should be 1)
-        addItem(product, quantity, variant);
-      } else {
-        addItem(product, quantity);
-      }
+      addItem(product, quantity);
       success('Added to cart!', `${product.name} has been added to your cart.`);
     } catch (err) {
       error('Failed to add to cart', 'Please try again.');
@@ -312,42 +217,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
     }
 
     try {
-      // For business products with packs, always use a pack
-      if (
-        product.isBusinessProduct &&
-        product.businessPacks &&
-        product.businessPacks.length > 0 &&
-        selectedPack
-      ) {
-        // All prices are in XOF
-        const packPriceXOF =
-          (
-            selectedPack as {
-              quantity: number;
-              label?: string;
-              price?: number;
-              originalPrice?: number;
-            }
-          ).price || basePriceXOF * selectedPack.quantity;
-
-        // Calculate price modifier: pack price minus base unit price (in XOF)
-        // The cart calculates: (basePrice + modifier) * quantity
-        // For packs: (basePrice + (packPrice - basePrice)) * quantity = packPrice * quantity
-        // This ensures 1 pack shows as packPrice, not basePrice * packSize
-        const priceModifier = packPriceXOF - basePriceXOF;
-
-        const variant = {
-          id: `pack-${selectedPack.quantity}`,
-          name: selectedPack.label || `Pack ${selectedPack.quantity}`,
-          value: String(selectedPack.quantity),
-          priceModifier: priceModifier,
-          packSize: selectedPack.quantity,
-        };
-        // Add packs, not units (quantity = number of packs)
-        addItem(product, quantity, variant);
-      } else {
-        addItem(product, quantity);
-      }
+      addItem(product, quantity);
       router.push('/checkout');
     } catch (err) {
       error('Failed to proceed to checkout', 'Please try again.');
@@ -608,33 +478,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
             </div>
           )}
 
-          {/* Pack Selector (Business Only) */}
-          {product.isBusinessProduct &&
-            product.businessPacks &&
-            product.businessPacks.length > 0 && (
-              <div className="mb-6">
-                <p className="text-sm font-medium text-gray-900 mb-3">
-                  {t('pack') || 'Pack'}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {product.businessPacks.map((pack) => (
-                    <button
-                      key={pack.quantity}
-                      onClick={() => setSelectedPack(pack)}
-                      className={cn(
-                        'flex h-10 px-4 items-center justify-center rounded-md border text-sm font-medium transition-colors',
-                        selectedPack?.quantity === pack.quantity
-                          ? 'border-blue-600 bg-blue-600 text-white'
-                          : 'border-gray-200 bg-white text-gray-900 hover:border-blue-600'
-                      )}
-                    >
-                      {pack.label || `Pack ${pack.quantity}`}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
           {/* Quantity */}
           <div className="mb-6 sm:mb-8">
             <p className="text-sm font-medium text-gray-900 mb-3">
@@ -685,19 +528,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
               >
                 {t('productDetail.buyNow')}
               </Button>
-            )}
-
-            {/* Business Pack Link */}
-            {product.businessPackProduct && !product.isBusinessProduct && (
-              <Link href={`/products/${product.businessPackProduct.slug}`}>
-                <Button
-                  variant="outline"
-                  className="w-full h-11 sm:h-12 text-sm font-medium border-amber-600 text-amber-600 hover:bg-amber-600 hover:text-white transition-colors touch-target"
-                >
-                  <Package className="h-4 w-4 mr-2" />
-                  {t('productDetail.viewBusinessPack')}
-                </Button>
-              </Link>
             )}
           </div>
 

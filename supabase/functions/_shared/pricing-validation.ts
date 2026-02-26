@@ -63,13 +63,6 @@ const PRODUCT_BY_ID_QUERY = `*[_type == "products" && _id == $id && !(_id in pat
   name,
   currentPrice,
   basePrice,
-  isBusinessProduct,
-  businessPacks[] {
-    quantity,
-    label,
-    currentPrice,
-    basePrice
-  },
   inStock
 }`;
 
@@ -90,13 +83,6 @@ interface SanityProduct {
   name: string;
   currentPrice?: number;
   basePrice?: number;
-  isBusinessProduct?: boolean;
-  businessPacks?: Array<{
-    quantity: number;
-    label?: string;
-    currentPrice?: number;
-    basePrice?: number;
-  }>;
   inStock?: boolean;
 }
 
@@ -141,9 +127,7 @@ function convertPrice(priceInXOF: number, currency: 'XOF' | 'EUR' | 'USD'): numb
  */
 async function getProductPrice(
   sanityClient: ReturnType<typeof getSanityClient>,
-  productId: string,
-  variantId?: string,
-  packSize?: number
+  productId: string
 ): Promise<{ price: number; originalPrice?: number } | null> {
   try {
     const product = await sanityClient.fetch<SanityProduct>(PRODUCT_BY_ID_QUERY, {
@@ -154,38 +138,15 @@ async function getProductPrice(
       return null;
     }
 
-    // Check if product is in stock
     if (product.inStock === false) {
       throw new Error(`Product ${productId} is out of stock`);
     }
 
-    // Handle business packs
-    // Client-side logic: basePrice + priceModifier where priceModifier = packPrice - basePrice
-    // So final price = basePrice + (packPrice - basePrice) = packPrice
-    if (product.isBusinessProduct && product.businessPacks && packSize) {
-      const pack = product.businessPacks.find((p) => p.quantity === packSize);
-      if (pack && pack.currentPrice !== undefined && pack.currentPrice > 0) {
-        // Return pack price directly (matches client calculation)
-        return {
-          price: pack.currentPrice,
-          originalPrice: pack.basePrice,
-        };
-      }
-      // If pack not found or no price, this is an error
-      // Don't fall back - the pack should exist
-      throw new Error(
-        `Pack with quantity ${packSize} not found or has no price for product ${productId}`
-      );
-    }
-
-    // Regular product price
-    // For business products without packSize, use currentPrice (which is minimum pack price)
-    // For regular products, use currentPrice
     const basePrice = product.currentPrice || 0;
-    if (basePrice === 0 && !product.isBusinessProduct) {
+    if (basePrice === 0) {
       throw new Error(`Product ${productId} has no price set`);
     }
-    
+
     return {
       price: basePrice,
       originalPrice: product.basePrice,
@@ -201,9 +162,8 @@ async function getProductPrice(
  * This ensures all prices match what's stored in Sanity (source of truth)
  * 
  * Calculation flow (matches client-side logic):
- * 1. For regular products: price = product.currentPrice (in XOF)
- * 2. For business packs: price = pack.currentPrice (in XOF) where pack.quantity matches variant
- * 3. Convert to target currency: price * CONVERSION_RATES[currency]
+ * 1. price = product.currentPrice (in XOF)
+ * 2. Convert to target currency: price * CONVERSION_RATES[currency]
  * 4. Calculate item total: pricePerUnit * quantity
  * 5. Calculate subtotal: sum of all item totals
  * 6. Calculate original subtotal: sum of originalPrice * quantity (if originalPrice > price)
@@ -231,17 +191,10 @@ export async function validateAndRecalculatePricing(
   // Validate each cart item
   for (const item of cartItems) {
     try {
-      // Extract pack size from variantId if it's a pack variant
-      // Variant IDs for packs are in format: "pack-{quantity}"
-      const packSizeMatch = item.variantId?.match(/^pack-(\d+)$/);
-      const packSize = packSizeMatch ? parseInt(packSizeMatch[1], 10) : undefined;
-
       // Get actual product price from Sanity
       const productPricing = await getProductPrice(
         sanityClient,
-        item.productId,
-        item.variantId,
-        packSize
+        item.productId
       );
 
       if (!productPricing) {
@@ -258,9 +211,6 @@ export async function validateAndRecalculatePricing(
       }
 
       // Calculate price per unit in target currency
-      // Client-side: basePriceXOF + variantPriceXOF = packPriceXOF (for packs) or basePriceXOF (for regular)
-      // Then converts: convertPrice(totalPriceXOF, currency)
-      // Server-side: Get packPriceXOF (for packs) or basePriceXOF (for regular) directly from Sanity
       const pricePerUnitXOF = productPricing.price;
       const pricePerUnit = convertPrice(pricePerUnitXOF, currency);
 
@@ -292,7 +242,7 @@ export async function validateAndRecalculatePricing(
 
       // Calculate original subtotal (for discount calculation)
       // Client-side logic: Uses originalPrice if available and > finalPrice, otherwise uses finalPrice
-      // For packs: Uses pack.basePrice if available, otherwise product.basePrice
+      // Uses product.basePrice (originalPrice) when available
       // For regular: Uses product.originalPrice if available
       if (productPricing.originalPrice && productPricing.originalPrice > pricePerUnitXOF) {
         // Original price exists and is greater than current price (discount scenario)

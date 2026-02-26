@@ -15,16 +15,11 @@ export function FaqClient() {
     { key: 'location', hasList: false },
     { key: 'products', hasList: false },
     { key: 'productionTime', hasList: false },
-    { key: 'samples', hasList: false },
     { key: 'visits', hasList: false },
-    { key: 'fabrics', hasList: false },
-    { key: 'services', hasList: true },
     { key: 'minimumOrder', hasList: false },
     { key: 'localDelivery', hasList: false },
     { key: 'internationalShipping', hasList: false },
     { key: 'brandLaunch', hasList: false },
-    { key: 'cuts', hasList: false },
-    { key: 'fileFormats', hasList: false },
     { key: 'quality', hasList: false },
   ];
 

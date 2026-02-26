@@ -4,16 +4,15 @@ import { AboutClient } from '@/components/about/about-client';
 import { siteUrl } from '@/lib/utils/config';
 import { getAboutPage } from '@/lib/sanity/queries';
 import { getSanityImageUrl } from '@/lib/sanity/client';
+import type { AboutSection } from '@/lib/sanity/queries';
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
-  const isFrench = locale === 'fr';
 
   return {
-    title: isFrench ? 'À Propos' : 'About',
-    description: isFrench
-      ? "O'bled est un fabricant textile basé à Abidjan, spécialisé dans la production de t- shirts vierges de haute qualité pour professionnels."
-      : "O'bled is a textile manufacturer based in Abidjan, specialized in high - quality blank t - shirt production for professionals.",
+    title: locale === 'fr' ? 'À Propos' : 'About',
+    description:
+      "Porter O'bled c'est notre langage, notre fierté. Vêtements et accessoires inspirés du Nouchi et fabriqués entièrement en Côte d'Ivoire.",
     openGraph: {
       url: `${siteUrl}/about`,
     },
@@ -23,23 +22,39 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+function transformSections(sections: AboutSection[] | undefined) {
+  if (!sections?.length) return [];
+  return sections.map((sec) => ({
+    title: sec.title,
+    subtitle: sec.subtitle,
+    body: sec.body,
+    images:
+      sec.images?.map((img) => ({
+        url: img.asset
+          ? getSanityImageUrl(img.asset as Record<string, unknown>, 800, 600) ||
+            undefined
+          : undefined,
+        caption: img.caption,
+      })) ?? [],
+  }));
+}
+
 export default async function AboutPage() {
-  const aboutPageData = await getAboutPage();
+  const data = await getAboutPage();
 
-  // Transform the data for the client component
-  const heroVideoUrl = aboutPageData?.heroVideoUrl;
-
-  // Transform section images
-  const sectionImages =
-    aboutPageData?.sectionImages?.map((sectionImage) => ({
-      url: sectionImage.image?.asset
-        ? getSanityImageUrl(sectionImage.image.asset, 800, 600) || undefined
-        : undefined,
-      caption: sectionImage.caption,
-      position: sectionImage.position,
-    })) || [];
+  const heroVideoUrl = data?.heroVideoUrl ?? undefined;
+  const heroTitle = data?.heroTitle ?? undefined;
+  const heroSubtitle = data?.heroSubtitle ?? undefined;
+  const heroDescription = data?.heroDescription ?? undefined;
+  const sections = transformSections(data?.sections);
 
   return (
-    <AboutClient heroVideoUrl={heroVideoUrl} sectionImages={sectionImages} />
+    <AboutClient
+      heroVideoUrl={heroVideoUrl}
+      heroTitle={heroTitle}
+      heroSubtitle={heroSubtitle}
+      heroDescription={heroDescription}
+      sections={sections}
+    />
   );
 }

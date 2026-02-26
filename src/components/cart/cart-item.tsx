@@ -52,15 +52,9 @@ export function CartItem({ item, showControls = true }: CartItemProps) {
               className="text-sm font-medium text-gray-900 hover:text-blue-600 transition-colors line-clamp-2"
             >
               {item.product.name}
-              {item.selectedVariant?.packSize && (
-                <span className="text-gray-500 font-normal">
-                  {' · '}
-                  {item.selectedVariant.name}
-                </span>
-              )}
             </Link>
 
-            {item.selectedVariant && !item.selectedVariant.packSize && (
+            {item.selectedVariant && (
               <p className="text-xs text-gray-500 mt-1">
                 {`${item.selectedVariant.name}${item.selectedVariant.value ? `: ${item.selectedVariant.value}` : ''}`}
               </p>
@@ -68,45 +62,22 @@ export function CartItem({ item, showControls = true }: CartItemProps) {
 
             <div className="flex items-center gap-2 mt-1">
               {(() => {
-                const packPriceXOF = basePriceXOF + variantPriceXOF;
-                const packPrice = convertPrice(packPriceXOF, currency);
-
-                // Find original price for pack if it exists
-                let originalPriceXOF: number | undefined;
-                if (
-                  item.selectedVariant?.packSize &&
-                  item.product.businessPacks
-                ) {
-                  const pack = item.product.businessPacks.find(
-                    (p) => p.quantity === item.selectedVariant?.packSize
-                  ) as
-                    | {
-                        quantity: number;
-                        label?: string;
-                        price?: number;
-                        originalPrice?: number;
-                      }
-                    | undefined;
-                  originalPriceXOF = pack?.originalPrice;
-                } else {
-                  originalPriceXOF = item.product.originalPrice;
-                }
+                const unitPriceXOF = basePriceXOF + variantPriceXOF;
+                const unitPrice = convertPrice(unitPriceXOF, currency);
+                const originalPriceXOF = item.product.originalPrice;
                 const originalPrice = originalPriceXOF
                   ? convertPrice(originalPriceXOF, currency)
                   : undefined;
 
                 return (
                   <>
-                    {originalPrice && originalPrice > packPrice && (
+                    {originalPrice && originalPrice > unitPrice && (
                       <span className="text-xs text-gray-500 line-through">
                         {formatPrice(originalPrice, currency)}
                       </span>
                     )}
                     <span className="text-sm text-gray-600">
-                      {formatPrice(packPrice, currency)}
-                      {item.selectedVariant?.packSize && (
-                        <span className="text-xs"> {t('pack')}</span>
-                      )}
+                      {formatPrice(unitPrice, currency)}
                       {item.quantity > 1 && (
                         <span className="text-xs ml-1">× {item.quantity}</span>
                       )}

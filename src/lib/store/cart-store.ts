@@ -58,23 +58,7 @@ const calculateOriginalSubtotal = (
     const variantPriceXOF = item.selectedVariant?.priceModifier || 0;
     const finalPriceXOF = basePriceXOF + variantPriceXOF;
 
-    // Find original price for pack if it exists
-    let originalPriceXOF: number | undefined;
-    if (item.selectedVariant?.packSize && item.product.businessPacks) {
-      const pack = item.product.businessPacks.find(
-        (p) => p.quantity === item.selectedVariant?.packSize
-      ) as
-        | {
-            quantity: number;
-            label?: string;
-            price?: number;
-            originalPrice?: number;
-          }
-        | undefined;
-      originalPriceXOF = pack?.originalPrice;
-    } else {
-      originalPriceXOF = item.product.originalPrice;
-    }
+    const originalPriceXOF = item.product.originalPrice;
 
     // Use original price if available and greater than final price, otherwise use final price
     const priceToUseXOF =

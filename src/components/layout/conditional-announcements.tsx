@@ -22,10 +22,6 @@ export function ConditionalAnnouncements() {
           text: t('manufacturer'),
           link: '/about',
         },
-        {
-          text: t('businessOffers'),
-          link: '/business',
-        },
       ];
 
       const finalAnnouncements =
