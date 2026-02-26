@@ -454,6 +454,7 @@
     "estimatedDelivery": "Délai de livraison estimé",
     "freeShippingActive": "Livraison gratuite",
     "freeShippingActiveDescription": "Votre commande bénéficie de la livraison gratuite.",
+    "noShippingOptionsAvailable": "Aucune option de livraison configurée. La livraison est gratuite.",
     "addAmountForFreeShipping": "Ajoutez {amount} pour activer la livraison gratuite.",
     "shippingInfo": "Les livraisons à Abidjan sont gérées par notre partenaire Yango Delivery. Nous utilisons DHL et UPS pour les expéditions internationales.",
     "shippingInfoContact": "Nous vous contacterons dès que possible pour confirmer les détails de livraison avec vous si nécessaire.",

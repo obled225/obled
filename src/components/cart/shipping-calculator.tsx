@@ -230,8 +230,7 @@ export function ShippingCalculator({
         <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-md">
           <p className="text-sm text-green-900 font-medium">{t('free')}</p>
           <p className="text-sm text-green-700 mt-1">
-            {t('noShippingOptionsAvailable') ||
-              'No shipping options configured. Shipping is free.'}
+            {t('noShippingOptionsAvailable')}
           </p>
         </div>
 
