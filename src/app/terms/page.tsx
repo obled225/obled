@@ -3,6 +3,8 @@ import { getLocale } from 'next-intl/server';
 import { TermsClient } from '@/components/terms/terms-client';
 import { siteUrl } from '@/lib/utils/config';
 
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
   const isFrench = locale === 'fr';

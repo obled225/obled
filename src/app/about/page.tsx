@@ -6,6 +6,8 @@ import { getAboutPage } from '@/lib/sanity/queries';
 import { getSanityImageUrl } from '@/lib/sanity/client';
 import type { AboutSection } from '@/lib/sanity/queries';
 
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
 

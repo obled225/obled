@@ -32,6 +32,8 @@ function transformGalleryImages(
   return result;
 }
 
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
   const isFrench = locale === 'fr';

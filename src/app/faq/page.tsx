@@ -4,6 +4,8 @@ import { FaqClient } from '@/components/faq/faq-client';
 import { FaqData } from '@/lib/types';
 import { siteUrl } from '@/lib/utils/config';
 
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
   const isFrench = locale === 'fr';
