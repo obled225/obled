@@ -172,8 +172,10 @@ export function ProductCard({ product, isFirst = false }: ProductCardProps) {
         <div className="mt-2 flex items-center justify-between gap-2">
           {product.category?.name ? (
             <p className="text-sm text-gray-600">{product.category.name}</p>
-          ) : null}
-          <div className="flex items-center space-x-2">
+          ) : (
+            <span className="flex-1 min-w-0" aria-hidden />
+          )}
+          <div className="flex items-center space-x-2 shrink-0 ml-auto">
             {displayOriginalPrice && displayOriginalPrice > displayPrice && (
               <span className="text-sm text-gray-500 line-through">
                 {formatPrice(displayOriginalPrice, currency)}
